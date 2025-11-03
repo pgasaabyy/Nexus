@@ -536,106 +536,117 @@ body {
   flex-shrink: 0;
 }
 
-/* Adicionando estilos para seção SOMOS A NEXUS */
-.nexus-about-section {
-  background: linear-gradient(135deg, #8ed6d7 0%, #a8dfe0 100%);
-  padding: 5rem 0;
-  color: #092f76;
-}
-
-.nexus-about-content {
-  max-width: 900px;
-  margin: 0 auto;
+/* Banner com gradiente azul para turquesa */
+.nexus-banner {
+  background: linear-gradient(90deg, #092f76 0%, #8ed6d7 100%);
+  padding: 2.5rem 0;
   text-align: center;
 }
 
-.nexus-logo-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 30px;
+.nexus-banner-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
 }
 
-.nexus-logo-badge {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  background: white;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 20px rgba(9, 47, 118, 0.2);
-  margin-bottom: 20px;
+/* Seção SOMOS A NEXUS */
+.nexus-about-section {
+    background-color: #f5f5dc;
+    padding: 4rem 2rem;
 }
 
-.book-icon {
-  width: 50px;
-  height: 50px;
-  color: #092f76;
+.nexus-about-container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.medal-icon {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 35px;
-  height: 35px;
-  color: #fbbf24;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+/* Header com logo e título */
+.nexus-header {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 3rem;
 }
 
-.nexus-brand {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #092f76;
-  letter-spacing: 3px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+.nexus-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nexus-logo-image {
+    width: 200px;
+    height: auto;
+    object-fit: contain;
 }
 
 .nexus-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #092f76;
-  margin: 30px 0 10px;
-  letter-spacing: 1px;
+    font-size: 4rem;
+    font-weight: 600;
+    color: #092f76;
+    margin: 0;
+    letter-spacing: 2px;
+    text-shadow: 4px 4px 10px #8ed6d7;
 }
 
-.nexus-subtitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #0a3d8f;
-  margin-bottom: 30px;
-  letter-spacing: 0.5px;
-}
-
+/* Textos descritivos */
 .nexus-description {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 30px;
-  margin: 30px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
 }
 
 .nexus-description p {
-  color: #1e3a5f;
-  line-height: 1.8;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  text-align: justify;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #000000;
+    text-align: justify;
+    margin: 0;
 }
 
-.nexus-description p:last-child {
-  margin-bottom: 0;
+/* Equipe NEXUS */
+.nexus-team {
+    text-align: right;
+    margin-top: 3rem;
 }
 
-.nexus-team-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #092f76;
-  margin-top: 40px;
-  letter-spacing: 1px;
+.nexus-team h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #092f76;
+    margin: 0;
+    text-shadow: 4px 4px 10px #8ed6d7;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .nexus-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .nexus-logo-image {
+        width: 150px;
+    }
+
+    .nexus-title {
+        font-size: 2.5rem;
+    }
+
+    .nexus-description p {
+        font-size: 1rem;
+        text-align: left;
+    }
+
+    .nexus-team h3 {
+        font-size: 2rem;
+        text-align: center;
+    }
 }
 
 /* Footer */

@@ -13,6 +13,7 @@ Plataforma escolar desenvolvida para gerenciar alunos, professores e turmas de f
 ## 🧩 Estrutura do Projeto
 
 
+
 ## 🛠️ Como Executar
 ```bash
 # Clonar o repositório
