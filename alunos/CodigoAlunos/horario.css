@@ -1,0 +1,150 @@
+.horario-page {
+  min-height: 100vh;
+  background-color: #e8e8f0;
+}
+
+.top-bar {
+  background: linear-gradient(135deg, #9fa8da 0%, #7986cb 100%);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.school-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-circle-small {
+  width: 36px;
+  height: 36px;
+  background-color: #003366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.school-name-small {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.me-ubs {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.schedule-container {
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.schedule-table {
+  background-color: white;
+  border-collapse: collapse;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.schedule-table thead {
+  background-color: white;
+}
+
+.schedule-table th {
+  padding: 16px 24px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.schedule-table th:first-child {
+  text-align: left;
+}
+
+.schedule-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.schedule-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.schedule-table td {
+  padding: 20px 24px;
+  text-align: center;
+  border-right: 1px solid #e0e0e0;
+}
+
+.schedule-table td:last-child {
+  border-right: none;
+}
+
+.time-cell {
+  font-weight: 600;
+  color: #333;
+  text-align: left !important;
+  font-size: 14px;
+}
+
+.intervalo-row {
+  background-color: #003366;
+}
+
+.intervalo-cell {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center !important;
+}
+
+@media (max-width: 768px) {
+  .schedule-container {
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .schedule-table {
+    min-width: 600px;
+  }
+}
