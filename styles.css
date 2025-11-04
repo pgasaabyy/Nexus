@@ -9,6 +9,9 @@ B1B7DC - azul claro
 */
 
 /* ===== RESET GERAL ===== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inria+Sans:wght@400;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +20,7 @@ B1B7DC - azul claro
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #edeed9;
+  background-color: #FFFFFF;
   color: #1a1a1a;
 }
 
@@ -693,4 +696,205 @@ body {
   .nexus-description p {
     text-align: left;
   }
+}
+
+.hero-content_emp h1 {
+  padding: auto;
+  text-align: center;
+  font-size: 100px;
+}
+
+.hero_emp {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url("imgs/img_emp.png") center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+/* === Título da seção Sobre === */
+.sobre-nos-section {
+    display: flex;
+    gap: 60px; /* Espaço entre a coluna esquerda e direita */
+    padding: 60px 80px;
+    max-width: 1600px; /* Limita a largura máxima da seção */
+    margin: 0 auto; /* Centraliza a seção na página */
+    background-color: #FFFFFF; /* Garante que esta seção tem fundo branco, mesmo que o body não tenha */
+}
+
+/* Coluna Esquerda: Título, Texto e Estatísticas */
+.sobre-nos-info {
+    flex: 1; /* Ocupa metade do espaço disponível */
+    min-width: 50%;
+    text-align: left; /* Garante que o texto e as stats fiquem alinhados à esquerda */
+}
+
+.sobre-nos-info h1 {
+    color: #092f76;
+    font-weight: 900;
+    font-family: 'Inria Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    font-size: 64px;
+    margin: 0 0 30px 0;
+    line-height: 1.1;
+    text-align: left; /* Título também à esquerda */
+}
+
+.sobre-nos-info p {
+    font-size: 22px;
+    line-height: 1.7;
+    font-family: 'Inria Sans', sans-serif;
+    color: #7B7272;
+    text-align: justify; /* Mantém o texto justificado */
+    margin-bottom: 30px; 
+}
+
+/* --- Estilos dos Stats (DENTRO DA COLUNA ESQUERDA) --- */
+.stats-container {
+    display: flex;
+    justify-content: space-between; /* Distribui os 4 itens igualmente na linha */
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+    margin-top: 40px;
+    gap: 20px;
+    max-width: 500px; /* Ajuste se achar que está muito largo no desktop */
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* ALINHA O NÚMERO E O RÓTULO À ESQUERDA (como na imagem) */
+    min-width: 120px;
+    flex: 1; /* Permite que cada item ocupe o espaço disponível */
+}
+
+.stat-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: #00AEEF; /* Cor ciano/azul da imagem */
+    line-height: 1.1;
+    font-family: 'Inria Sans', sans-serif;
+}
+
+.stat-label {
+    font-size: 16px;
+    color: #7B7272;
+    font-family: 'Inria Sans', sans-serif;
+}
+
+/* --- Coluna Direita: Cards --- */
+.cards-container {
+    flex: 1; /* Ocupa a outra metade do espaço disponível */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 45%; /* Um pouco menor para dar respiro, ajustável */
+}
+
+.card-v2 {
+    display: flex; /* Fundamental para o layout da Imagem 2 */
+    background-color: #F8F9FA; /* Fundo cinza bem claro */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Garante que a barra de ícone fique dentro dos cantos */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.card-v2:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* A barra de ícone azul da esquerda */
+.card-v2-icon-container {
+    flex-shrink: 0; /* Impede que a barra encolha */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #092f76; /* Cor azul escuro */
+    padding: 25px 20px;
+    color: white; 
+    font-size: 28px; /* Tamanho do emoji/ícone */
+}
+
+/* O conteúdo de texto da direita */
+.card-v2-content {
+    padding: 20px 25px;
+}
+
+.card-v2-content h3 {
+    color: #333; /* Cor do título (preto/cinza escuro) */
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-family: 'Inria Sans', sans-serif; /* Garante a fonte correta */
+    font-weight: 700;
+    
+    /* Remove o display:flex e o gap que existiam antes */
+}
+
+.card-v2-content p {
+    color: #555; /* Cor do parágrafo */
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin: 0;
+    font-family: 'Inria Sans', sans-serif; /* Garante a fonte correta */
+}
+
+/* === Responsividade (Ajustada) === */
+@media (max-width: 1024px) {
+    .sobre-nos-section {
+        flex-direction: column; /* Empilha as colunas */
+        align-items: center; /* Centraliza a seção como um todo */
+        text-align: center; 
+        padding: 40px 20px; 
+        gap: 40px; /* Mais espaço entre os blocos empilhados */
+    }
+
+    .sobre-nos-info {
+        max-width: 90%; 
+        width: 100%;
+        text-align: left; /* Mantém o texto e as stats à esquerda dentro do bloco */
+    }
+
+    .sobre-nos-info h1 {
+        font-size: 48px; 
+        text-align: center; /* Centraliza o título "SOBRE NÓS" */
+    }
+    
+    .stats-container {
+    display: flex;
+    justify-content: space-between; /* Distribui os 4 itens */
+    flex-wrap: nowrap; /* IMPEDE a quebra de linha no desktop */
+    margin-top: 40px;
+    width: 100%; /* Garante que ocupe todo o espaço da coluna */
+    /* 'gap', 'max-width' e 'flex:1' foram removidos para funcionar corretamente */
+}
+
+    .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinha o texto (500+ e Escolas) à esquerda */
+    /* 'min-width' e 'flex: 1' foram removidos */
+}
+
+.stat-item {
+  align-items: flex-start; /* Alinha o texto (500+ e Escolas) à esquerda */
+  display: flex;
+  flex-direction: column;
+    /* 'min-width' e 'flex: 1' removidos para deixar os itens no tamanho natural */
+}
+    
+    .stat-number {
+        font-size: 36px; 
+    }
+
+    .cards-container {
+        max-width: 90%; 
+        width: 100%;
+    }
 }
