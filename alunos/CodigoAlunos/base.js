@@ -32,3 +32,28 @@ if (notificationBtn) {
     alert("Você tem 2 novas notificações!")
   })
 }
+
+// adicionar evento
+async function addEvent(title, date, type){
+  const res = await fetch('/api/events/add/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken()},
+    body: JSON.stringify({title, date, event_type: type})
+  });
+  return res.json();
+}
+
+// listar eventos com filtro
+async function getEvents(type=null){
+  let url = '/api/events/';
+  if(type) url += '?type=' + type;
+  const res = await fetch(url);
+  return res.json();
+}
+
+// helper csrftoken (se você estiver usando cookies)
+function csrftoken(){
+  const name = 'csrftoken';
+  const val = document.cookie.split('; ').find(row => row.startsWith(name+'='));
+  return val ? val.split('=')[1] : '';
+}

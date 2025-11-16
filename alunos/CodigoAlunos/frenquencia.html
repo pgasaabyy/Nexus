@@ -45,7 +45,7 @@
                 </a>
                 <a href="configuracoes.html" class="nav-item">
                     <img src="imgs/configuracao-removebg-preview.png" alt="Configurações" class="config-icon">
-  Configuração
+                    Configuração
                 </a>
             </nav>
             
@@ -63,7 +63,7 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header">
-                <h1 class="page-title">Dashboard Aluno - Boletim Escolar</h1>
+                <h1 class="page-title">Dashboard Aluno - Frequência Escolar</h1>
                 <div class="header-right">
                     <button class="notification-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -224,60 +224,14 @@
                                 <li>Óbito de familiar próximo: Pai, mãe, cônjuge ou representante legal, com apresentação de certidão de óbito.</li>
                             </ul>
                             
-                            <p class="criteria-note">As justificativas devem ser entregadas em até 3 dias úteis após o retorno do aluno.</p>
+                            <p class="criteria-note">As justificativas devem ser entregues em até 3 dias úteis após o retorno do aluno.</p>
                         </div>
-                        <button class="btn-primary" id="justifyBtn">Justifique suas faltas</button>
+                        <!-- Changed button to link to justificativa.html page -->
+                        <a href="justificativa.html" class="btn-primary" style="text-decoration: none; display: block; text-align: center;">Justifique suas faltas</a>
                     </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Justification Modal -->
-    <div id="justificationModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="modal-back-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <div class="modal-school-info">
-                    <div class="logo-circle-small">
-                        <span>PA</span>
-                    </div>
-                    <span class="school-name-small">Olá, Pedro</span>
-                </div>
-                <span class="me-ubs-modal">ME UBS</span>
-            </div>
-            
-            <div class="modal-body">
-                <h2 class="modal-title">Justificativa de faltas</h2>
-                
-                <div class="form-group">
-                    <label for="justification">Justificativa</label>
-                    <textarea id="justification" rows="4" placeholder="Digite sua justificativa..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="document">Documento</label>
-                    <div class="file-upload">
-                        <input type="file" id="document" accept=".pdf,.jpg,.jpeg,.png">
-                        <label for="document" class="file-upload-label">
-                            <span>Escolher Arquivo</span>
-                            <span class="file-hint">Nenhum Arquivo selecionado</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="absenceDate">Dia da falta</label>
-                    <input type="date" id="absenceDate" value="2025-04-24">
-                </div>
-                
-                <button class="btn-submit">Enviar</button>
-            </div>
-        </div>
     </div>
 
     <script src="base.js"></script>

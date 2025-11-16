@@ -32,6 +32,11 @@ body {
   margin-bottom: 32px;
 }
 
+a, span {
+    text-decoration: none;
+}
+
+
 .logo-circle {
   width: 48px;
   height: 48px;
@@ -81,6 +86,11 @@ body {
   opacity: 1;
 }
 
+.nav-item.active .config-icon {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
 
 .nav-item:hover {
   background-color: #e8e8e8;
@@ -91,6 +101,8 @@ body {
   background-color: #003366;
   color: white;
 }
+
+
 
 .logout-btn {
   display: flex;
@@ -1073,6 +1085,7 @@ body {
   padding: 20px;             /* espaço interno */
   background-color: white;   /* fundo branco */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10); /* leve sombra opcional */
+  width: 479px;
 }
 
 .boletim-widget:hover {
@@ -1228,7 +1241,9 @@ body {
   border-radius: 12px;       /* bordas arredondadas */
   padding: 20px;             /* espaço interno */
   background-color: white;   /* fundo branco */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10)
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+  width: 450px;
+  height: 282px;
 }
 
 .horario-widget:hover {
@@ -1268,6 +1283,21 @@ body {
   background-color: white;   /* fundo branco */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10)
 }
+
+.avisos-header svg {
+    color: #003366;
+    vertical-align: middle;
+    margin-bottom: 2px; /* ajuste fino opcional */
+}
+
+.avisos-header svg {
+    color: #003366;
+    height: 20px;
+    width: 20px;
+    align-self: center;
+    margin-top: -11px;
+}
+
 
 .avisos-widget:hover{
   border-color: #092F76;
