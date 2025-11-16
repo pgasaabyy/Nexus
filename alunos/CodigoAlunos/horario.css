@@ -77,14 +77,33 @@
   justify-content: center;
 }
 
-.schedule-table {
+/* Redesigned to match dashboard layout with schedule card */
+
+/* Schedule Card */
+.schedule-card {
   background-color: white;
-  border-collapse: collapse;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
+  border: 3px solid #8ED6D7;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+.schedule-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+}
+
+.schedule-table-wrapper {
+  overflow-x: auto;
+}
+
+.schedule-table {
   width: 100%;
-  max-width: 1000px;
+  border-collapse: collapse;
+  background-color: white;
 }
 
 .schedule-table thead {
@@ -92,20 +111,21 @@
 }
 
 .schedule-table th {
-  padding: 16px 24px;
+  padding: 16px 12px;
   text-align: center;
   font-weight: 600;
   color: #333;
   border-bottom: 2px solid #e0e0e0;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .schedule-table th:first-child {
   text-align: left;
+  width: 80px;
 }
 
 .schedule-table tbody tr {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .schedule-table tbody tr:last-child {
@@ -113,20 +133,34 @@
 }
 
 .schedule-table td {
-  padding: 20px 24px;
+  padding: 16px 12px;
   text-align: center;
-  border-right: 1px solid #e0e0e0;
+  vertical-align: middle;
+  min-width: 100px;
 }
 
-.schedule-table td:last-child {
-  border-right: none;
+.schedule-table td:first-child {
+  text-align: left;
 }
 
 .time-cell {
   font-weight: 600;
   color: #333;
-  text-align: left !important;
+  font-size: 15px;
+}
+
+.subject-cell {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-size: 14px;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.subject-green {
+  background-color: #C8E6C9;
+  color: #2E7D32;
 }
 
 .intervalo-row {
@@ -147,13 +181,33 @@
   text-align: center !important;
 }
 
+@media (max-width: 1024px) {
+  .schedule-card {
+    padding: 20px;
+  }
+
+  .schedule-table {
+    font-size: 13px;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 12px 8px;
+  }
+}
+
 @media (max-width: 768px) {
+  .schedule-table-wrapper {
+    overflow-x: auto;
+  }
+
   .schedule-container {
     padding: 20px;
     overflow-x: auto;
   }
 
   .schedule-table {
-    min-width: 600px;
+    min-width: 800px;
   }
+
 }
