@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão dos Professores</title>
+    <!-- Link para o novo arquivo CSS dedicado -->
+    <link rel="stylesheet" href="gestao-professores.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de  
+Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-student"></i> <span>Alunos</span></a>
+                <a href="#" class="nav-item active"><i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Turmas</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="#" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="page-title">
+                    <h1>Gestão dos Professores</h1>
+                    <p>Dashboard dos Professores</p>
+                </div>
+                <div class="header-actions">
+                    <a href="#" class="btn-primary"><i class="ph-bold ph-user-plus"></i> Novo Professor</a>
+                    <div class="user-profile">
+                        <i class="ph ph-bell"></i>
+                        <div class="user-info">
+                            <strong>Marina Rodrigues</strong>
+                            <span>marinarodrigues11@coor.edu.br</span>
+                        </div>
+                        <div class="user-avatar">MR</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- KPIs -->
+            <section class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Total de Professores</span>
+                        <strong>48</strong>
+                    </div>
+                    <div class="kpi-icon blue"><i class="ph ph-users"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Lançamentos em Dia</span>
+                        <strong>92%</strong>
+                    </div>
+                    <div class="kpi-icon green"><i class="ph ph-check-circle"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Pendentes</span>
+                        <strong>8</strong>
+                        <small>Aguardando validação</small>
+                    </div>
+                    <div class="kpi-icon yellow"><i class="ph ph-clock-countdown"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Carga Horária Média</span>
+                        <strong>38h</strong>
+                    </div>
+                    <div class="kpi-icon blue"><i class="ph ph-timer"></i></div>
+                </div>
+            </section>
+
+            <!-- Tabela de Professores -->
+            <section class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <h3>Corpo Docente</h3>
+                        <p>Gerenciamento de professores e atribuições</p>
+                    </div>
+                    <div class="table-controls">
+                        <div class="search-bar">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" placeholder="Buscar professor ou disciplina...">
+                        </div>
+                        <button class="btn-export"><i class="ph ph-export"></i> Exportar</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Professor</th>
+                            <th>Disciplina</th>
+                            <th>Turmas</th>
+                            <th>Carga Horária</th>
+                            <th>Lançamentos</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Prof. Maria Silva</td>
+                            <td>Matemática</td>
+                            <td>4 turmas</td>
+                            <td>40h/semana</td>
+                            <td>
+                                <div class="progress-cell">
+                                    <div class="progress-bar"><div class="bar" style="width: 95%;"></div></div>
+                                    <span>95%</span>
+                                </div>
+                            </td>
+                            <td><span class="status-tag em-dia">Em dia</span></td>
+                            <td><a href="#" class="btn-details">Ver perfil</a></td>
+                        </tr>
+                        <tr>
+                            <td>Prof. João Santos</td>
+                            <td>Português</td>
+                            <td>5 turmas</td>
+                            <td>40h/semana</td>
+                            <td>
+                                <div class="progress-cell">
+                                    <div class="progress-bar"><div class="bar" style="width: 88%;"></div></div>
+                                    <span>88%</span>
+                                </div>
+                            </td>
+                            <td><span class="status-tag pendente">Pendente</span></td>
+                            <td><a href="#" class="btn-details">Ver perfil</a></td>
+                        </tr>
+                        <tr>
+                            <td>Prof. Ana Costa</td>
+                            <td>História</td>
+                            <td>3 turmas</td>
+                            <td>30h/semana</td>
+                            <td>
+                                <div class="progress-cell">
+                                    <div class="progress-bar"><div class="bar" style="width: 100%;"></div></div>
+                                    <span>100%</span>
+                                </div>
+                            </td>
+                            <td><span class="status-tag em-dia">Em dia</span></td>
+                            <td><a href="#" class="btn-details">Ver perfil</a></td>
+                        </tr>
+                        <tr>
+                            <td>Prof. Carlos Oliveira</td>
+                            <td>Física</td>
+                            <td>4 turmas</td>
+                            <td>40h/semana</td>
+                            <td>
+                                <div class="progress-cell">
+                                    <div class="progress-bar"><div class="bar" style="width: 92%;"></div></div>
+                                    <span>92%</span>
+                                </div>
+                            </td>
+                            <td><span class="status-tag em-dia">Em dia</span></td>
+                            <td><a href="#" class="btn-details">Ver perfil</a></td>
+                        </tr>
+                        <tr>
+                            <td>Prof. Beatriz Lima</td>
+                            <td>Química</td>
+                            <td>3 turmas</td>
+                            <td>30h/semana</td>
+                            <td>
+                                <div class="progress-cell">
+                                    <div class="progress-bar"><div class="bar" style="width: 78%;"></div></div>
+                                    <span>78%</span>
+                                </div>
+                            </td>
+                            <td><span class="status-tag pendente">Pendente</span></td>
+                            <td><a href="#" class="btn-details">Ver perfil</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

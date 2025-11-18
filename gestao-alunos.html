@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Alunos</title>
+    <!-- Link para o novo arquivo CSS dedicado -->
+    <link rel="stylesheet" href="gestao-alunos.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="#" class="nav-item active"><i class="ph-bold ph-student"></i> <span>Alunos</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="#" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <div class="page-title-section">
+                <h1>Gestão de Alunos</h1>
+                <p>Cadastro e gerenciamento de alunos</p>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Lista de Alunos</h2>
+                    <div class="search-bar">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Pesquisar por aluno, CPF ou Email">
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Turma</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="student-name">
+                                    <span>Ana</span>
+                                    <span>Silva</span>
+                                </div>
+                            </td>
+                            <td>123.456.789-00</td>
+                            <td>9º Ano</td>
+                            <td>ana@email.com</td>
+                            <td><span class="status-tag-table ativo">Ativo</span></td>
+                            <td class="actions-cell">
+                                <a href="#" class="action-icon"><i class="ph ph-pencil-simple"></i></a>
+                                <a href="#" class="action-icon"><i class="ph ph-eye"></i></a>
+                                <a href="#" class="action-icon"><i class="ph ph-file-text"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-name">
+                                    <span>Carlos</span>
+                                    <span>Santos</span>
+                                </div>
+                            </td>
+                            <td>987.654.321-00</td>
+                            <td>8º Ano</td>
+                            <td>carlos@email.com</td>
+                            <td><span class="status-tag-table ativo">Ativo</span></td>
+                            <td class="actions-cell">
+                                <a href="#" class="action-icon"><i class="ph ph-pencil-simple"></i></a>
+                                <a href="#" class="action-icon"><i class="ph ph-eye"></i></a>
+                                <a href="#" class="action-icon"><i class="ph ph-file-text"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-name">
+                                    <span>Maria</span>
+                                    <span>Oliveira</span>
+                                </div>
+                            </td>
+                            <td>456.789.123-00</td>
+                            <td>7º Ano</td>
+                            <td>maria@email.com</td>
+                            <td><span class="status-tag-table trancado">Trancado</span></td>
+                            <td class="actions-cell">
+                                <a href="#" class="action-icon"><i class="ph ph-pencil-simple"></i></a>
+                                <a href="#" class="action-icon"><i class="ph ph-eye"></i></a>
+                                <a href="#" class="action-icon"><i class="ph ph-file-text"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

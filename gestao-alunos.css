@@ -1,0 +1,252 @@
+/* ===== ARQUIVO CSS DEDICADO PARA: GESTAO-ALUNOS.HTML ===== */
+
+/* ===== RESET E VARIÁVEIS GLOBAIS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap' );
+
+:root {
+    --cor-fundo: #F8F9FA;
+    --cor-sidebar: #FFFFFF;
+    --cor-widget: #FFFFFF;
+    --cor-borda: #E9ECEF;
+    --cor-azul-escuro: #092F76;
+    --cor-azul-ativo: #0052CC;
+    --cor-texto-principal: #212529;
+    --cor-texto-secundario: #6c757d;
+    --cor-logout: #dc3545;
+    --cor-sombra: rgba(0, 0, 0, 0.06);
+    --fonte-principal: 'Poppins', 'Inria Sans', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--cor-fundo);
+    font-family: var(--fonte-principal);
+    color: var(--cor-texto-principal);
+}
+
+/* ===== ESTRUTURA BASE DO DASHBOARD ===== */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ===== MENU LATERAL (SIDEBAR) ===== */
+.sidebar {
+    width: 260px;
+    background-color: var(--cor-sidebar);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--cor-borda);
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 2rem; 
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--cor-texto-secundario);
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-item i {
+    font-size: 1.4rem;
+}
+
+.nav-item:hover {
+    background-color: #f1f3f5;
+}
+
+.nav-item.active {
+    background-color: var(--cor-azul-escuro);
+    color: white;
+}
+.nav-item.active:hover {
+    background-color: #072763;
+}
+
+.nav-item.logout {
+    margin-top: auto;
+    color: var(--cor-logout);
+}
+
+.nav-item.logout:hover {
+    background-color: #fff5f5;
+}
+
+/* ===== CONTEÚDO PRINCIPAL ===== */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+/* ===== ESTILOS ESPECÍFICOS DA PÁGINA DE GESTÃO ===== */
+.page-title-section h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+}
+.page-title-section p {
+    font-size: 1.1rem;
+    color: var(--cor-texto-secundario);
+    margin-top: 5px;
+}
+
+.table-container {
+    background-color: var(--cor-widget);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-top: 2.5rem;
+    box-shadow: 0 8px 25px var(--cor-sombra);
+    border: 1px solid var(--cor-borda);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.table-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.search-bar {
+    position: relative;
+    width: 320px;
+}
+.search-bar i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--cor-texto-secundario);
+    font-size: 1.2rem;
+}
+.search-bar input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 2.8rem;
+    border-radius: 12px;
+    border: 1px solid var(--cor-borda);
+    background-color: var(--cor-fundo);
+    font-size: 1rem;
+    font-weight: 500;
+}
+.search-bar input::placeholder {
+    color: #999;
+}
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--cor-azul-ativo);
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    text-align: left;
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid var(--cor-borda);
+    vertical-align: middle;
+}
+thead th {
+    color: var(--cor-texto-secundario);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.student-name {
+    font-weight: 600;
+}
+.student-name span {
+    display: block;
+}
+
+.status-tag-table {
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: white;
+    display: inline-block;
+    text-align: center;
+}
+.status-tag-table.ativo { background-color: var(--cor-azul-ativo); }
+.status-tag-table.trancado { background-color: #495057; }
+.status-tag-table.transferido { background-color: var(--cor-logout); }
+
+.actions-cell {
+    display: flex;
+    gap: 1rem;
+}
+.action-icon {
+    color: var(--cor-texto-secundario);
+    font-size: 1.4rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.action-icon:hover {
+    color: var(--cor-azul-ativo);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 992px) {
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .search-bar {
+        width: 100%;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+        overflow-x: auto;
+    }
+    .sidebar-nav {
+        flex-direction: row;
+        margin-top: 0;
+    }
+    .nav-item span { display: none; }
+    .nav-item.logout { margin-top: 0; margin-left: auto; }
+    .main-content { padding: 20px; }
+}

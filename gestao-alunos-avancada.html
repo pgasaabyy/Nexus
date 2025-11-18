@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão dos Alunos</title>
+    <!-- Link para o novo arquivo CSS dedicado -->
+    <link rel="stylesheet" href="gestao-alunos-avancada.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de  
+Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordenacao.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="#" class="nav-item active"><i class="ph-bold ph-student"></i> <span>Alunos</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Turmas</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
+                <a href="#" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="#" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="page-title">
+                    <h1>Gestão dos Alunos</h1>
+                    <p>Dashboard dos Alunos</p>
+                </div>
+                <div class="header-actions">
+                    <a href="#" class="btn-primary"><i class="ph-bold ph-user-plus"></i> Nova Matrícula</a>
+                    <div class="user-profile">
+                        <i class="ph ph-bell"></i>
+                        <div class="user-info">
+                            <strong>Marina Rodrigues</strong>
+                            <span>marinarodrigues11@coor.edu.br</span>
+                        </div>
+                        <div class="user-avatar">MR</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- KPIs -->
+            <section class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Total de Alunos</span>
+                        <strong>1,284</strong>
+                    </div>
+                    <div class="kpi-icon blue"><i class="ph ph-student"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Média Geral</span>
+                        <strong>8.2</strong>
+                    </div>
+                    <div class="kpi-icon green"><i class="ph ph-graduation-cap"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Frequência Média</span>
+                        <strong>93%</strong>
+                    </div>
+                    <div class="kpi-icon blue"><i class="ph ph-user-list"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Em Atenção</span>
+                        <strong>24</strong>
+                        <small>Baixo rendimento</small>
+                    </div>
+                    <div class="kpi-icon yellow"><i class="ph ph-warning-circle"></i></div>
+                </div>
+            </section>
+
+            <!-- Tabela de Alunos -->
+            <section class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <h3>Lista de Alunos</h3>
+                        <p>Gerenciamento completo do corpo estudantil</p>
+                    </div>
+                    <div class="table-controls">
+                        <div class="search-bar">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" placeholder="Buscar por nome ou matrícula...">
+                        </div>
+                        <button class="btn-filter"><i class="ph ph-funnel-simple"></i> Todas as turmas <i class="ph ph-caret-down"></i></button>
+                        <button class="btn-export"><i class="ph ph-export"></i> Exportar</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Matrícula</th>
+                            <th>Nome</th>
+                            <th>Turma</th>
+                            <th>Média</th>
+                            <th>Frequência</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024001</td>
+                            <td>Ana Clara Silva</td>
+                            <td>3º Ano A</td>
+                            <td><span class="grade-tag good">8.5</span></td>
+                            <td>95%</td>
+                            <td><span class="status-tag active">Ativo</span></td>
+                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
+                        </tr>
+                        <tr>
+                            <td>2024002</td>
+                            <td>Bruno Santos Costa</td>
+                            <td>3º Ano A</td>
+                            <td><span class="grade-tag medium">7.8</span></td>
+                            <td>88%</td>
+                            <td><span class="status-tag active">Ativo</span></td>
+                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
+                        </tr>
+                        <tr>
+                            <td>2024003</td>
+                            <td>Carla Oliveira</td>
+                            <td>2º Ano B</td>
+                            <td><span class="grade-tag excellent">9.2</span></td>
+                            <td>98%</td>
+                            <td><span class="status-tag active">Ativo</span></td>
+                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
+                        </tr>
+                        <tr>
+                            <td>2024004</td>
+                            <td>Daniel Ferreira</td>
+                            <td>2º Ano A</td>
+                            <td><span class="grade-tag low">6.5</span></td>
+                            <td>82%</td>
+                            <td><span class="status-tag warning">Atenção</span></td>
+                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
+                        </tr>
+                        <tr>
+                            <td>2024005</td>
+                            <td>Eduarda Martins</td>
+                            <td>1º Ano C</td>
+                            <td><span class="grade-tag good">8.9</span></td>
+                            <td>96%</td>
+                            <td><span class="status-tag active">Ativo</span></td>
+                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
