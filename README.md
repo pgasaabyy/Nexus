@@ -126,42 +126,42 @@ GET /api/turmas/  # Grades ativas
   <tr>
     <td align="center">
       <a href="https://github.com/pgasaabyy">
-        <img src="https://avatars.githubusercontent.com/u/pgasaabyy" width="100px;" alt="Foto pgasaabyy"/>
+        <img src="https://avatars.githubusercontent.com/u/178240823?v=4" width="100px;" alt="Foto pgasaabyy"/>
         <br />
         <sub><b>pgasaabyy</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/juliamodena15">
-        <img src="https://avatars.githubusercontent.com/u/juliamodena15" width="100px;" alt="Foto Julia"/>
+        <img src="https://avatars.githubusercontent.com/u/183606987?v=4" width="100px;" alt="Foto Julia"/>
         <br />
         <sub><b>Julia Modena</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/larissasalmeida6-hub">
-        <img src="https://avatars.githubusercontent.com/u/larissasalmeida6-hub" width="100px;" alt="Foto Larissa"/>
+        <img src="https://avatars.githubusercontent.com/u/235154108?v=4" width="100px;" alt="Foto Larissa"/>
         <br />
         <sub><b>Larissa Almeida</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/MaviSz01">
-        <img src="https://avatars.githubusercontent.com/u/MaviSz01" width="100px;" alt="Foto MaviSz01"/>
+        <img src="https://avatars.githubusercontent.com/u/176519382?v=4" width="100px;" alt="Foto MaviSz01"/>
         <br />
         <sub><b>MaviSz01</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/Natan-Sant">
-        <img src="https://avatars.githubusercontent.com/u/Natan-Sant" width="100px;" alt="Foto Natan"/>
+        <img src="https://avatars.githubusercontent.com/u/177337038?v=4" width="100px;" alt="Foto Natan"/>
         <br />
         <sub><b>Natan Sant'anna</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/wellxsz">
-        <img src="https://avatars.githubusercontent.com/u/wellxsz" width="100px;" alt="Foto Well"/>
+        <img src="https://avatars.githubusercontent.com/u/177960375?v=4" width="100px;" alt="Foto Well"/>
         <br />
         <sub><b>wellxsz</b></sub>
       </a>
