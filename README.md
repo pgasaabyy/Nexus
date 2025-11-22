@@ -1,141 +1,180 @@
-# 🏛️ Nexus - Sistema de Gestão Escolar Inteligente
+<div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)
-![Django](https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow?style=for-the-badge)
+  <img src="LINK_DA_SUA_LOGO_AQUI.png" alt="Nexus Logo" width="250">
 
-> **Nexus** é uma plataforma integrada de gestão escolar desenvolvida para centralizar processos acadêmicos, administrativos e pedagógicos. O sistema elimina a fragmentação de dados, oferecendo dashboards intuitivos para Direção, Secretaria, Professores e Alunos.
+  <h1>🏛️ Nexus - Sistema de Gestão Escolar Inteligente</h1>
+
+  <p>
+    <b>Centralização. Eficiência. Inovação.</b><br>
+    O futuro da gestão acadêmica no SENAI Morvan Figueiredo.
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django">
+    <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+    <img src="https://img.shields.io/badge/Status-Em_Desenvolvimento-F7DF1E?style=for-the-badge&logo=insomnia&logoColor=black" alt="Status">
+  </p>
+
+</div>
 
 ---
 
 ## 🎯 Objetivo do Projeto
-Resolver a problemática da desorganização escolar causada por sistemas descentralizados. O Nexus conecta o lançamento de notas, controle de frequência e matrícula em um único ambiente seguro e escalável.
+
+> **O Problema:** Instituições de ensino sofrem com a fragmentação de dados, utilizando sistemas separados para notas, matrículas e frequência, gerando retrabalho e inconsistência.
+
+> **A Solução Nexus:** Uma plataforma integrada que conecta **Direção, Secretaria, Professores e Alunos** em um único ecossistema seguro e escalável.
 
 ---
 
-## 🚀 Funcionalidades Principais
+## 🚀 Funcionalidades & Módulos
 
 ### 🎓 Gestão Acadêmica
-* **Controle de Turmas e Cursos:** Cadastro completo de grades curriculares e alocação de professores.
-* **Matrícula Digital:** Vínculo de alunos em turmas com histórico de status (Ativo, Trancado, Concluído).
-* **Diário de Classe:** Lançamento de frequência e conteúdo programático.
 
-### 📊 Dashboards e Relatórios
-* **API RESTful Integrada:** Fornecimento de dados em JSON para construção de gráficos dinâmicos.
-* **Boletins Automáticos:** Geração de boletins em PDF.
-* **Exportação de Dados:** Relatórios administrativos em Excel.
+- ✅ **Controle de Turmas:** Alocação inteligente de professores e grades curriculares.
+- ✅ **Matrícula Digital:** Vínculo de alunos com status (Ativo, Trancado, Concluído).
+- ✅ **Diário de Classe:** Lançamento rápido de frequência e conteúdo.
 
-### 👥 Perfis de Acesso (RBAC)
-* **Admin/Secretaria:** Acesso total para cadastros e relatórios.
-* **Professor:** Acesso restrito às suas turmas para lançar notas/chamada.
-* **Aluno:** Visualização de boletim, frequência e materiais.
+### 📊 Dashboards e Intelligence
 
----
+- 📈 **API RESTful:** Dados em tempo real para criação de gráficos dinâmicos.
+- 📄 **Boletins PDF:** Geração automática de documentos oficiais.
+- 📑 **Exportação Excel:** Relatórios administrativos completos.
 
-## 🛠️ Stack Tecnológico
+### 👥 Segurança e Acesso (RBAC)
 
-| Componente | Tecnologia | Função |
-| :--- | :--- | :--- |
-| **Back-end** | Python + Django | Núcleo da aplicação e regras de negócio. |
-| **API** | Django REST Framework | Comunicação de dados para dashboards. |
-| **Banco de Dados** | MySQL | Armazenamento relacional robusto. |
-| **Front-end** | HTML5, Bootstrap | Interface responsiva (Web). |
-| **Relatórios** | ReportLab & OpenPyXL | Geração de documentos PDF e planilhas. |
+| Perfil             | Permissões Principais                                       |
+|--------------------|-------------------------------------------------------------|
+| **Admin/Secretaria** | Acesso total, cadastros, matrículas e relatórios gerenciais. |
+| **Professor**        | Gestão de suas turmas, lançamento de notas e chamadas.      |
+| **Aluno**            | Visualização de boletim, faltas e materiais de aula.        |
 
 ---
 
-## 💻 Instalação e Configuração
+## 💻 Guia de Instalação Rápida
 
-Siga este guia para rodar o projeto localmente.
+Prepare seu ambiente de desenvolvimento em **3 minutos**.
 
-### Pré-requisitos
-* Python 3.10 ou superior.
-* MySQL Server (8.0) rodando.
-* Git instalado.
+### 1. Pré-requisitos
 
-### 1. Clonar o Repositório
+- Python 3.10+
+- MySQL Server 8.0+
+- Git
+
+### 2. Clonar e Configurar
+
 ```bash
+# 1. Clone o repositório
 git clone https://github.com/pgasaabyy/Nexus.git
 cd Nexus
-```
 
-### 2. Configurar o Ambiente Virtual
-```bash
-# Windows
+# 2. Crie o Ambiente Virtual
 python -m venv venv
+
+# 3. Ative o Ambiente
+# Windows:
 venv\Scripts\activate
-
-# Linux/Mac
-python3 -m venv venv
+# Linux/Mac:
 source venv/bin/activate
-```
 
-### 3. Instalar Dependências
-```bash
+# 4. Instale as Dependências
 pip install -r requirements.txt
-```
-*Caso não tenha o arquivo requirements, instale manualmente:*
-`pip install django mysqlclient djangorestframework django-crispy-forms django-filter reportlab openpyxl django-import-export`
+````
 
-### 4. Configurar o Banco de Dados
-Abra seu terminal MySQL ou Workbench e rode:
+### 3. Banco de Dados e Execução
+
+Abra seu MySQL e execute o comando SQL abaixo:
+
 ```sql
-DROP DATABASE IF EXISTS nexus;
 CREATE DATABASE nexus CHARACTER SET utf8mb4;
 ```
 
-### 5. Configurar Conexão (Se necessário)
-Verifique se a senha do banco no arquivo `nexus/settings.py` bate com a do seu computador.
+Em seguida, volte ao terminal:
 
-### 6. Executar Migrações
 ```bash
+# Migre a estrutura para o banco
 python manage.py makemigrations
 python manage.py migrate
-```
 
-### 7. Criar Admin e Rodar
-```bash
+# Crie o usuário administrador
 python manage.py createsuperuser
+
+# Inicie o servidor
 python manage.py runserver
 ```
-Acesse: `http://127.0.0.1:8000/`
+
+🚀 Acesse: `http://127.0.0.1:8000/`
 
 ---
 
-## 📡 Documentação da API
+## 📡 API Endpoints
 
-O Nexus possui endpoints prontos para integração com Dashboards.
+O Nexus é **API First**. Integre com PowerBI ou front-ends modernos.
 
-* **Base URL:** `/api/`
-* **Endpoints:**
-    * `GET /api/alunos/` - Lista de alunos.
-    * `GET /api/notas/` - Histórico de notas.
-    * `GET /api/turmas/` - Turmas ativas.
-
----
-
-## 📂 Estrutura do Projeto
-
-```
-Nexus/
-├── escola/             # App principal (Models, Views, API)
-│   ├── migrations/     # Histórico do banco
-│   ├── models.py       # Tabelas do Banco de Dados
-│   ├── serializers.py  # Configuração da API
-│   └── views.py        # Lógica do sistema
-├── nexus/              # Configurações globais (settings.py)
-├── manage.py           # Executor de comandos Django
-└── requirements.txt    # Lista de bibliotecas
+```http
+GET /api/alunos/  # Listagem completa de discentes
+GET /api/notas/   # Histórico acadêmico
+GET /api/turmas/  # Grades ativas
 ```
 
 ---
 
-## 🤝 Autores
+## 🤝 Time de Desenvolvimento
 
-Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TEMA 4).
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/pgasaabyy">
+        <img src="https://avatars.githubusercontent.com/u/pgasaabyy" width="100px;" alt="Foto pgasaabyy"/>
+        <br />
+        <sub><b>pgasaabyy</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/juliamodena15">
+        <img src="https://avatars.githubusercontent.com/u/juliamodena15" width="100px;" alt="Foto Julia"/>
+        <br />
+        <sub><b>Julia Modena</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/larissasalmeida6-hub">
+        <img src="https://avatars.githubusercontent.com/u/larissasalmeida6-hub" width="100px;" alt="Foto Larissa"/>
+        <br />
+        <sub><b>Larissa Almeida</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/MaviSz01">
+        <img src="https://avatars.githubusercontent.com/u/MaviSz01" width="100px;" alt="Foto MaviSz01"/>
+        <br />
+        <sub><b>MaviSz01</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Natan-Sant">
+        <img src="https://avatars.githubusercontent.com/u/Natan-Sant" width="100px;" alt="Foto Natan"/>
+        <br />
+        <sub><b>Natan Sant'anna</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/wellxsz">
+        <img src="https://avatars.githubusercontent.com/u/wellxsz" width="100px;" alt="Foto Well"/>
+        <br />
+        <sub><b>wellxsz</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
-<p align="center">
-  <b>SENAI Morvan Figueiredo - 2025</b><br>
-  Desenvolvido com ❤️
-</p>
+---
+
+<div align="center">
+  <p>
+    Desenvolvido com 💙 para o <b>TEMA 4</b><br>
+    SENAI Morvan Figueiredo - 2025
+  </p>
+</div>
+```
