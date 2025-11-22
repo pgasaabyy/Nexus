@@ -56,11 +56,12 @@ Siga este guia para rodar o projeto localmente.
 
 ### 1. Clonar o Repositório
 ```bash
-git clone [https://github.com/pgasaabyy/Nexus.git](https://github.com/pgasaabyy/Nexus.git)
+git clone https://github.com/pgasaabyy/Nexus.git
 cd Nexus
-2. Configurar o Ambiente Virtual
-Bash
+```
 
+### 2. Configurar o Ambiente Virtual
+```bash
 # Windows
 python -m venv venv
 venv\Scripts\activate
@@ -68,48 +69,55 @@ venv\Scripts\activate
 # Linux/Mac
 python3 -m venv venv
 source venv/bin/activate
-3. Instalar Dependências
-Bash
+```
 
+### 3. Instalar Dependências
+```bash
 pip install -r requirements.txt
-Caso não tenha o arquivo requirements, instale manualmente: pip install django mysqlclient djangorestframework django-crispy-forms django-filter reportlab openpyxl django-import-export
+```
+*Caso não tenha o arquivo requirements, instale manualmente:*
+`pip install django mysqlclient djangorestframework django-crispy-forms django-filter reportlab openpyxl django-import-export`
 
-4. Configurar o Banco de Dados
+### 4. Configurar o Banco de Dados
 Abra seu terminal MySQL ou Workbench e rode:
-
-SQL
-
+```sql
 DROP DATABASE IF EXISTS nexus;
 CREATE DATABASE nexus CHARACTER SET utf8mb4;
-5. Configurar Conexão (Se necessário)
-Verifique se a senha do banco no arquivo nexus/settings.py bate com a do seu computador.
+```
 
-6. Executar Migrações
-Bash
+### 5. Configurar Conexão (Se necessário)
+Verifique se a senha do banco no arquivo `nexus/settings.py` bate com a do seu computador.
 
+### 6. Executar Migrações
+```bash
 python manage.py makemigrations
 python manage.py migrate
-7. Criar Admin e Rodar
-Bash
+```
 
+### 7. Criar Admin e Rodar
+```bash
 python manage.py createsuperuser
 python manage.py runserver
-Acesse: http://127.0.0.1:8000/
+```
+Acesse: `http://127.0.0.1:8000/`
 
-📡 Documentação da API
+---
+
+## 📡 Documentação da API
+
 O Nexus possui endpoints prontos para integração com Dashboards.
 
-Base URL: /api/
+* **Base URL:** `/api/`
+* **Endpoints:**
+    * `GET /api/alunos/` - Lista de alunos.
+    * `GET /api/notas/` - Histórico de notas.
+    * `GET /api/turmas/` - Turmas ativas.
 
-Endpoints:
+---
 
-GET /api/alunos/ - Lista de alunos.
+## 📂 Estrutura do Projeto
 
-GET /api/notas/ - Histórico de notas.
-
-GET /api/turmas/ - Turmas ativas.
-
-📂 Estrutura do Projeto
+```
 Nexus/
 ├── escola/             # App principal (Models, Views, API)
 │   ├── migrations/     # Histórico do banco
@@ -119,10 +127,15 @@ Nexus/
 ├── nexus/              # Configurações globais (settings.py)
 ├── manage.py           # Executor de comandos Django
 └── requirements.txt    # Lista de bibliotecas
-🤝 Autores
+```
+
+---
+
+## 🤝 Autores
+
 Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TEMA 4).
 
-<p align="center"> <b>SENAI Morvan Figueiredo - 2025 </b>
-
-
-Desenvolvido com ❤️ </p>
+<p align="center">
+  <b>SENAI Morvan Figueiredo - 2025</b><br>
+  Desenvolvido com ❤️
+</p>
