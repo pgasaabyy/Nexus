@@ -173,8 +173,8 @@ GET /api/turmas/  # Grades ativas
 
 <div align="center">
   <p>
-    Desenvolvido com 💙 para o <b>TEMA 4</b><br>
+    Desenvolvido com 💙 para o <b>Trabalho de Conclusão de Curso - Sistema de Gestão Escolar</b><br>
     SENAI Morvan Figueiredo - 2025
   </p>
 </div>
-```
+
