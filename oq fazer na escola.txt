@@ -1,0 +1,109 @@
+📂 Passo 1: Organizar as Pastas 
+HTMLs: Devem ir para dentro de uma pasta templates dentro do seu app escola.
+
+Caminho: nexus/escola/templates/escola/index.html (e login.html, dashboard.html, etc).
+
+CSS, JS e Imagens: Devem ir para uma pasta static dentro do seu app escola.
+
+Caminho: nexus/escola/static/escola/css/style.css
+
+Caminho: nexus/escola/static/escola/js/script.js
+
+Caminho: nexus/escola/static/escola/img/logo.png
+
+🛠️ Passo 2: "Djangolizar" o HTML (A Transformação)
+Agora você precisa abrir cada arquivo HTML e trocar os links estáticos pela linguagem do Django.
+
+No topo de TODO arquivo HTML, adicione:
+
+HTML
+
+{% load static %}
+Conectando o CSS e JS:
+
+Antes (Errado no Django): <link rel="stylesheet" href="style.css">
+
+Depois (Certo):
+
+HTML
+
+<link rel="stylesheet" href="{% static 'escola/css/style.css' %}">
+(Faça o mesmo para os scripts JS e imagens src).
+
+Conectando os Links (Botões): Não use mais nomes de arquivo .html. Use os nomes das URLs que vamos criar.
+
+Antes: <a href="login.html">Ir para Login</a>
+
+Depois: <a href="{% url 'login' %}">Ir para Login</a>
+
+🔐 Passo 3: Fazendo o Login Funcionar (O Porteiro)
+Para o login por e-mail funcionar e redirecionar cada um para seu canto, o formulário HTML precisa enviar os dados corretamente.
+
+No seu login.html:
+
+A tag <form> precisa ter method="POST".
+
+Dentro do form, obrigatório ter {% csrf_token %} (segurança).
+
+Os inputs devem ter name="username" (ou email) e name="password".
+
+HTML
+
+<form method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="Seu E-mail ou Usuário">
+    <input type="password" name="password" placeholder="Senha">
+    <button type="submit">Entrar</button>
+</form>
+Na views.py (A Lógica do Redirecionamento): Você vai usar aquela lógica que conversamos. O Django checa o grupo e manda pro dashboard certo.
+
+Python
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
+def login_view(request):
+    if request.method == 'POST':
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user is not None:
+            login(request, user)
+            # O Grande Truque do Redirecionamento
+            if user.groups.filter(name='Secretaria').exists():
+                return redirect('dashboard_secretaria')
+            elif user.groups.filter(name='Professor').exists():
+                return redirect('dashboard_professor')
+            elif user.groups.filter(name='Aluno').exists():
+                return redirect('dashboard_aluno')
+    return render(request, 'escola/login.html')
+📊 Passo 4: Conectando os Dashboards e Funções
+Agora, quando o usuário cair no dashboard, os botões (como "Gerar Boletim" ou "Nova Atividade") precisam funcionar.
+
+Exemplo: Botão de Exportar PDF no Dashboard
+
+No HTML (dashboard_aluno.html):
+
+HTML
+
+<div class="card">
+    <h3>Meu Boletim</h3>
+    <a href="{% url 'gerar_boletim' %}" class="btn-exportar">Baixar PDF</a>
+</div>
+No urls.py (Criando o endereço):
+
+Python
+
+path('exportar-boletim/', views.gerar_boletim_pdf, name='gerar_boletim'),
+No views.py (A mágica): (Use a função de PDF que mostrei na resposta anterior).
+
+🧪 Checklist para "Zero Defeitos" na Escola
+Antes de apresentar, faça este teste:
+
+[ ] CSS Carregou? Se a página abrir feia (sem cor), confira se usou {% static %} e se configurou o STATIC_URL no settings.py.
+
+[ ] Token de Segurança: Se der erro "CSRF Verification Failed" ao logar, é porque esqueceu de colocar {% csrf_token %} dentro do <form>.
+
+URLs com Nomes: Nunca use href="/dashboard". Sempre use href="{% url 'nome_da_url' %}". Se você mudar a URL um dia, o site não quebra.
+
+Banco Populado: Lembre-se de criar pelo menos 1 usuário de teste para cada perfil (1 Aluno, 1 Prof, 1 Secretaria) no admin do Django antes de tentar logar na frente do professor.
+
+Seguindo essa estrutura, o fluxo será: Abre Home ➔ Clica Login ➔ Django serve o Login ➔ Preenche dados ➔ Django valida e verifica Grupo ➔ Django redireciona ➔ Dashboard carrega com dados do Banco.
