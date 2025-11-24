@@ -133,7 +133,7 @@ GET /api/turmas/  # Grades ativas
     </td>
     <td align="center">
       <a href="https://github.com/juliamodena15">
-        <img src="https://avatars.githubusercontent.com/u/183606987?v=4" width="100px;" alt="Foto Julia"/>
+        <img src="[https://avatars.githubusercontent.com/u/183606987?v=4](https://avatars.githubusercontent.com/u/183606987?v=4)" width="100px;" alt="Foto Julia"/>
         <br />
         <sub><b>Julia Modena</b></sub>
       </a>
