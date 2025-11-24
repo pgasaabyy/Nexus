@@ -1,0 +1,194 @@
+/* ===== ARQUIVO CSS COMPLETO PARA PÁGINA DE DOCUMENTOS ===== */
+
+/* ===== RESET E VARIÁVEIS GLOBAIS ===== */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* ===== ESTILOS ESPECÍFICOS DA PÁGINA DE DOCUMENTOS ===== */
+
+.page-header {
+  margin-bottom: 15px;
+}
+
+.page-title h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+}
+
+.page-title p {
+  color: var(--cor-texto-secundario);
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  background-color: #f0f0f0;
+  padding: 6px;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--cor-texto-secundario);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-family: var(--fonte-principal);
+}
+
+.tab-button.active {
+  background-color: white;
+  color: var(--cor-texto-principal);
+  font-weight: 600;
+}
+
+.tab-button:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.page-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 25px;
+}
+
+.btn-action.primary i {
+  font-size: 1.1rem;
+}
+
+.content-section {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.document-card {
+  background-color: var(--cor-widget);
+  border: 1px solid var(--cor-borda);
+  border-top: 4px solid var(--cor-azul-piscina);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px var(--cor-sombra);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.document-icon {
+  font-size: 2.5rem;
+  color: var(--cor-azul-escuro);
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-badge.aprovado {
+  background-color: #d1f4f4;
+  color: #0d7c7c;
+}
+
+.status-badge.pendente {
+  background-color: #d1f4f4;
+  color: #0d7c7c;
+}
+
+.document-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.document-type,
+.document-date {
+  font-size: 0.875rem;
+  color: var(--cor-texto-secundario);
+  margin: 0;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-download,
+.btn-view {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--fonte-principal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-download {
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto-principal);
+}
+
+.btn-download:hover {
+  background-color: var(--cor-fundo);
+  border-color: #ccc;
+}
+
+.btn-download i {
+  font-size: 1rem;
+}
+
+.btn-view {
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto-principal);
+}
+
+.btn-view:hover {
+  background-color: var(--cor-fundo);
+  border-color: #ccc;
+}
+
+/* Responsividade específica para documentos */
+@media (max-width: 1200px) {
+  .documents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+}

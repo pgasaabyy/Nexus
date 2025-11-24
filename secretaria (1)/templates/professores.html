@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Professores - Colégio Paulo de Alcantara{% endblock %}
+
+{% block page_title %}Gestão de Professores{% endblock %}
+{% block page_subtitle %}<p>Cadastro e gerenciamento de professores</p>{% endblock %}
+
+{% block content %}
+<div class="widgets-grid" style="grid-column: span 4;">
+    <div class="widget" style="grid-column: span 4;">
+        <div class="section-header">
+            <h3 class="section-title">Lista de Professores</h3>
+            <a href="{% url 'professor_criar' %}" class="btn-action primary">+ Novo Professor</a>
+        </div>
+
+        <div class="search-box">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" id="searchProfessores" placeholder="Pesquisar por nome, CPF ou Email">
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Disciplinas</th>
+                        <th>Turmas</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-professores">
+                    {% for professor in professores %}
+                    <tr>
+                        <td><strong>{{ professor.nome }}</strong></td>
+                        <td>{{ professor.cpf }}</td>
+                        <td>{{ professor.disciplinas_list|join:", "|default:"-" }}</td>
+                        <td>{{ professor.turmas_count }} Turma{{ professor.turmas_count|pluralize:"s" }}</td>
+                        <td>
+                            <span class="status-tag {{ professor.status|lower }}">
+                                {{ professor.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="action-icons">
+                            <a href="{% url 'professor_editar' professor.id %}" title="Editar">
+                                <i class="ph ph-pencil-simple"></i>
+                            </a>
+                            <a href="{% url 'professor_detalhe' professor.id %}" title="Visualizar">
+                                <i class="ph ph-eye"></i>
+                            </a>
+                            <a href="{% url 'professor_documentos' professor.id %}" title="Documentos">
+                                <i class="ph ph-file-text"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhum professor encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if professores.has_other_pages %}
+        <div class="pagination">
+            {% if professores.has_previous %}
+            <a href="?page={{ professores.previous_page_number }}" class="btn-outline">Anterior</a>
+            {% endif %}
+            
+            <span class="page-info">Página {{ professores.number }} de {{ professores.paginator.num_pages }}</span>
+            
+            {% if professores.has_next %}
+            <a href="?page={{ professores.next_page_number }}" class="btn-outline">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('searchProfessores').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#tbody-professores tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

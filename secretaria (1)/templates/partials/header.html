@@ -1,0 +1,16 @@
+<header class="main-header">
+    <div class="welcome-message">
+        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+        {% block page_subtitle %}{% endblock %}
+    </div>
+    <div class="user-profile">
+        <i class="ph ph-bell"></i>
+        <div class="user-info">
+            <strong>{{ user.get_full_name|default:user.username }}</strong>
+            <span>{{ user.email }}</span>
+        </div>
+        <div class="user-avatar">
+            {{ user.get_full_name|first|upper|default:'U' }}{{ user.last_name|first|upper|default:'' }}
+        </div>
+    </div>
+</header>

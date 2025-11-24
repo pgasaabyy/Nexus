@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Alunos - Colégio Paulo de Alcantara{% endblock %}
+
+{% block page_title %}Gestão de Alunos{% endblock %}
+{% block page_subtitle %}<p>Cadastro e gerenciamento de alunos</p>{% endblock %}
+
+{% block content %}
+<div class="widgets-grid" style="grid-column: span 4;">
+    <div class="widget" style="grid-column: span 4;">
+        <div class="section-header">
+            <h3 class="section-title">Lista de Alunos</h3>
+            <a href="{% url 'aluno_criar' %}" class="btn-action primary">+ Novo Aluno</a>
+        </div>
+
+        <div class="search-box">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" id="searchAlunos" placeholder="Pesquisar por nome, CPF ou Email">
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Turma</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-alunos">
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td><strong>{{ aluno.nome }}</strong></td>
+                        <td>{{ aluno.cpf }}</td>
+                        <td>{{ aluno.turma.nome|default:"-" }}</td>
+                        <td>{{ aluno.email }}</td>
+                        <td>
+                            <span class="status-tag {{ aluno.status|lower }}">
+                                {{ aluno.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="action-icons">
+                            <a href="{% url 'aluno_editar' aluno.id %}" title="Editar">
+                                <i class="ph ph-pencil-simple"></i>
+                            </a>
+                            <a href="{% url 'aluno_detalhe' aluno.id %}" title="Visualizar">
+                                <i class="ph ph-eye"></i>
+                            </a>
+                            <a href="{% url 'aluno_documentos' aluno.id %}" title="Documentos">
+                                <i class="ph ph-file-text"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhum aluno encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if alunos.has_other_pages %}
+        <div class="pagination">
+            {% if alunos.has_previous %}
+            <a href="?page={{ alunos.previous_page_number }}" class="btn-outline">Anterior</a>
+            {% endif %}
+            
+            <span class="page-info">Página {{ alunos.number }} de {{ alunos.paginator.num_pages }}</span>
+            
+            {% if alunos.has_next %}
+            <a href="?page={{ alunos.next_page_number }}" class="btn-outline">Próxima</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('searchAlunos').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#tbody-alunos tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

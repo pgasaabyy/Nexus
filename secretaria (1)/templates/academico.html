@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão Acadêmica - Colégio Paulo de Alcantara{% endblock %}
+
+{% block page_title %}Gestão Acadêmica{% endblock %}
+{% block page_subtitle %}<p>Gerenciamento de cursos, turmas e disciplinas</p>{% endblock %}
+
+{% block content %}
+<div class="tabs">
+    <button class="tab-button active" data-tab="tab1">Cursos</button>
+    <button class="tab-button" data-tab="tab2">Turmas</button>
+    <button class="tab-button" data-tab="tab3">Disciplinas</button>
+</div>
+
+<div class="widgets-grid" style="grid-column: span 4;">
+    <div class="widget" style="grid-column: span 4;">
+        <div class="section-header">
+            <h3 class="section-title">Cursos Oferecidos</h3>
+            <a href="{% url 'curso_criar' %}" class="btn-action primary">+ Novo Curso</a>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome do Curso</th>
+                        <th>Séries</th>
+                        <th>Total de Alunos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tab1" class="tab-content">
+                    {% for curso in cursos %}
+                    <tr>
+                        <td><strong>{{ curso.nome }}</strong></td>
+                        <td>{{ curso.series_descricao }}</td>
+                        <td>{{ curso.total_alunos }}</td>
+                        <td>
+                            <a href="{% url 'curso_editar' curso.id %}" class="btn-edit">Editar</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Nenhum curso encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tbody id="tab2" class="tab-content" style="display: none;">
+                    {% for turma in turmas %}
+                    <tr>
+                        <td><strong>{{ turma.nome }}</strong></td>
+                        <td>{{ turma.serie }}</td>
+                        <td>{{ turma.total_alunos }}</td>
+                        <td>
+                            <a href="{% url 'turma_editar' turma.id %}" class="btn-edit">Editar</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Nenhuma turma encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tbody id="tab3" class="tab-content" style="display: none;">
+                    {% for disciplina in disciplinas %}
+                    <tr>
+                        <td><strong>{{ disciplina.nome }}</strong></td>
+                        <td>{{ disciplina.nivel }}</td>
+                        <td>{{ disciplina.total_alunos }}</td>
+                        <td>
+                            <a href="{% url 'disciplina_editar' disciplina.id %}" class="btn-edit">Editar</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Nenhuma disciplina encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const tabId = this.dataset.tab;
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabId).style.display = '';
+    });
+});
+</script>
+{% endblock %}

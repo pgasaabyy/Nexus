@@ -1,0 +1,33 @@
+{% load static %}
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-circle">PA</div>
+        <span>Colégio Paulo de Alcantara</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <i class="ph ph-house"></i> <span>Dashboard</span>
+        </a>
+        <a href="{% url 'alunos' %}" class="nav-item {% if request.resolver_match.url_name == 'alunos' %}active{% endif %}">
+            <i class="ph ph-graduation-cap"></i> <span>Alunos</span>
+        </a>
+        <a href="{% url 'professores' %}" class="nav-item {% if request.resolver_match.url_name == 'professores' %}active{% endif %}">
+            <i class="ph ph-chalkboard-teacher"></i> <span>Professores</span>
+        </a>
+        <a href="{% url 'academico' %}" class="nav-item {% if request.resolver_match.url_name == 'academico' %}active{% endif %}">
+            <i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span>
+        </a>
+        <a href="{% url 'documentos' %}" class="nav-item {% if request.resolver_match.url_name == 'documentos' %}active{% endif %}">
+            <i class="ph ph-newspaper"></i> <span>Documentos</span>
+        </a>
+        <a href="{% url 'calendario' %}" class="nav-item {% if request.resolver_match.url_name == 'calendario' %}active{% endif %}">
+            <i class="ph ph-calendar"></i> <span>Calendário</span>
+        </a>
+        <a href="{% url 'configuracoes' %}" class="nav-item {% if request.resolver_match.url_name == 'configuracoes' %}active{% endif %}">
+            <i class="ph ph-gear"></i> <span>Configurações</span>
+        </a>
+        <a href="{% url 'logout' %}" class="nav-item logout">
+            <i class="ph ph-sign-out"></i> <span>Logout</span>
+        </a>
+    </nav>
+</aside>

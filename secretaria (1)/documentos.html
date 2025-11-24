@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Documentos - Colégio Paulo de Alcantara</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="ph ph-house"></i> <span>Dashboard</span>
+                </a>
+                <a href="alunos.html" class="nav-item">
+                    <i class="ph ph-graduation-cap"></i> <span>Alunos</span>
+                </a>
+                <a href="professores.html" class="nav-item">
+                    <i class="ph ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+                <a href="academico.html" class="nav-item">
+                    <i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span>
+                </a>
+                <a href="documentos.html" class="nav-item active">
+                    <i class="ph ph-newspaper"></i> <span>Documentos</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="ph ph-calendar"></i> <span>Calendário</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="ph ph-gear"></i> <span>Configurações</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="ph ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <h1>Gestão de Documentos</h1>
+                    <p>Emissão e gerenciamento de documentos escolares</p>
+                </div>
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>Marcela Santos</strong>
+                        <span>marcelasantos45@sec.edu.br</span>
+                    </div>
+                    <div class="user-avatar">MS</div>
+                </div>
+            </header>
+
+            <div class="tabs">
+                <button class="tab-button active" data-tab="docs-tab">Documentos</button>
+                <button class="tab-button" data-tab="models-tab">Modelos</button>
+            </div>
+
+            <div class="page-actions">
+                <button class="btn-action primary">
+                    <i class="ph ph-upload-simple"></i>
+                    Upload Documento
+                </button>
+            </div>
+
+            <div id="docs-tab" class="tab-content">
+                <div class="documents-grid">
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge badge-approved">Aprovado</span>
+                        </div>
+                        <h3 class="document-title">Histórico Escolar - João Silva</h3>
+                        <p class="document-type">Tipo: Histórico</p>
+                        <p class="document-date">10/02/2024</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge badge-pending">Pendente</span>
+                        </div>
+                        <h3 class="document-title">Declaração de Matrícula - Maria Santos</h3>
+                        <p class="document-type">Tipo: Declaração</p>
+                        <p class="document-date">12/02/2024</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge badge-approved">Aprovado</span>
+                        </div>
+                        <h3 class="document-title">Boletim 1º Bimestre - 5º Ano B</h3>
+                        <p class="document-type">Tipo: Boletim</p>
+                        <p class="document-date">15/02/2024</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge badge-approved">Aprovado</span>
+                        </div>
+                        <h3 class="document-title">Certificado de Conclusão - Ana Costa</h3>
+                        <p class="document-type">Tipo: Certificado</p>
+                        <p class="document-date">18/02/2024</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge badge-pending">Pendente</span>
+                        </div>
+                        <h3 class="document-title">Transferência - Pedro Oliveira</h3>
+                        <p class="document-type">Tipo: Transferência</p>
+                        <p class="document-date">20/02/2024</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge badge-approved">Aprovado</span>
+                        </div>
+                        <h3 class="document-title">Declaração de Conclusão - Lucas Ferreira</h3>
+                        <p class="document-type">Tipo: Declaração</p>
+                        <p class="document-date">22/02/2024</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="models-tab" class="tab-content" style="display: none;">
+                <div class="documents-grid">
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge" style="background-color: #e5e7eb; color: #666;">Modelo</span>
+                        </div>
+                        <h3 class="document-title">Modelo - Histórico Escolar</h3>
+                        <p class="document-type">Tipo: Template</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge" style="background-color: #e5e7eb; color: #666;">Modelo</span>
+                        </div>
+                        <h3 class="document-title">Modelo - Declaração de Matrícula</h3>
+                        <p class="document-type">Tipo: Template</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="card-header">
+                            <i class="ph ph-file-text document-icon"></i>
+                            <span class="badge" style="background-color: #e5e7eb; color: #666;">Modelo</span>
+                        </div>
+                        <h3 class="document-title">Modelo - Certificado</h3>
+                        <p class="document-type">Tipo: Template</p>
+                        <div class="card-actions">
+                            <button class="btn-outline">
+                                <i class="ph ph-download-simple"></i>
+                                Baixar
+                            </button>
+                            <button class="btn-text">Visualizar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

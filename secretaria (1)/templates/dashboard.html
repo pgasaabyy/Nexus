@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Colégio Paulo de Alcantara{% endblock %}
+
+{% block page_title %}Bem-Vindo {{ user.first_name|default:user.username }}!{% endblock %}
+
+{% block content %}
+<div class="widgets-grid">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span>Total de Alunos</span>
+            <i class="ph ph-graduation-cap"></i>
+        </div>
+        <div class="kpi-value">{{ total_alunos|default:"1,284" }}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span>Professores Ativos</span>
+            <i class="ph ph-users"></i>
+        </div>
+        <div class="kpi-value">{{ total_professores|default:"87" }}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span>Turmas Abertas</span>
+            <i class="ph ph-book-open"></i>
+        </div>
+        <div class="kpi-value">{{ total_turmas|default:"42" }}</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span>Receita Mensal</span>
+            <i class="ph ph-currency-dollar"></i>
+        </div>
+        <div class="kpi-value">R$ {{ receita_mensal|default:"248.500"|floatformat:0 }}</div>
+        <div class="kpi-footer">
+            <span class="positive"><i class="ph ph-arrow-up"></i> {{ variacao_receita|default:"8.2" }}%</span> vs. mês anterior
+        </div>
+    </div>
+
+    <div class="widget table-widget">
+        <h3><i class="ph ph-trend-up"></i> Matrículas Recentes</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Turma</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for matricula in matriculas_recentes %}
+                <tr>
+                    <td><strong>{{ matricula.aluno.nome }}</strong></td>
+                    <td>{{ matricula.turma.nome }}</td>
+                    <td>{{ matricula.data_matricula|date:"Y-m-d" }}</td>
+                    <td>
+                        <span class="status-tag {{ matricula.status|lower }}">
+                            {{ matricula.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Nenhuma matrícula recente encontrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="widget tasks-widget">
+        <h3><i class="ph ph-warning-circle"></i> Tarefas Pendentes</h3>
+        <ul class="tasks-list">
+            {% for tarefa in tarefas_pendentes %}
+            <li>
+                <div class="task-info">
+                    <strong>{{ tarefa.descricao }}</strong>
+                    <span class="status-tag {{ tarefa.prioridade|lower }}">
+                        {{ tarefa.get_prioridade_display }}
+                    </span>
+                </div>
+            </li>
+            {% empty %}
+            <li>
+                <div class="task-info">
+                    <strong>Nenhuma tarefa pendente</strong>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'tarefas' %}" class="btn-action primary full-width">Gerenciar Tarefas</a>
+    </div>
+</div>
+{% endblock %}

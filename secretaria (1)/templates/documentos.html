@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Documentos - Colégio Paulo de Alcantara{% endblock %}
+
+{% block page_title %}Gestão de Documentos{% endblock %}
+{% block page_subtitle %}<p>Emissão e gerenciamento de documentos escolares</p>{% endblock %}
+
+{% block content %}
+<div class="tabs">
+    <button class="tab-button active" data-tab="docs-tab">Documentos</button>
+    <button class="tab-button" data-tab="models-tab">Modelos</button>
+</div>
+
+<div class="page-actions">
+    <button class="btn-action primary" onclick="document.getElementById('uploadForm').click()">
+        <i class="ph ph-upload-simple"></i>
+        Upload Documento
+    </button>
+    <form id="uploadFormContainer" style="display: none;">
+        {% csrf_token %}
+        <input type="file" id="uploadForm" name="documento">
+    </form>
+</div>
+
+<div id="docs-tab" class="tab-content">
+    <div class="documents-grid">
+        {% for documento in documentos %}
+        <div class="document-card">
+            <div class="card-header">
+                <i class="ph ph-file-text document-icon"></i>
+                <span class="badge badge-{{ documento.status|lower }}">
+                    {{ documento.get_status_display }}
+                </span>
+            </div>
+            <h3 class="document-title">{{ documento.titulo }}</h3>
+            <p class="document-type">Tipo: {{ documento.get_tipo_display }}</p>
+            <p class="document-date">{{ documento.data_emissao|date:"d/m/Y" }}</p>
+            <div class="card-actions">
+                <a href="{% url 'documento_download' documento.id %}" class="btn-outline">
+                    <i class="ph ph-download-simple"></i>
+                    Baixar
+                </a>
+                <a href="{% url 'documento_visualizar' documento.id %}" class="btn-text">Visualizar</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>Nenhum documento encontrado.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="models-tab" class="tab-content" style="display: none;">
+    <div class="documents-grid">
+        {% for modelo in modelos %}
+        <div class="document-card">
+            <div class="card-header">
+                <i class="ph ph-file-text document-icon"></i>
+                <span class="badge" style="background-color: #e5e7eb; color: #666;">Modelo</span>
+            </div>
+            <h3 class="document-title">{{ modelo.nome }}</h3>
+            <p class="document-type">Tipo: Template</p>
+            <div class="card-actions">
+                <a href="{% url 'modelo_download' modelo.id %}" class="btn-outline">
+                    <i class="ph ph-download-simple"></i>
+                    Baixar
+                </a>
+                <a href="{% url 'modelo_visualizar' modelo.id %}" class="btn-text">Visualizar</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>Nenhum modelo encontrado.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const tabId = this.dataset.tab;
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabId).style.display = 'block';
+    });
+});
+
+// Handle file upload
+document.getElementById('uploadForm').addEventListener('change', function(e) {
+    if (this.files.length > 0) {
+        // Submit form via AJAX or standard form submission
+        console.log('[v0] File selected:', this.files[0].name);
+        // Add your upload logic here
+    }
+});
+</script>
+{% endblock %}
