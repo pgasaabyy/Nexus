@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard da Coordenação{% endblock %}
+
+{% block page_header %}
+<div class="welcome-message">
+    <h1>Seja bem vinda {{ user.first_name }}!</h1>
+    <p>Aqui é o dashboard da coordenação</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="widgets-grid">
+    <!-- KPIs -->
+    <div class="kpi-card">
+        <div class="kpi-header"><span>Total de Alunos</span><i class="ph ph-student"></i></div>
+        <div class="kpi-value">{{ total_alunos|default:"1,284" }}</div>
+        <div class="kpi-footer"><span class="positive"><i class="ph-bold ph-arrow-up"></i> 5.2%</span> vs. mês anterior</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-header"><span>Professores Ativos</span><i class="ph ph-users"></i></div>
+        <div class="kpi-value">{{ total_professores|default:"48" }}</div>
+        <div class="kpi-footer"><span class="positive"><i class="ph-bold ph-arrow-up"></i> 2.1%</span> vs. mês anterior</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-header"><span>Turmas Criadas</span><i class="ph ph-book-open"></i></div>
+        <div class="kpi-value">{{ total_turmas|default:"36" }}</div>
+        <div class="kpi-footer">Distribuídas em 3 turnos</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-header"><span>Taxa de Aprovação</span><i class="ph ph-check-circle"></i></div>
+        <div class="kpi-value">92%</div>
+        <div class="kpi-footer"><span class="positive"><i class="ph-bold ph-arrow-up"></i> 3.5%</span> vs. mês anterior</div>
+    </div>
+
+    <!-- Desempenho por Turma (Lista) -->
+    <div class="widget list-widget">
+        <h3>Desempenho por turma</h3>
+        <ul class="performance-list">
+            {% for turma in turmas %}
+            <li>
+                <div class="class-info">
+                    <strong>{{ turma.nome }}</strong>
+                    <span>{{ turma.alunos_matriculados }} alunos</span>
+                </div>
+                <div class="class-stats">
+                    <div class="stat-item">
+                        <span>Média: <strong>{{ turma.media_turma }}</strong></span>
+                        <span>Freq: <strong>{{ turma.frequencia }}%</strong></span>
+                    </div>
+                    <div class="progress-bar"><div style="width: {{ turma.media_turma|mul:10 }}%;"></div></div>
+                </div>
+            </li>
+            {% empty %}
+            <li><span>Nenhuma turma cadastrada</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="widget actions-widget">
+        <h3><i class="ph ph-lightning"></i> Ações Rápidas</h3>
+        <div class="actions-buttons">
+            <a href="{% url 'escola:relatorios' %}" class="btn-action primary">Validar Notas Pendentes</a>
+            <a href="{% url 'escola:relatorios' %}" class="btn-action secondary">Gerar Relatório Mensal</a>
+            <a href="{% url 'escola:comunicados' %}" class="btn-action secondary">Enviar Comunicado</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

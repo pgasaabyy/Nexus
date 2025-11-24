@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Materiais Didáticos{% endblock %}
+
+{% block content %}
+<div class="materiais-header">
+    <div class="page-title-section">
+        <h1>Materiais Didáticos</h1>
+        <p>Gerencie e compartilhe materiais com os alunos</p>
+    </div>
+    <button class="btn-novo-material" onclick="alert('Funcionalidade em desenvolvimento')">
+        <i class="ph ph-upload-simple"></i> Enviar Material
+    </button>
+</div>
+
+<div class="materiais-grid">
+    {% for material in materiais %}
+    <div class="material-card">
+        <div class="material-icon">
+            <i class="ph ph-file-pdf"></i>
+        </div>
+        <span class="tag-turma">{{ material.turma.nome }}</span>
+        <h3>{{ material.titulo }}</h3>
+        <div class="material-meta">
+            <span><i class="ph ph-calendar-blank"></i> {{ material.data_envio|date:"d/m/Y" }}</span>
+        </div>
+        <p class="material-description">{{ material.descricao }}</p>
+        <div class="material-actions">
+            <a href="{% if material.arquivo %}{{ material.arquivo.url }}{% endif %}" 
+               class="btn-download" download>
+                <i class="ph ph-download-simple"></i> Baixar
+            </a>
+            <button class="btn-delete" onclick="confirm('Deseja deletar este material?')">
+                <i class="ph ph-trash"></i>
+            </button>
+        </div>
+    </div>
+    {% empty %}
+    <p>Nenhum material cadastrado</p>
+    {% endfor %}
+</div>
+{% endblock %}

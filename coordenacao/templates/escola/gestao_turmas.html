@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão das Turmas{% endblock %}
+
+{% block page_header %}
+<div class="welcome-message">
+    <h1>Gestão das Turmas</h1>
+    <p>Dashboard das Turmas</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="widgets-grid turmas-grid">
+    <!-- KPIs de Turmas -->
+    <div class="kpi-card kpi-turma">
+        <div class="kpi-header"><span>Total de Turmas</span><i class="ph ph-book-open"></i></div>
+        <div class="kpi-value">{{ total_turmas|default:"36" }}</div>
+        <div class="kpi-footer"><i class="ph ph-copy"></i></div>
+    </div>
+    <div class="kpi-card kpi-turma">
+        <div class="kpi-header"><span>Média Geral</span><i class="ph ph-chart-line-up"></i></div>
+        <div class="kpi-value">8.2</div>
+        <div class="kpi-footer"><i class="ph ph-arrow-up"></i></div>
+    </div>
+    <div class="kpi-card kpi-turma">
+        <div class="kpi-header"><span>Taxa de Presença</span><i class="ph ph-user-check"></i></div>
+        <div class="kpi-value">93%</div>
+        <div class="kpi-footer"><i class="ph ph-user-check"></i></div>
+    </div>
+    <div class="kpi-card kpi-turma attention">
+        <div class="kpi-header"><span>Turmas em Atenção</span><i class="ph ph-warning-circle"></i></div>
+        <div class="kpi-value">4</div>
+        <div class="kpi-footer">Baixo desempenho</div>
+    </div>
+</div>
+
+<!-- Botão Nova Turma -->
+<div class="turmas-actions">
+    <a href="#" class="btn-nova-turma"><i class="ph ph-plus-circle"></i> Nova Turma</a>
+</div>
+
+<!-- Filtros -->
+<div class="turmas-filters">
+    <select class="filter-select">
+        <option>Todas as séries</option>
+    </select>
+    <select class="filter-select">
+        <option>Todos os turnos</option>
+    </select>
+</div>
+
+<!-- Lista de Turmas (Cards) -->
+<div class="turmas-list">
+    {% for turma in turmas %}
+    <div class="turma-card {% if turma.ativa %}active-class{% else %}attention-class{% endif %}">
+        <div class="turma-header">
+            <strong>{{ turma.nome }}</strong>
+            <span class="status-tag {% if turma.ativa %}active{% else %}attention{% endif %}">{% if turma.ativa %}Ativa{% else %}Atenção{% endif %}</span>
+        </div>
+        <span class="turma-turno">{{ turma.get_turno_display }}</span>
+        <div class="turma-stats">
+            <p>Alunos matriculados: <span>{{ turma.alunos_matriculados }}</span></p>
+            <p>Média da turma: <span>{{ turma.media_turma }}</span></p>
+            <div class="progress-bar"><div style="width: {{ turma.media_turma|mul:10 }}%;"></div></div>
+            <p>Frequência: <span>{{ turma.frequencia }}%</span></p>
+            <div class="progress-bar"><div style="width: {{ turma.frequencia }}%; background-color: var(--cor-verde);"></div></div>
+        </div>
+        <div class="turma-footer">
+            <p>Professor responsável</p>
+            <strong>{% if turma.professor %}Prof. {{ turma.professor.get_full_name }}{% else %}N/A{% endif %}</strong>
+            <div class="turma-actions">
+                <a href="#" class="btn-details">Ver detalhes</a>
+                <a href="#" class="btn-edit">Editar</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Nenhuma turma cadastrada</p>
+    {% endfor %}
+</div>
+{% endblock %}

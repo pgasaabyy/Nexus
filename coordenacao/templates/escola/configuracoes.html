@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/configuracoes.css' %}">
+{% endblock %}
+
+{% block page_header %}
+<div class="welcome-message">
+    <h1>Configurações</h1>
+    <p>Gerencie preferências e configurações</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Formulário de Configurações -->
+<div class="widget configuracoes-widget">
+    <form class="configuracoes-form" method="post" action="#">
+        {% csrf_token %}
+        <!-- Seção 1: Informações da Escola -->
+        <div class="form-section">
+            <h2>Informações da Escola</h2>
+            <p class="section-subtitle">Dados institucionais e configurações gerais</p>
+
+            <div class="form-group">
+                <label for="nome-instituicao">Nome da Instituição</label>
+                <input type="text" id="nome-instituicao" value="{{ nome_instituicao }}" readonly>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cnpj">CNPJ</label>
+                    <input type="text" id="cnpj" value="00.000.000/0001-00" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="text" id="telefone" value="(11) 0000-0000" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="endereco">Endereço</label>
+                <input type="text" id="endereco" value="Rua Exemplo, 123 - Bairro" readonly>
+            </div>
+        </div>
+
+        <!-- Seção 2: Ano Letivo -->
+        <div class="form-section">
+            <h2>Ano Letivo</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ano-atual">Ano Atual</label>
+                    <input type="text" id="ano-atual" value="{{ ano_atual }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="bimestre-atual">Bimestre Atual</label>
+                    <input type="text" id="bimestre-atual" value="2º Bimestre" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Professor{% endblock %}
+
+{% block content %}
+<header class="main-header">
+    <div class="welcome-message">
+        <h1>Bem Vindo {{ user.first_name }}!</h1>
+        <p class="subtitle">Ensino Médio</p>
+    </div>
+    <div class="user-profile">
+        <i class="ph ph-bell"></i>
+        <div class="user-info">
+            <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+            <span>{{ user.email }}</span>
+        </div>
+        <div class="user-avatar">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
+    </div>
+</header>
+
+<div class="widgets-grid-aulas">
+    <!-- KPIs -->
+    <div class="kpi-card-small">
+        <div class="kpi-title">Total de Alunos</div>
+        <div class="kpi-value">{{ total_alunos }}</div>
+        <div class="kpi-subtitle">Matriculados ativos</div>
+    </div>
+    <div class="kpi-card-small">
+        <div class="kpi-title">Turmas</div>
+        <div class="kpi-value">{{ turmas.count }}</div>
+        <div class="kpi-subtitle">Cerca de {{ total_alunos }} alunos</div>
+    </div>
+    <div class="kpi-card-small">
+        <div class="kpi-title">Notas Lançadas</div>
+        <div class="kpi-value">{{ notas_lancadas }}</div>
+        <div class="kpi-subtitle">Este período</div>
+    </div>
+
+    <!-- Agenda do Dia -->
+    <div class="widget agenda-widget">
+        <h2><i class="ph ph-clock"></i> Agenda de Hoje</h2>
+        <p class="widget-subtitle">Suas aulas programadas</p>
+        <ul class="agenda-list">
+            {% for turma in turmas %}
+            <li class="agenda-item">
+                <span class="agenda-time">13:30</span>
+                <span class="agenda-materia">{{ turma.nome }}</span>
+                <a href="{% url 'escola:materiais' %}" class="btn-material">Material</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="widget acoes-rapidas-widget">
+        <h2>Ações Rápidas</h2>
+        <p class="widget-subtitle">Ferramentas de uso frequente</p>
+        <div class="acoes-grid">
+            <a href="{% url 'escola:lancamento_notas' %}" class="acao-btn">
+                <i class="ph ph-file-text"></i> Lançar Notas
+            </a>
+            <a href="{% url 'escola:frequencia' %}" class="acao-btn">
+                <i class="ph ph-user-list"></i> Frequência
+            </a>
+            <a href="{% url 'escola:materiais' %}" class="acao-btn">
+                <i class="ph ph-upload-simple"></i> Materiais
+            </a>
+            <a href="{% url 'admin:index' %}" class="acao-btn">
+                <i class="ph ph-chart-bar"></i> Admin
+            </a>
+        </div>
+    </div>
+
+    <!-- Tarefas Pendentes -->
+    <div class="widget tarefas-pendentes-widget">
+        <div class="widget-header">
+            <h2>Tarefas Pendentes</h2>
+            <a href="#" class="edit-icon"><i class="ph ph-pencil-simple"></i></a>
+        </div>
+        <p class="widget-subtitle">Itens que precisam de atenção</p>
+        <ul class="tarefas-list-small">
+            <li>
+                <div class="tarefa-info">
+                    <span class="tarefa-desc">Lançar notas da prova</span>
+                    <small>Amanhã</small>
+                </div>
+                <span class="prioridade alta">Alta</span>
+            </li>
+            <li>
+                <div class="tarefa-info">
+                    <span class="tarefa-desc">Preparar material para aula</span>
+                    <small>Hoje</small>
+                </div>
+                <span class="prioridade media">Média</span>
+            </li>
+            <li>
+                <div class="tarefa-info">
+                    <span class="tarefa-desc">Responder mensagens dos alunos</span>
+                    <small>Esta semana</small>
+                </div>
+                <span class="prioridade baixa">Baixa</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Atividades Recentes -->
+    <div class="widget atividades-recentes-widget">
+        <h2><i class="ph ph-chart-line-up"></i> Atividades Recentes</h2>
+        <p class="widget-subtitle">Suas últimas ações</p>
+        <ul class="atividades-list">
+            <li class="atividade-item">
+                <div class="atividade-icon"></div>
+                <div class="atividade-info">
+                    <strong>Notas lançadas</strong>
+                    <span>Prova de Química</span>
+                    <small>Há 3 horas</small>
+                </div>
+            </li>
+            <li class="atividade-item">
+                <div class="atividade-icon"></div>
+                <div class="atividade-info">
+                    <strong>Frequência registrada</strong>
+                    <span>Biologia</span>
+                    <small>Há 2 horas</small>
+                </div>
+            </li>
+            <li class="atividade-item">
+                <div class="atividade-icon"></div>
+                <div class="atividade-info">
+                    <strong>Material enviado</strong>
+                    <span>Lista de Exercícios</span>
+                    <small>Ontem</small>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

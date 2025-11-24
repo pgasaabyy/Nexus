@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Comunicados{% endblock %}
+
+{% block content %}
+<div class="page-title-section">
+    <h1>Comunicados</h1>
+    <p>Envie mensagens e comunicados para alunos e turmas</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 300px; gap: 25px; margin-bottom: 25px;">
+    <!-- Formulário de Novo Comunicado -->
+    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 2px solid #8ED6D7;">
+        <h2 style="margin-top: 0; color: #092F76;">Novo Comunicado</h2>
+        <p style="color: #6c757d; margin-bottom: 20px;">Envie uma mensagem para alunos ou turmas</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Destinatário</label>
+                <input type="text" name="destinatario" placeholder="Ex: Todos os pais, 9º Ano A, etc." 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Assunto</label>
+                <input type="text" name="assunto" placeholder="Digite o assunto do comunicado" 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Mensagem</label>
+                <textarea name="mensagem" placeholder="Digite sua mensagem aqui..." 
+                          style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; min-height: 150px; box-sizing: border-box; font-family: inherit;"></textarea>
+            </div>
+
+            <button type="submit" style="width: 100%; background-color: #092F76; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="ph ph-paper-plane-tilt"></i> Enviar Comunicado
+            </button>
+        </form>
+    </div>
+
+    <!-- Card Estatísticas -->
+    <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
+        <h3 style="margin: 0 0 20px; color: #092F76;">Estatísticas</h3>
+        <div style="margin-bottom: 20px;">
+            <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Enviados hoje</p>
+            <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">{% with hoje=comunicados|length %}{{ hoje }}{% endwith %}</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Esta semana</p>
+            <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">{{ comunicados|length }}</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Este mês</p>
+            <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">{{ comunicados|length }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Comunicados Enviados -->
+<div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
+    <h2 style="margin-top: 0; margin-bottom: 20px; color: #092F76; display: flex; align-items: center; gap: 10px;">
+        <i class="ph ph-chat-dots"></i> Comunicados Enviados
+    </h2>
+    <p style="color: #6c757d; margin-top: 0; margin-bottom: 20px;">Histórico de mensagens enviadas</p>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        {% for comunicado in comunicados %}
+        <div style="padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div>
+                    <h4 style="margin: 0 0 5px; color: #092F76;">{{ comunicado.assunto }}</h4>
+                    <p style="margin: 0 0 8px; color: #6c757d; font-size: 0.9rem;">
+                        <strong>{{ comunicado.destinatario }}</strong> • {{ comunicado.data_envio|date:"d/m/Y" }}
+                    </p>
+                    <p style="margin: 0; color: #495057; font-size: 0.95rem;">{{ comunicado.mensagem }}</p>
+                </div>
+                <span style="background-color: #8ED6D7; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">Enviado</span>
+            </div>
+        </div>
+        {% empty %}
+        <p>Nenhum comunicado enviado</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

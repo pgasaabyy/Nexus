@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão dos Professores{% endblock %}
+
+{% block page_header %}
+<div class="page-title">
+    <h1>Gestão dos Professores</h1>
+    <p>Dashboard dos Professores</p>
+</div>
+<div class="header-actions">
+    <a href="#" class="btn-primary"><i class="ph-bold ph-user-plus"></i> Novo Professor</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- KPIs -->
+<section class="kpi-section">
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Total de Professores</span>
+            <strong>{{ total_professores|default:"48" }}</strong>
+        </div>
+        <div class="kpi-icon blue"><i class="ph ph-users"></i></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Lançamentos em Dia</span>
+            <strong>92%</strong>
+        </div>
+        <div class="kpi-icon green"><i class="ph ph-check-circle"></i></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Pendentes</span>
+            <strong>8</strong>
+            <small>Aguardando validação</small>
+        </div>
+        <div class="kpi-icon yellow"><i class="ph ph-clock-countdown"></i></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Carga Horária Média</span>
+            <strong>38h</strong>
+        </div>
+        <div class="kpi-icon blue"><i class="ph ph-timer"></i></div>
+    </div>
+</section>
+
+<!-- Tabela de Professores -->
+<section class="table-container">
+    <div class="table-header">
+        <div class="table-title">
+            <h3>Corpo Docente</h3>
+            <p>Gerenciamento de professores e atribuições</p>
+        </div>
+        <div class="table-controls">
+            <div class="search-bar">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar professor ou disciplina...">
+            </div>
+            <button class="btn-export"><i class="ph ph-export"></i> Exportar</button>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Professor</th>
+                <th>Disciplina</th>
+                <th>Turmas</th>
+                <th>Carga Horária</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professor in professores %}
+            <tr>
+                <td>Prof. {{ professor.usuario.get_full_name }}</td>
+                <td>{{ professor.disciplina }}</td>
+                <td>{{ professor.turmas.count }} turmas</td>
+                <td>{{ professor.carga_horaria }}h/semana</td>
+                <td><span class="status-tag em-dia">Em dia</span></td>
+                <td><a href="#" class="btn-details">Ver perfil</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Nenhum professor cadastrado</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

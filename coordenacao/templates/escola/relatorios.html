@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Relatórios{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/relatorios.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block page_header %}
+<div class="welcome-message">
+    <h1>Relatórios</h1>
+    <p>Dashboard dos Relatórios</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Botão de Exportação -->
+<div class="export-action">
+    <a href="#" class="btn-export"><i class="ph ph-download-simple"></i> Exportar os relatórios completos</a>
+</div>
+
+<div class="widgets-grid relatorios-grid">
+    <!-- KPIs de Relatórios -->
+    <div class="kpi-card-small">
+        <div class="kpi-header-small"><span>Taxa de Aprovação</span><i class="ph ph-chart-line-up"></i></div>
+        <div class="kpi-value-small">{{ taxa_aprovacao }}%</div>
+        <div class="kpi-footer-small">1.5% vs. mês anterior</div>
+    </div>
+    <div class="kpi-card-small">
+        <div class="kpi-header-small"><span>Taxa de Evasão</span><i class="ph ph-chart-line-down"></i></div>
+        <div class="kpi-value-small">{{ taxa_evasao }}%</div>
+        <div class="kpi-footer-small">0.7% vs. mês anterior</div>
+    </div>
+    <div class="kpi-card-small">
+        <div class="kpi-header-small"><span>Média Geral</span><i class="ph ph-chart-bar"></i></div>
+        <div class="kpi-value-small">{{ media_geral }}</div>
+        <div class="kpi-footer-small">1.2% vs. mês anterior</div>
+    </div>
+    <div class="kpi-card-small">
+        <div class="kpi-header-small"><span>Frequência Média</span><i class="ph ph-chart-bar"></i></div>
+        <div class="kpi-value-small">{{ frequencia_media }}%</div>
+        <div class="kpi-footer-small">1.5% vs. mês anterior</div>
+    </div>
+
+    <!-- Relatórios Disponíveis -->
+    <div class="widget relatorios-disponiveis">
+        <h3><i class="ph ph-file-text"></i> Relatórios Disponíveis</h3>
+        <p class="widget-subtitle">Documentos prontos para download</p>
+        <div class="download-links">
+            <a href="#" class="download-item"><i class="ph ph-download-simple"></i> Relatório Mensal (PDF)</a>
+            <a href="#" class="download-item"><i class="ph ph-download-simple"></i> Estatísticas (Excel)</a>
+            <a href="#" class="download-item"><i class="ph ph-download-simple"></i> Análise Completa (PDF)</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

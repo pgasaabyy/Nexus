@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registro de Frequência{% endblock %}
+
+{% block content %}
+<div class="page-title-section">
+    <h1>Registro de Frequência</h1>
+    <p>Registre a presença e falta dos alunos</p>
+</div>
+
+<div class="filtros-container">
+    <h3>Selecione a Aula</h3>
+    <form method="get" class="filtros-grid">
+        <div class="filtro-item">
+            <label>Turma</label>
+            <select name="turma">
+                <option value="">Selecione a turma</option>
+                {% for turma in turmas %}
+                <option value="{{ turma.id }}" {% if turma_selecionada.id == turma.id %}selected{% endif %}>
+                    {{ turma.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filtro-item">
+            <label>Data da Aula</label>
+            <input type="date" name="data" value="{{ data_aula }}">
+        </div>
+        <button type="submit" class="btn-filtrar">Filtrar</button>
+    </form>
+</div>
+
+{% if turma_selecionada %}
+<div class="frequencia-table-container">
+    <h3>{{ turma_selecionada.nome }} - {{ data_aula }}</h3>
+    <form method="post">
+        {% csrf_token %}
+        <table class="frequencia-table">
+            <thead>
+                <tr>
+                    <th>Nº</th>
+                    <th>Nome do Aluno</th>
+                    <th>Presença</th>
+                    <th>% Frequência no Bimestre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ aluno.nome }}</td>
+                    <td>
+                        <div class="checkbox-container">
+                            <label>
+                                <input type="radio" name="presenca_{{ aluno.id }}" value="presente" checked>
+                                Presente
+                            </label>
+                            <label>
+                                <input type="radio" name="presenca_{{ aluno.id }}" value="falta">
+                                Falta
+                            </label>
+                        </div>
+                    </td>
+                    <td><span class="percentual-frequencia freq-boa">{{ aluno.frequencia }}%</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn-salvar-frequencia">
+            <i class="ph ph-check-circle"></i> Salvar Frequência
+        </button>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

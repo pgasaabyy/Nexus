@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestão Escolar{% endblock %}</title>
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Arquivo CSS principal -->
+    <link rel="stylesheet" href="{% static 'css/dashboard-coordenacao.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcântara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'escola:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
+                </a>
+
+                <a href="{% url 'escola:gestao_alunos' %}" class="nav-item {% if request.resolver_match.url_name == 'gestao_alunos' %}active{% endif %}">
+                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
+                </a>
+
+                <a href="{% url 'escola:gestao_professores' %}" class="nav-item {% if request.resolver_match.url_name == 'gestao_professores' %}active{% endif %}">
+                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+
+                <a href="{% url 'escola:gestao_turmas' %}" class="nav-item {% if request.resolver_match.url_name == 'gestao_turmas' %}active{% endif %}">
+                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
+                </a>
+
+                <a href="{% url 'escola:relatorios' %}" class="nav-item {% if request.resolver_match.url_name == 'relatorios' %}active{% endif %}">
+                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
+                </a>
+
+                <a href="{% url 'escola:calendario' %}" class="nav-item {% if request.resolver_match.url_name == 'calendario' %}active{% endif %}">
+                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
+                </a>
+
+                <a href="{% url 'escola:comunicados' %}" class="nav-item {% if request.resolver_match.url_name == 'comunicados' %}active{% endif %}">
+                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
+                </a>
+
+                <a href="{% url 'escola:configuracoes' %}" class="nav-item {% if request.resolver_match.url_name == 'configuracoes' %}active{% endif %}">
+                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
+                </a>
+
+                <a href="#" class="nav-item logout">
+                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                {% block page_header %}{% endblock %}
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <span>{{ user.email }}</span>
+                    </div>
+                    <div class="user-avatar">{{ user.first_name|first|default:"U" }}{{ user.last_name|first|default:"" }}</div>
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

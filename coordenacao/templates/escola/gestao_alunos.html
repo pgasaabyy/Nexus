@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão dos Alunos{% endblock %}
+
+{% block page_header %}
+<div class="page-title">
+    <h1>Gestão dos Alunos</h1>
+    <p>Dashboard dos Alunos</p>
+</div>
+<div class="header-actions">
+    <a href="#" class="btn-primary"><i class="ph-bold ph-user-plus"></i> Nova Matrícula</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- KPIs -->
+<section class="kpi-section">
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Total de Alunos</span>
+            <strong>{{ total_alunos|default:"1,284" }}</strong>
+        </div>
+        <div class="kpi-icon blue"><i class="ph ph-student"></i></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Média Geral</span>
+            <strong>8.2</strong>
+        </div>
+        <div class="kpi-icon green"><i class="ph ph-graduation-cap"></i></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Frequência Média</span>
+            <strong>93%</strong>
+        </div>
+        <div class="kpi-icon blue"><i class="ph ph-user-list"></i></div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-info">
+            <span>Em Atenção</span>
+            <strong>24</strong>
+            <small>Baixo rendimento</small>
+        </div>
+        <div class="kpi-icon yellow"><i class="ph ph-warning-circle"></i></div>
+    </div>
+</section>
+
+<!-- Tabela de Alunos -->
+<section class="table-container">
+    <div class="table-header">
+        <div class="table-title">
+            <h3>Lista de Alunos</h3>
+            <p>Gerenciamento completo do corpo estudantil</p>
+        </div>
+        <div class="table-controls">
+            <div class="search-bar">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar por nome ou matrícula...">
+            </div>
+            <button class="btn-filter"><i class="ph ph-funnel-simple"></i> Todas as turmas <i class="ph ph-caret-down"></i></button>
+            <button class="btn-export"><i class="ph ph-export"></i> Exportar</button>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Matrícula</th>
+                <th>Nome</th>
+                <th>Turma</th>
+                <th>Média</th>
+                <th>Frequência</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aluno in alunos %}
+            <tr>
+                <td>{{ aluno.matricula }}</td>
+                <td>{{ aluno.nome }}</td>
+                <td>{% if aluno.turma %}{{ aluno.turma.nome }}{% endif %}</td>
+                <td><span class="grade-tag good">{{ aluno.media }}</span></td>
+                <td>{{ aluno.frequencia }}%</td>
+                <td><span class="status-tag active">{{ aluno.get_status_display }}</span></td>
+                <td><a href="#" class="btn-details">Ver detalhes</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">Nenhum aluno cadastrado</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

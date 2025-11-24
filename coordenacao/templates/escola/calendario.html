@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendário Escolar{% endblock %}
+
+{% block page_header %}
+<div class="welcome-message">
+    <h1>Calendário Escolar</h1>
+    <p>Calendário</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="calendar-container">
+    <!-- Botão Novo Evento -->
+    <div class="calendar-actions">
+        <a href="#" class="btn-novo-evento"><i class="ph ph-plus"></i> Novo Evento</a>
+    </div>
+
+    <!-- Área onde o calendário (ex: FullCalendar) seria renderizado -->
+    <div class="calendar-placeholder">
+        <p>Conteúdo do Calendário (Ex: FullCalendar) será exibido aqui.</p>
+        {% if eventos %}
+        <ul>
+            {% for evento in eventos %}
+            <li>{{ evento.titulo }} - {{ evento.data }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

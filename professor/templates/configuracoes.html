@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block content %}
+<div class="page-title-section">
+    <h1>Configurações</h1>
+    <p>Gerencie preferências e configurações</p>
+</div>
+
+<!-- Informações da Escola -->
+<div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; margin-bottom: 25px;">
+    <h2 style="margin-top: 0; margin-bottom: 8px; color: #092F76;">Informações da Escola</h2>
+    <p style="color: #6c757d; margin: 0 0 25px;">Dados institucionais e configurações gerais</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Nome da Instituição</label>
+                <input type="text" name="nome_instituicao" value="{% if escola %}{{ escola.nome }}{% endif %}" 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Telefone</label>
+                <input type="tel" name="telefone" value="{% if escola %}{{ escola.telefone }}{% endif %}" 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">CNPJ</label>
+                <input type="text" name="cnpj" value="{% if escola %}{{ escola.cnpj }}{% endif %}" 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Endereço</label>
+                <input type="text" name="endereco" value="{% if escola %}{{ escola.endereco }}{% endif %}" 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Ano Letivo</label>
+                <input type="number" name="ano_letivo" value="{% if escola %}{{ escola.ano_letivo }}{% endif %}" 
+                       style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Bimestre Atual</label>
+                <select name="bimestre_atual" style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                    <option value="1º Bimestre" {% if escola.bimestre_atual == '1º Bimestre' %}selected{% endif %}>1º Bimestre</option>
+                    <option value="2º Bimestre" {% if escola.bimestre_atual == '2º Bimestre' %}selected{% endif %}>2º Bimestre</option>
+                    <option value="3º Bimestre" {% if escola.bimestre_atual == '3º Bimestre' %}selected{% endif %}>3º Bimestre</option>
+                    <option value="4º Bimestre" {% if escola.bimestre_atual == '4º Bimestre' %}selected{% endif %}>4º Bimestre</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" style="background-color: #092F76; color: white; border: none; padding: 15px 40px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+            <i class="ph ph-check-circle"></i> Salvar Alterações
+        </button>
+    </form>
+</div>
+{% endblock %}
