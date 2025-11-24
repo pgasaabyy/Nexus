@@ -1,16 +1,22 @@
 .justificativa-body {
-    background: linear-gradient(135deg, #7a9cc6 0%, #92b4d4 50%, #b8d4e8 100%);
+    background-image:url(imgs/imagefundo.png) ;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    background-size: cover;          /* preenche a tela sem distorcer */
+    background-position: center;     /* centraliza a imagem */
+    background-repeat: no-repeat;    /* não repete */
+
 }
 
 .justificativa-container {
     width: 100%;
     max-width: 800px;
+    
 }
+
 
 /* Header */
 .justificativa-header {

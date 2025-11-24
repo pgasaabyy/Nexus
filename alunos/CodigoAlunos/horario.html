@@ -29,6 +29,13 @@
                     </svg>
                     Visão Geral
                 </a>
+                <a href="boletim.html" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Boletim Escolar
+                </a>
                 <a href="calendario.html" class="nav-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -38,13 +45,15 @@
                     </svg>
                     Calendário
                 </a>
-                <a href="boletim.html" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    Boletim
-                </a>
+                
+                <a href="horario.html" class="nav-item active">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+    Horários
+</a>
                 <a href="configuracoes.html" class="nav-item">
                     <img src="imgs/configuracao-removebg-preview.png" alt="Configurações" class="config-icon">
                     Configurações
@@ -65,9 +74,12 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header">
-                <h1 class="page-title">Horários Escolares</h1>
+                <h1 class="page-title">Dashboard Aluno</h1>
                 <div class="header-right">
                     <button class="notification-btn">
+                        <div class="notification-panel hidden">
+    <div class="notif-list" id="notifList"></div>
+</div>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -95,61 +107,87 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Segunda</th>
-                                <th>Terça</th>
-                                <th>Quarta</th>
-                                <th>Quinta</th>
-                                <th>Sexta</th>
-                                <th>Sexta</th>
+                                <th><div class="subject-cell subject-blue">Segunda</div></th>
+                                <th><div class="subject-cell subject-blue">Terça</div></th>
+                                <th><div class="subject-cell subject-blue">Quarta</div></th>
+                                <th><div class="subject-cell subject-blue">Quinta</div></th>
+                                <th><div class="subject-cell subject-blue">Sexta</div></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="time-cell">8:00</td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Matéria</div></td>
-                                <td></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Matéria</div></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td class="time-cell">9:00</td>
-                                <td><div class="subject-cell subject-green">Matéria</div></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">História</div></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td class="time-cell">10:15</td>
-                                <td><div class="subject-cell subject-green">História</div></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">História</div></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td class="time-cell">11:15</td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Futebol</div></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Futebol</div></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Futebol</div></td>
-                            </tr>
-                            <tr>
-                                <td class="time-cell">13:00</td>
-                                <td><div class="subject-cell subject-green">Futebol</div></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Futebol</div></td>
-                                <td></td>
-                                <td><div class="subject-cell subject-green">Futebol</div></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
+    <!-- 7:00 -->
+    <tr>
+        <td class="time-cell">7:00</td>
+        <td><div class="subject-cell subject-darkblue">Matemática</div></td>
+        <td><div class="subject-cell subject-darkblue">História</div></td>
+        <td><div class="subject-cell subject-darkblue">Biologia</div></td>
+        <td><div class="subject-cell subject-darkblue">Inglês</div></td>
+        <td><div class="subject-cell subject-darkblue">Educação Física</div></td>
+    </tr>
+
+    <!-- 7:50 -->
+    <tr>
+        <td class="time-cell">7:50</td>
+        <td><div class="subject-cell subject-darkblue">Matemática</div></td>     <!-- dupla -->
+        <td><div class="subject-cell subject-darkblue">História</div></td>        <!-- dupla -->
+        <td><div class="subject-cell subject-darkblue">Biologia</div></td>        <!-- dupla -->
+        <td><div class="subject-cell subject-darkblue">Inglês</div></td>          <!-- dupla -->
+        <td><div class="subject-cell subject-darkblue">Educação Física</div></td> <!-- dupla -->
+    </tr>
+
+    <!-- 8:40 -->
+    <tr>
+        <td class="time-cell">8:40</td>
+        <td><div class="subject-cell subject-darkblue">Língua Portuguesa</div></td>
+        <td><div class="subject-cell subject-darkblue">Sociologia</div></td>
+        <td><div class="subject-cell subject-darkblue">Química</div></td>
+        <td><div class="subject-cell subject-darkblue">Língua Portuguesa</div></td>
+        <td><div class="subject-cell subject-darkblue">História</div></td>
+    </tr>
+
+    <!-- INTERVALO -->
+    <tr>
+        <td class="time-cell">9:30</td>
+        <td><div class="subject-cell subject-blue">Intervalo</div></td>
+        <td><div class="subject-cell subject-blue">Intervalo</div></td>
+        <td><div class="subject-cell subject-blue">Intervalo</div></td>
+        <td><div class="subject-cell subject-blue">Intervalo</div></td>
+        <td><div class="subject-cell subject-blue">Intervalo</div></td>
+    </tr>
+
+    <!-- 9:50 -->
+    <tr>
+        <td class="time-cell">9:50</td>
+        <td><div class="subject-cell subject-darkblue">Sociologia</div></td>
+        <td><div class="subject-cell subject-darkblue">Matemática</div></td>
+        <td><div class="subject-cell subject-darkblue">Química</div></td>
+        <td><div class="subject-cell subject-darkblue">Inglês</div></td>
+        <td><div class="subject-cell subject-darkblue">Biologia</div></td>
+    </tr>
+
+    <!-- 10:40 -->
+    <tr>
+        <td class="time-cell">10:40</td>
+        <td><div class="subject-cell subject-darkblue">Sociologia</div></td>   <!-- dupla -->
+        <td><div class="subject-cell subject-darkblue">Matemática</div></td>   <!-- dupla -->
+        <td><div class="subject-cell subject-darkblue">Educação Física</div></td>
+        <td><div class="subject-cell subject-darkblue">Biologia</div></td>
+        <td><div class="subject-cell subject-darkblue">Inglês</div></td>
+    </tr>
+
+    <!-- 11:30 -->
+    <tr>
+        <td class="time-cell">11:30</td>
+        <td><div class="subject-cell subject-darkblue">Língua Portuguesa</div></td>
+        <td><div class="subject-cell subject-darkblue">História</div></td>
+        <td><div class="subject-cell subject-darkblue">Matemática</div></td>
+        <td><div class="subject-cell subject-darkblue">Sociologia</div></td>
+        <td><div class="subject-cell subject-darkblue">Química</div></td>
+    </tr>
+</tbody>
+
+
+
                     </table>
                 </div>
             </div>
@@ -157,5 +195,7 @@
     </div>
 
     <script src="horario.js"></script>
+    <script src="base.js"></script>
+
 </body>
 </html>

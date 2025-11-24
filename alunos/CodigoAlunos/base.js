@@ -25,13 +25,6 @@ if (logoutBtn) {
   })
 }
 
-// Notification button
-const notificationBtn = document.querySelector(".notification-btn")
-if (notificationBtn) {
-  notificationBtn.addEventListener("click", () => {
-    alert("Você tem 2 novas notificações!")
-  })
-}
 
 // adicionar evento
 async function addEvent(title, date, type){
@@ -57,3 +50,101 @@ function csrftoken(){
   const val = document.cookie.split('; ').find(row => row.startsWith(name+'='));
   return val ? val.split('=')[1] : '';
 }
+// ==== SISTEMA GLOBAL DE NOTIFICAÇÕES ====
+
+// Elementos
+const notifBtn = document.querySelector('.notification-btn');
+const notifPanel = document.querySelector('.notification-panel');
+const notifList = document.getElementById('notifList');
+
+// Alternar painel ao clicar
+notifBtn.addEventListener('click', () => {
+    notifPanel.classList.toggle('hidden');
+});
+
+// Fechar ao clicar fora
+document.addEventListener('click', (e) => {
+    if (!notifBtn.contains(e.target) && !notifPanel.contains(e.target)) {
+        notifPanel.classList.add('hidden');
+    }
+});
+
+// ------------------------------
+// 1. Ler avisos da página (se existir)
+// ------------------------------
+function lerAvisosDaPagina() {
+    const avisos = document.querySelectorAll('.aviso-item');
+    const lista = [];
+
+    avisos.forEach(aviso => {
+        lista.push({
+            dia: aviso.querySelector('.date-day').innerText,
+            mes: aviso.querySelector('.date-month').innerText,
+            titulo: aviso.querySelector('.aviso-title').innerText,
+            subtitulo: aviso.querySelector('.aviso-subtitle').innerText
+        });
+    });
+
+    return lista;
+}
+
+// ------------------------------
+// 2. Salvar avisos no localStorage
+// ------------------------------
+function salvarAvisosGlobal(avisos) {
+    if (avisos.length > 0) {
+        localStorage.setItem('avisosEscola', JSON.stringify(avisos));
+    }
+}
+
+// ------------------------------
+// 3. Carregar avisos do localStorage
+// ------------------------------
+function carregarAvisosGlobais() {
+    const dados = localStorage.getItem('avisosEscola');
+    return dados ? JSON.parse(dados) : [];
+}
+
+// ------------------------------
+// 4. Criar item no sino
+// ------------------------------
+function criarItemNotificacao(aviso) {
+    const item = document.createElement('div');
+    item.classList.add('notif-item');
+
+    item.innerHTML = `
+        <div class="notif-date">
+            <div class="notif-day">${aviso.dia}</div>
+            <div class="notif-month">${aviso.mes}</div>
+        </div>
+        <div class="notif-text">
+            <div class="notif-title-item">${aviso.titulo}</div>
+            <div class="notif-sub">${aviso.subtitulo}</div>
+        </div>
+    `;
+
+    notifList.appendChild(item);
+}
+
+// ------------------------------
+// 5. Mostrar notificações no sino
+// ------------------------------
+function mostrarNotificacoes() {
+    notifList.innerHTML = "";
+    const avisos = carregarAvisosGlobais();
+    avisos.forEach(aviso => criarItemNotificacao(aviso));
+}
+
+// ------------------------------
+// 6. Executar no carregamento da página
+// ------------------------------
+
+// Se esta página tiver avisos, salva eles
+const avisosDaPagina = lerAvisosDaPagina();
+if (avisosDaPagina.length > 0) {
+    salvarAvisosGlobal(avisosDaPagina);
+}
+
+// Sempre mostrar notificações
+mostrarNotificacoes();
+

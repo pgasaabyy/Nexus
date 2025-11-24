@@ -47,11 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
   monthSelector.value = currentMonth
   renderCalendar()
 
-  // Add event button
+// Add event button
   const addEventBtn = document.querySelector(".btn-add-event")
   if (addEventBtn) {
     addEventBtn.addEventListener("click", () => {
-      alert("Funcionalidade de adicionar evento em desenvolvimento!")
+      window.location.href = 'adicionar_evento.html'; // Adicionado: Redireciona para a nova página
     })
   }
 
