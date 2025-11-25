@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Frequência</title>
+    <link rel="stylesheet" href="{% static 'escola/css/style_professor.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_professor' %}" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'professor_notas' %}" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
+                <a href="{% url 'professor_frequencia' %}" class="nav-item active"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
+                <a href="{% url 'professor_materiais' %}" class="nav-item"><i class="ph-bold ph-books"></i> <span>Materiais</span></a>
+                <a href="{% url 'professor_calendario' %}" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="{% url 'professor_comunicados' %}" class="nav-item"><i class="ph-bold ph-megaphone"></i> <span>Comunicados</span></a>
+                <a href="{% url 'professor_configuracoes' %}" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--cor-recuperacao); margin-top: auto;"><i class="ph-bold ph-sign-out"></i> <span>Sair</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Registro de Frequência</h1>
+            </header>
+
+            <div class="filtros-container">
+                <div class="filtros-grid">
+                    <div class="filtro-item">
+                        <label>Data da Aula</label>
+                        <input type="date" class="filter-input">
+                    </div>
+                    <div class="filtro-item">
+                        <label>Turma</label>
+                        <select class="filter-select">
+                            <option>3º Ano A</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Nome do Aluno</th>
+                            <th>Status</th>
+                            <th>Justificativa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Carlos Eduardo</strong></td>
+                            <td>
+                                <select class="filter-select" style="width: auto;">
+                                    <option value="P">Presente</option>
+                                    <option value="F">Falta</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="Caso falte..."></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Daniela Lima</strong></td>
+                            <td>
+                                <select class="filter-select" style="width: auto;">
+                                    <option value="P">Presente</option>
+                                    <option value="F" selected>Falta</option>
+                                </select>
+                            </td>
+                            <td><input type="text" value="Atestado Médico"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn-salvar-frequencia"><i class="ph ph-check-circle"></i> Salvar Chamada</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

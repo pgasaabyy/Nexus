@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestão de Turmas - Coordenação</title>
+    <link rel="stylesheet" href="{% static 'escola/css/style_coordenacao.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_coordenacao' %}" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'coordenacao_turmas' %}" class="nav-item active"><i class="ph-bold ph-chalkboard"></i> <span>Turmas</span></a>
+                <a href="{% url 'coordenacao_alunos' %}" class="nav-item"><i class="ph-bold ph-student"></i> <span>Alunos</span></a>
+                <a href="{% url 'coordenacao_professores' %}" class="nav-item"><i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="{% url 'coordenacao_relatorios' %}" class="nav-item"><i class="ph-bold ph-chart-pie-slice"></i> <span>Relatórios</span></a>
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--cor-logout); margin-top: auto;"><i class="ph-bold ph-sign-out">

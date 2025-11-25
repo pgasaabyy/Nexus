@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios - Coordenação</title>
+    <link rel="stylesheet" href="{% static 'escola/css/style_coordenacao.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_coordenacao' %}" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'coordenacao_turmas' %}" class="nav-item"><i class="ph-bold ph-chalkboard"></i> <span>Turmas</span></a>
+                <a href="{% url 'coordenacao_alunos' %}" class="nav-item"><i class="ph-bold ph-student"></i> <span>Alunos</span></a>
+                <a href="{% url 'coordenacao_professores' %}" class="nav-item"><i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="{% url 'coordenacao_relatorios' %}" class="nav-item active"><i class="ph-bold ph-chart-pie-slice"></i> <span>Relatórios</span></a>
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--cor-logout); margin-top: auto;"><i class="ph-bold ph-sign-out"></i> <span>Sair</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="main-header">
+                <div class="page-title">
+                    <h1>Relatórios Pedagógicos</h1>
+                    <p>Indicadores de desempenho escolar</p>
+                </div>
+                <a href="#" class="btn-export"><i class="ph ph-download-simple"></i> Exportar PDF</a>
+            </div>
+
+            <div class="relatorios-grid">
+                <div class="kpi-card-small">
+                    <span>Taxa de Aprovação</span>
+                    <h2>92%</h2>
+                </div>
+                <div class="kpi-card-small">
+                    <span>Evasão Escolar</span>
+                    <h2 style="color: var(--cor-amarelo);">1.5%</h2>
+                </div>
+                <div class="kpi-card-small">
+                    <span>Média da Escola</span>
+                    <h2>7.8</h2>
+                </div>
+                <div class="kpi-card-small">
+                    <span>Total de Aulas</span>
+                    <h2>1.240</h2>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Desempenho por Disciplina</h3>
+                <div class="chart-container">
+                    <canvas id="graficoNotas"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('graficoNotas');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Matemática', 'Português', 'História', 'Geografia', 'Ciências'],
+                datasets: [{
+                    label: 'Média Geral',
+                    data: [7.2, 8.1, 8.5, 7.9, 8.8],
+                    backgroundColor: ['#092F76', '#8ED6D7', '#28a745', '#ffc107', '#092F76']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    </script>
+</body>
+</html>

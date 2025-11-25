@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestão de Alunos - Coordenação</title>
+    <link rel="stylesheet" href="{% static 'escola/css/style_coordenacao.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_coordenacao' %}" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'coordenacao_turmas' %}" class="nav-item"><i class="ph-bold ph-chalkboard"></i> <span>Turmas</span></a>
+                <a href="{% url 'coordenacao_alunos' %}" class="nav-item active"><i class="ph-bold ph-student"></i> <span>Alunos</span></a>
+                <a href="{% url 'coordenacao_professores' %}" class="nav-item"><i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="{% url 'coordenacao_relatorios' %}" class="nav-item"><i class="ph-bold ph-chart-pie-slice"></i> <span>Relatórios</span></a>
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--cor-logout); margin-top: auto;"><i class="ph-bold ph-sign-out"></i> <span>Sair</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="main-header">
+                <div class="page-title">
+                    <h1>Acompanhamento de Alunos</h1>
+                    <p>Análise de desempenho individual</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Nome do Aluno</th>
+                                <th>Turma</th>
+                                <th>Média Geral</th>
+                                <th>Frequência</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024001</td>
+                                <td><strong>Mariana Silva</strong></td>
+                                <td>1º Ano A</td>
+                                <td><span class="grade-tag excellent">9.5</span></td>
+                                <td>98%</td>
+                                <td><span class="status-tag active">Ativo</span></td>
+                                <td><a href="#" class="btn-details">Detalhes</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024002</td>
+                                <td><strong>João Pedro</strong></td>
+                                <td>2º Ano B</td>
+                                <td><span class="grade-tag low">5.8</span></td>
+                                <td>75%</td>
+                                <td><span class="status-tag warning">Atenção</span></td>
+                                <td><a href="#" class="btn-details">Detalhes</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

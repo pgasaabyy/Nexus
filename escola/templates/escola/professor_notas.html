@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lançamento de Notas</title>
+    <link rel="stylesheet" href="{% static 'escola/css/style_professor.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_professor' %}" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'professor_notas' %}" class="nav-item active"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
+                <a href="{% url 'professor_frequencia' %}" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
+                <a href="{% url 'professor_materiais' %}" class="nav-item"><i class="ph-bold ph-books"></i> <span>Materiais</span></a>
+                <a href="{% url 'professor_calendario' %}" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="{% url 'professor_comunicados' %}" class="nav-item"><i class="ph-bold ph-megaphone"></i> <span>Comunicados</span></a>
+                <a href="{% url 'professor_configuracoes' %}" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--cor-recuperacao); margin-top: auto;"><i class="ph-bold ph-sign-out"></i> <span>Sair</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Lançamento de Notas</h1>
+            </header>
+
+            <div class="filtros-container">
+                <div class="filtros-grid">
+                    <div class="filtro-item">
+                        <label>Turma</label>
+                        <select class="filter-select">
+                            <option>Selecione a turma...</option>
+                            <option>1º Ano A</option>
+                            <option>2º Ano B</option>
+                        </select>
+                    </div>
+                    <div class="filtro-item">
+                        <label>Disciplina</label>
+                        <select class="filter-select">
+                            <option>Matemática</option>
+                            <option>Física</option>
+                        </select>
+                    </div>
+                    <div class="filtro-item">
+                        <label>Avaliação</label>
+                        <select class="filter-select">
+                            <option>Prova Mensal</option>
+                            <option>Trabalho</option>
+                            <option>Prova Bimestral</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Nome do Aluno</th>
+                            <th style="width: 150px;">Nota (0-10)</th>
+                            <th>Observações</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong>Ana Clara Silva</strong></td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="8.5"></td>
+                            <td><input type="text" placeholder="Observação..."></td>
+                            <td><span class="nota-status aprovado">Aprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong>Bruno Souza</strong></td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="4.5"></td>
+                            <td><input type="text" placeholder="Observação..."></td>
+                            <td><span class="nota-status recuperacao">Recuperação</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn-salvar-notas"><i class="ph ph-check-circle"></i> Salvar Notas</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard do Professor</title>
+    <link rel="stylesheet" href="{% static 'escola/css/style_professor.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_professor' %}" class="nav-item active"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'professor_notas' %}" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
+                <a href="{% url 'professor_frequencia' %}" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
+                <a href="{% url 'professor_materiais' %}" class="nav-item"><i class="ph-bold ph-books"></i> <span>Materiais</span></a>
+                <a href="{% url 'professor_calendario' %}" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="{% url 'professor_comunicados' %}" class="nav-item"><i class="ph-bold ph-megaphone"></i> <span>Comunicados</span></a>
+                <a href="{% url 'professor_configuracoes' %}" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="{% url 'logout' %}" class="nav-item" style="color: var(--cor-recuperacao); margin-top: auto;"><i class="ph-bold ph-sign-out"></i> <span>Sair</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <h1>Olá, Prof. {{ user.first_name|default:"Professor" }}! 👋</h1>
+                    <p>Aqui está o resumo das suas turmas hoje.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info" style="text-align: right;">
+                        <strong>{{ user.username }}</strong>
+                        <span style="display:block; font-size: 0.8rem; color: #666;">Docente</span>
+                    </div>
+                    <div class="user-avatar">{{ user.first_name|slice:":2"|upper }}</div>
+                </div>
+            </header>
+
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <i class="ph-bold ph-chalkboard-teacher"></i>
+                    <div>
+                        <span class="label">Minhas Turmas</span>
+                        <span class="value">5</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <i class="ph-bold ph-student"></i>
+                    <div>
+                        <span class="label">Total de Alunos</span>
+                        <span class="value">142</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <i class="ph-bold ph-check-circle"></i>
+                    <div>
+                        <span class="label">Diários em Dia</span>
+                        <span class="value" style="color: var(--cor-aprovado);">100%</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <i class="ph-bold ph-clock"></i>
+                    <div>
+                        <span class="label">Próxima Aula</span>
+                        <span class="value" style="font-size: 1.5rem;">3º A - 10:40</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-container">
+                <h3>Atividades Recentes</h3>
+                <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                    <li style="padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px;">
+                        <i class="ph-fill ph-file-text" style="color: #092F76; font-size: 1.5rem;"></i>
+                        <div>
+                            <strong>Notas Lançadas</strong><br>
+                            <span style="font-size: 0.9rem; color: #666;">Matemática - 2º Ano B</span>
+                        </div>
+                    </li>
+                    <li style="padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px;">
+                        <i class="ph-fill ph-user-list" style="color: #092F76; font-size: 1.5rem;"></i>
+                        <div>
+                            <strong>Frequência Registrada</strong><br>
+                            <span style="font-size: 0.9rem; color: #666;">Biologia - 3º A</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

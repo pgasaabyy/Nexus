@@ -1,0 +1,49 @@
+/* ===== ESTILO GERAL DA COORDENAÇÃO (UNIFICADO) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --cor-fundo: #F8F9FA;
+    --cor-sidebar: #FFFFFF;
+    --cor-widget: #FFFFFF;
+    --cor-borda: #E9ECEF;
+    --cor-azul-escuro: #092F76;
+    --cor-texto-principal: #212529;
+    --cor-texto-secundario: #6c757d;
+    --cor-logout: #dc3545;
+    --cor-verde: #28a745;
+    --cor-amarelo: #ffc107;
+    --cor-azul-piscina: #8ED6D7;
+    --cor-sombra: rgba(0, 0, 0, 0.06);
+    --fonte-principal: 'Poppins', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: var(--cor-fundo); font-family: var(--fonte-principal); color: var(--cor-texto-principal); }
+.dashboard-container { display: flex; min-height: 100vh; }
+
+/* ===== SIDEBAR ===== */
+.sidebar { width: 260px; background: var(--cor-sidebar); padding: 25px; border-right: 1px solid var(--cor-borda); display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar-header { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+.logo-circle { width: 40px; height: 40px; background: var(--cor-azul-escuro); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 10px; }
+.nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 15px; border-radius: 8px; text-decoration: none; color: var(--cor-texto-secundario); font-weight: 500; transition: 0.2s; }
+.nav-item:hover, .nav-item.active { background: var(--cor-azul-escuro); color: white; }
+.nav-item i { font-size: 1.4rem; }
+
+/* ===== CONTEÚDO PRINCIPAL ===== */
+.main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+.main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.page-title h1 { font-size: 2.5rem; font-weight: 700; margin: 0; }
+.page-title p { color: var(--cor-texto-secundario); }
+
+/* ===== WIDGETS GERAIS ===== */
+.content-section, .widget, .turma-card, .kpi-card, .kpi-card-small {
+    background: var(--cor-widget); padding: 25px; border-radius: 15px;
+    box-shadow: 0 4px 15px var(--cor-sombra); border: 1px solid var(--cor-borda);
+    border-top: 4px solid var(--cor-azul-piscina);
+}
+
+/* ===== TURMAS ===== */
+.turmas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+.turma-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.turma-stats p { font-size: 0.9rem; color: var(--cor-texto-secundario); display
