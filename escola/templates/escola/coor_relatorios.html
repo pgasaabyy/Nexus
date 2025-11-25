@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios</title>
+    <!-- Link para o CSS principal do dashboard (reutilizado) -->
+    <link rel="stylesheet" href="dashboard-coordenacao.css">
+    <!-- Link para o CSS específico da página de Relatórios -->
+    <link rel="stylesheet" href="relatorios.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Biblioteca de Gráficos (Chart.js ) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de  
+Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordenacao.html" class="nav-item">
+                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
+                </a>
+
+                <a href="gestao-alunos-avancada.html" class="nav-item">
+                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
+                </a>
+
+                <a href="gestao-professores.html" class="nav-item">
+                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+
+                <a href="turmas.html" class="nav-item">
+                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
+                </a>
+
+                <a href="relatorios.html" class="nav-item active">
+                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
+                </a>
+
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
+                </a>
+
+                <a href="comunicados.html" class="nav-item">
+                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
+                </a>
+
+                <a href="configuracoes.html" class="nav-item">
+                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
+                </a>
+
+                <a href="#" class="nav-item logout">
+                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <!-- Título e subtítulo da página -->
+                    <h1>Relatórios</h1>
+                    <p>Dashboard dos Relatórios</p>
+                </div>
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>Marina Rodrigues</strong>
+                        <span>marinarodrigues11@coor.edu.br</span>
+                    </div>
+                    <div class="user-avatar">MR</div>
+                </div>
+            </header>
+
+            <!-- Botão de Exportação -->
+            <div class="export-action">
+                <a href="#" class="btn-export"><i class="ph ph-download-simple"></i> Exportar os relatórios completos</a>
+            </div>
+
+            <div class="widgets-grid relatorios-grid">
+                <!-- KPIs de Relatórios -->
+                <div class="kpi-card-small">
+                    <div class="kpi-header-small"><span>Taxa de Aprovação</span><i class="ph ph-chart-line-up"></i></div>
+                    <div class="kpi-value-small">92%</div>
+                    <div class="kpi-footer-small">1.5% vs. mês anterior</div>
+                </div>
+                <div class="kpi-card-small">
+                    <div class="kpi-header-small"><span>Taxa de Evasão</span><i class="ph ph-chart-line-down"></i></div>
+                    <div class="kpi-value-small">1.8%</div>
+                    <div class="kpi-footer-small">0.7% vs. mês anterior</div>
+                </div>
+                <div class="kpi-card-small">
+                    <div class="kpi-header-small"><span>Média Geral</span><i class="ph ph-chart-bar"></i></div>
+                    <div class="kpi-value-small">8.4</div>
+                    <div class="kpi-footer-small">1.2% vs. mês anterior</div>
+                </div>
+                <div class="kpi-card-small">
+                    <div class="kpi-header-small"><span>Frequência Média</span><i class="ph ph-chart-bar"></i></div>
+                    <div class="kpi-value-small">93.5%</div>
+                    <div class="kpi-footer-small">1.5% vs. mês anterior</div>
+                </div>
+
+                <!-- Gráfico de Desempenho por Curso -->
+                <div class="widget chart-widget">
+                    <h3>Desempenho por Curso</h3>
+                    <p class="chart-subtitle">Média de notas por área do conhecimento</p>
+                    <div class="chart-container">
+                        <canvas id="desempenhoCursoChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget chart-widget">
+                    <h3>Distribuição de Status</h3>
+                    <p class="chart-subtitle">Situação final dos alunos</p>
+                    <div class="chart-container">
+                        <canvas id="distribuicaoStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Relatórios Disponíveis -->
+                <div class="widget relatorios-disponiveis">
+                    <h3><i class="ph ph-file-text"></i> Relatórios Disponíveis</h3>
+                    <p class="widget-subtitle">Documentos prontos para download</p>
+                    <div class="download-links">
+                        <a href="#" class="download-item"><i class="ph ph-download-simple"></i> Relatório Mensal (PDF)</a>
+                        <a href="#" class="download-item"><i class="ph ph-download-simple"></i> Estatísticas (Excel)</a>
+                        <a href="#" class="download-item"><i class="ph ph-download-simple"></i> Análise Completa (PDF)</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Script para inicializar os gráficos (apenas para simulação) -->
+    <script>
+        // Simulação de inicialização de gráficos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfico de Barras (Desempenho por Curso)
+            const ctxBar = document.getElementById('desempenhoCursoChart');
+            if (ctxBar) {
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ciências', 'Humanas', 'Exatas', 'Linguagens'],
+                        datasets: [{
+                            label: 'Média de Notas',
+                            data: [8.5, 8.4, 7.8, 9.0],
+                            backgroundColor: '#092F76',
+                            borderRadius: 5,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, max: 12 }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Gráfico de Pizza (Distribuição de Status)
+            const ctxDoughnut = document.getElementById('distribuicaoStatusChart');
+            if (ctxDoughnut) {
+                new Chart(ctxDoughnut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Aprovados: 92%', 'Reprovados: 3%', 'Recuperação: 5%'],
+                        datasets: [{
+                            data: [92, 3, 5],
+                            backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: true }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

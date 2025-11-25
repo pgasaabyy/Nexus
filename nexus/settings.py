@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,11 +85,14 @@ WSGI_APPLICATION = 'nexus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nexus',      # Nome do banco que criamos
-        'USER': 'root',       # Seu usuário MySQL
-        'PASSWORD': 'admin1234',   # Sua senha MySQL
+        'NAME': 'nexus',
+        'USER': 'root',
+        'PASSWORD': 'admin1234',
         'HOST': 'localhost',
         'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
     }
 }
 
@@ -131,7 +135,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Isso diz pro Django procurar arquivos estáticos dentro de cada app instalado
+# Isso diz pro Django: "Procure dentro das pastas dos apps"
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',

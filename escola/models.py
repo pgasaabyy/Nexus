@@ -52,7 +52,8 @@ class Aluno(models.Model):
 
 class Matricula(models.Model):
     STATUS_CHOICES = [('Ativo', 'Ativo'), ('Trancado', 'Trancado'), ('Concluido', 'Concluido')]
-    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='registros')
+    # Correção do related_name feita anteriormente
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='registros') 
     turma = models.ForeignKey(Turma, on_delete=models.PROTECT)
     data_matricula = models.DateField(default=timezone.now)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Ativo')

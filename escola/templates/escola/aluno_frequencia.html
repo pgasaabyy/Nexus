@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Frequência Escolar - Colégio Paulo de Alcântara</title>
+    <link rel="stylesheet" href="{% static 'escola/css/base.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="school-logo"><div class="logo-circle"><span>PA</span></div><div class="school-name"><div>Colégio Paulo de</div><div>Alcântara</div></div></div>
+            <nav class="nav-menu">
+                <a href="{% url 'dashboard_aluno' %}" class="nav-item"><i class="ph-bold ph-house"></i> Visão Geral</a>
+                <a href="{% url 'aluno_boletim' %}" class="nav-item"><i class="ph-bold ph-exam"></i> Boletim</a>
+                <a href="{% url 'aluno_horario' %}" class="nav-item"><i class="ph-bold ph-clock"></i> Horário</a>
+                <a href="{% url 'aluno_frequencia' %}" class="nav-item active"><i class="ph-bold ph-check-circle"></i> Frequência</a>
+                <a href="{% url 'aluno_calendario' %}" class="nav-item"><i class="ph-bold ph-calendar"></i> Calendário</a>
+                <a href="{% url 'aluno_configuracoes' %}" class="nav-item"><i class="ph-bold ph-gear"></i> Configurações</a>
+            </nav>
+            <div class="logout-container"><a href="{% url 'logout' %}" class="logout-btn"><i class="ph-bold ph-sign-out"></i> Sair</a></div>
+        </aside>
+
+        <main class="main-content">
+            <h1>Frequência</h1>
+            <div class="actions">
+                <a href="{% url 'aluno_justificativa' %}" class="btn-justify">Justificar Falta</a>
+            </div>
+            </main>
+    </div>
+    <script src="{% static 'escola/js/base.js' %}"></script>
+    <script src="{% static 'escola/js/frequencia.js' %}"></script>
+</body>
+</html>

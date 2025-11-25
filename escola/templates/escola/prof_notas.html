@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançamento de Notas</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .filtros-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #E0E0E0;
+        }
+        .filtros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .filtro-item label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #092F76;
+        }
+        .filtro-item select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .notas-table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #E0E0E0;
+            overflow-x: auto;
+        }
+        .notas-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .notas-table th, .notas-table td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        .notas-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #092F76;
+        }
+        .notas-table input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #E0E0E0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .notas-table input[type="number"]:focus {
+            outline: none;
+            border-color: #092F76;
+            box-shadow: 0 0 0 2px rgba(9, 47, 118, 0.1);
+        }
+        .nota-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .nota-status.aprovado {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .nota-status.recuperacao {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .nota-status.reprovado {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .btn-salvar-notas {
+            background-color: #092F76;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.2s;
+        }
+        .btn-salvar-notas:hover {
+            background-color: #072763;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="lancamento-notas.html" class="nav-item active"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
+                <a href="frequencia.html" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
+                <a href="materiais.html" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
+                <a href="calendario.html" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="comunicados.html" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
+                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="index.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-title-section">
+                <h1>Lançamento de Notas</h1>
+                <p>Registre as notas dos alunos por disciplina e turma</p>
+            </div>
+
+            <div class="filtros-container">
+                <h3>Selecione a Turma e Avaliação</h3>
+                <div class="filtros-grid">
+                    <div class="filtro-item">
+                        <label>Turma</label>
+                        <select>
+                            <option>Selecione a turma</option>
+                            <option>1º Ano A - Matemática</option>
+                            <option>2º Ano A - Matemática</option>
+                            <option>3º Ano A - Matemática</option>
+                            <option>3º Ano B - Matemática</option>
+                        </select>
+                    </div>
+                    <div class="filtro-item">
+                        <label>Bimestre</label>
+                        <select>
+                            <option>Selecione o bimestre</option>
+                            <option>1º Bimestre</option>
+                            <option>2º Bimestre</option>
+                            <option>3º Bimestre</option>
+                            <option selected>4º Bimestre</option>
+                        </select>
+                    </div>
+                    <div class="filtro-item">
+                        <label>Tipo de Avaliação</label>
+                        <select>
+                            <option>Prova</option>
+                            <option>Trabalho</option>
+                            <option>Seminário</option>
+                            <option>Atividade</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notas-table-container">
+                <h3>3º Ano A - Matemática - Prova 4º Bimestre</h3>
+                <table class="notas-table">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Nome do Aluno</th>
+                            <th>Nota (0-10)</th>
+                            <th>Observações</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Ana Clara Silva</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="9.5"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status aprovado">Aprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Bruno Santos Costa</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="7.0"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status aprovado">Aprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Carla Fernandes Lima</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="5.5"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status recuperacao">Recuperação</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Daniel Oliveira Souza</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="8.2"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status aprovado">Aprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Eduarda Pereira Alves</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="4.5"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status reprovado">Reprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Felipe Rodrigues Barros</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="9.0"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status aprovado">Aprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Gabriela Martins Dias</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="7.8"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status aprovado">Aprovado</span></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Henrique Almeida Rocha</td>
+                            <td><input type="number" min="0" max="10" step="0.1" value="6.5"></td>
+                            <td><input type="text" placeholder="Adicionar observação"></td>
+                            <td><span class="nota-status recuperacao">Recuperação</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn-salvar-notas">
+                    <i class="ph ph-check-circle"></i>
+                    Salvar Todas as Notas
+                </button>
+            </div>
+        </main>
+    </div>
+    <script src="sistema.js"></script>
+</body>
+</html>

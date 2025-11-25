@@ -52,6 +52,7 @@
 
 ---
 
+
 ## 💻 Guia de Instalação Rápida
 
 Prepare seu ambiente de desenvolvimento em **3 minutos**.

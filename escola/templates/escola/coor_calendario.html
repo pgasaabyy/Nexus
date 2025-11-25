@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Escolar</title>
+    <!-- Link para o CSS principal do dashboard (reutilizado) -->
+    <link rel="stylesheet" href="dashboard-coordenacao.css">
+    <!-- Link para o CSS específico da página de Calendário -->
+    <link rel="stylesheet" href="coor_calendario.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de  
+Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordenacao.html" class="nav-item">
+                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
+                </a>
+
+                <a href="gestao-alunos-avancada.html" class="nav-item">
+                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
+                </a>
+
+                <a href="gestao-professores.html" class="nav-item">
+                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+
+                <a href="turmas.html" class="nav-item">
+                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
+                </a>
+
+                <a href="relatorios.html" class="nav-item">
+                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
+                </a>
+
+                <a href="calendario.html" class="nav-item active">
+                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
+                </a>
+
+                <a href="comunicados.html" class="nav-item">
+                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
+                </a>
+
+                <a href="configuracoes.html" class="nav-item">
+                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
+                </a>
+
+                <a href="#" class="nav-item logout">
+                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <!-- Título e subtítulo da página -->
+                    <h1>Calendário Escolar</h1>
+                    <p>Calendário</p>
+                </div>
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>Marina Rodrigues</strong>
+                        <span>marinarodrigues11@coor.edu.br</span>
+                    </div>
+                    <div class="user-avatar">MR</div>
+                </div>
+            </header>
+
+            <div class="calendar-container">
+                <!-- Botão Novo Evento -->
+                <div class="calendar-actions">
+                    <a href="#" class="btn-novo-evento"><i class="ph ph-plus"></i> Novo Evento</a>
+                </div>
+
+                <!-- Área onde o calendário (ex: FullCalendar) seria renderizado -->
+                <div class="calendar-placeholder">
+                    <!-- Conteúdo do calendário será inserido aqui por JavaScript -->
+                    <p>Conteúdo do Calendário (Ex: FullCalendar) será exibido aqui.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

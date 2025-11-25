@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunicados</title>
+    <!-- Link para o CSS principal do dashboard (reutilizado) -->
+    <link rel="stylesheet" href="dashboard-coordenacao.css">
+    <!-- Link para o CSS específico da página de Comunicados -->
+    <link rel="stylesheet" href="comunicados.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de  
+Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordenacao.html" class="nav-item">
+                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
+                </a>
+
+                <a href="gestao-alunos-avancada.html" class="nav-item">
+                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
+                </a>
+
+                <a href="gestao-professores.html" class="nav-item">
+                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+
+                <a href="turmas.html" class="nav-item">
+                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
+                </a>
+
+                <a href="relatorios.html" class="nav-item">
+                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
+                </a>
+
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
+                </a>
+
+                <a href="comunicados.html" class="nav-item active">
+                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
+                </a>
+
+                <a href="configuracoes.html" class="nav-item">
+                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
+                </a>
+
+                <a href="#" class="nav-item logout">
+                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <!-- Título e subtítulo da página -->
+                    <h1>Comunicados</h1>
+                    <p>Envie comunicados</p>
+                </div>
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>Marina Rodrigues</strong>
+                        <span>marinarodrigues11@coor.edu.br</span>
+                    </div>
+                    <div class="user-avatar">MR</div>
+                </div>
+            </header>
+
+            <div class="widgets-grid comunicados-grid">
+                <!-- KPIs de Comunicados -->
+                <div class="kpi-card-comunicado">
+                    <div class="kpi-value-comunicado">12</div>
+                    <div class="kpi-footer-comunicado">Comunicados enviados</div>
+                    <i class="ph ph-paper-plane"></i>
+                </div>
+                <div class="kpi-card-comunicado">
+                    <div class="kpi-value-comunicado">3</div>
+                    <div class="kpi-footer-comunicado">Rascunhos salvos</div>
+                    <i class="ph ph-chats"></i>
+                </div>
+                <div class="kpi-card-comunicado">
+                    <div class="kpi-value-comunicado">5</div>
+                    <div class="kpi-footer-comunicado">Feedbacks novos</div>
+                    <i class="ph ph-bell"></i>
+                </div>
+            </div>
+
+            <!-- Formulário de Criação de Comunicado -->
+            <div class="widget comunicado-form-widget">
+                <h3>Criar Comunicado Oficial</h3>
+                <p class="widget-subtitle">Envie mensagens para alunos, professores ou toda a comunidade escolar</p>
+                
+                <form class="comunicado-form">
+                    <div class="form-group">
+                        <label for="titulo">Título do Comunicado</label>
+                        <input type="text" id="titulo" placeholder="Ex: Reunião de Pais e Mestres">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Destinatários</label>
+                        <div class="radio-group">
+                            <input type="radio" id="alunos" name="destinatario" value="alunos" checked>
+                            <label for="alunos">Alunos</label>
+                            
+                            <input type="radio" id="professores" name="destinatario" value="professores">
+                            <label for="professores">Professores</label>
+                            
+                            <input type="radio" id="secretaria" name="destinatario" value="secretaria">
+                            <label for="secretaria">Secretaria</label>
+                            
+                            <input type="radio" id="pais" name="destinatario" value="pais">
+                            <label for="pais">Pais/Responsáveis</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mensagem">Mensagem</label>
+                        <textarea id="mensagem" rows="6" placeholder="Digite sua mensagem aqui..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit"><i class="ph ph-paper-plane"></i> Enviar Comunicado</button>
+                        <button type="button" class="btn-draft">Salvar como Rascunho</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

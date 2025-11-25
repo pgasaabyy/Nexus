@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão das Turmas</title>
+    <!-- Link para o CSS principal do dashboard (reutilizado) -->
+    <link rel="stylesheet" href="dashboard-coordenacao.css">
+    <!-- Link para o CSS específico da página de Turmas -->
+    <link rel="stylesheet" href="turmas.css">
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de  
+Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-coordenacao.html" class="nav-item">
+                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
+                </a>
+
+                <a href="gestao-alunos-avancada.html" class="nav-item">
+                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
+                </a>
+
+                <a href="gestao-professores.html" class="nav-item">
+                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+
+                <a href="turmas.html" class="nav-item active">
+                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
+                </a>
+
+                <a href="relatorios.html" class="nav-item">
+                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
+                </a>
+
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
+                </a>
+
+                <a href="comunicados.html" class="nav-item">
+                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
+                </a>
+
+                <a href="configuracoes.html" class="nav-item">
+                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
+                </a>
+
+                <a href="#" class="nav-item logout">
+                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <!-- Título e subtítulo da página -->
+                    <h1>Gestão das Turmas</h1>
+                    <p>Dashboard das Turmas</p>
+                </div>
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>Marina Rodrigues</strong>
+                        <span>marinarodrigues11@coor.edu.br</span>
+                    </div>
+                    <div class="user-avatar">MR</div>
+                </div>
+            </header>
+
+            <div class="widgets-grid turmas-grid">
+                <!-- KPIs de Turmas -->
+                <div class="kpi-card kpi-turma">
+                    <div class="kpi-header"><span>Total de Turmas</span><i class="ph ph-book-open"></i></div>
+                    <div class="kpi-value">36</div>
+                    <div class="kpi-footer"><i class="ph ph-copy"></i></div>
+                </div>
+                <div class="kpi-card kpi-turma">
+                    <div class="kpi-header"><span>Média Geral</span><i class="ph ph-chart-line-up"></i></div>
+                    <div class="kpi-value">8.2</div>
+                    <div class="kpi-footer"><i class="ph ph-arrow-up"></i></div>
+                </div>
+                <div class="kpi-card kpi-turma">
+                    <div class="kpi-header"><span>Taxa de Presença</span><i class="ph ph-user-check"></i></div>
+                    <div class="kpi-value">93%</div>
+                    <div class="kpi-footer"><i class="ph ph-user-check"></i></div>
+                </div>
+                <div class="kpi-card kpi-turma attention">
+                    <div class="kpi-header"><span>Turmas em Atenção</span><i class="ph ph-warning-circle"></i></div>
+                    <div class="kpi-value">4</div>
+                    <div class="kpi-footer">Baixo desempenho</div>
+                </div>
+            </div>
+
+            <!-- Botão Nova Turma -->
+            <div class="turmas-actions">
+                <a href="#" class="btn-nova-turma"><i class="ph ph-plus-circle"></i> Nova Turma</a>
+            </div>
+
+            <!-- Filtros -->
+            <div class="turmas-filters">
+                <select class="filter-select">
+                    <option>Todas as séries</option>
+                </select>
+                <select class="filter-select">
+                    <option>Todos os turnos</option>
+                </select>
+            </div>
+
+            <!-- Lista de Turmas (Cards) -->
+            <div class="turmas-list">
+                <!-- Card de Turma - 3º Ano A -->
+                <div class="turma-card active-class">
+                    <div class="turma-header">
+                        <strong>3º Ano A</strong>
+                        <span class="status-tag active">Ativa</span>
+                    </div>
+                    <span class="turma-turno">Matutino</span>
+                    <div class="turma-stats">
+                        <p>Alunos matriculados: <span>32</span></p>
+                        <p>Média da turma: <span>8.5</span></p>
+                        <div class="progress-bar"><div style="width: 85%;"></div></div>
+                        <p>Frequência: <span>95%</span></p>
+                        <div class="progress-bar"><div style="width: 95%; background-color: var(--cor-verde);"></div></div>
+                    </div>
+                    <div class="turma-footer">
+                        <p>Professor responsável</p>
+                        <strong>Prof. Maria Silva</strong>
+                        <span>Matemática</span>
+                        <div class="turma-actions">
+                            <a href="#" class="btn-details">Ver detalhes</a>
+                            <a href="#" class="btn-edit">Editar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Turma - 3º Ano B -->
+                <div class="turma-card active-class">
+                    <div class="turma-header">
+                        <strong>3º Ano B</strong>
+                        <span class="status-tag active">Ativa</span>
+                    </div>
+                    <span class="turma-turno">Matutino</span>
+                    <div class="turma-stats">
+                        <p>Alunos matriculados: <span>30</span></p>
+                        <p>Média da turma: <span>7.8</span></p>
+                        <div class="progress-bar"><div style="width: 78%;"></div></div>
+                        <p>Frequência: <span>92%</span></p>
+                        <div class="progress-bar"><div style="width: 92%; background-color: var(--cor-verde);"></div></div>
+                    </div>
+                    <div class="turma-footer">
+                        <p>Professor responsável</p>
+                        <strong>Prof. João Santos</strong>
+                        <span>Português</span>
+                        <div class="turma-actions">
+                            <a href="#" class="btn-details">Ver detalhes</a>
+                            <a href="#" class="btn-edit">Editar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Turma - 2º Ano A -->
+                <div class="turma-card active-class">
+                    <div class="turma-header">
+                        <strong>2º Ano A</strong>
+                        <span class="status-tag active">Ativa</span>
+                    </div>
+                    <span class="turma-turno">Vespertino</span>
+                    <div class="turma-stats">
+                        <p>Alunos matriculados: <span>28</span></p>
+                        <p>Média da turma: <span>8.2</span></p>
+                        <div class="progress-bar"><div style="width: 82%;"></div></div>
+                        <p>Frequência: <span>94%</span></p>
+                        <div class="progress-bar"><div style="width: 94%; background-color: var(--cor-verde);"></div></div>
+                    </div>
+                    <div class="turma-footer">
+                        <p>Professor responsável</p>
+                        <strong>Prof. Ana Costa</strong>
+                        <span>História</span>
+                        <div class="turma-actions">
+                            <a href="#" class="btn-details">Ver detalhes</a>
+                            <a href="#" class="btn-edit">Editar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Turma - 2º Ano B -->
+                <div class="turma-card attention-class">
+                    <div class="turma-header">
+                        <strong>2º Ano B</strong>
+                        <span class="status-tag attention">Atenção</span>
+                    </div>
+                    <span class="turma-turno">Vespertino</span>
+                    <div class="turma-stats">
+                        <p>Alunos matriculados: <span>31</span></p>
+                        <p>Média da turma: <span>7.5</span></p>
+                        <div class="progress-bar"><div style="width: 75%;"></div></div>
+                        <p>Frequência: <span>89%</span></p>
+                        <div class="progress-bar"><div style="width: 89%; background-color: var(--cor-amarelo);"></div></div>
+                    </div>
+                    <div class="turma-footer">
+                        <p>Professor responsável</p>
+                        <strong>Prof. Carlos Oliveira</strong>
+                        <span>Física</span>
+                        <div class="turma-actions">
+                            <a href="#" class="btn-details">Ver detalhes</a>
+                            <a href="#" class="btn-edit">Editar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Turma - 1º Ano C -->
+                <div class="turma-card active-class">
+                    <div class="turma-header">
+                        <strong>1º Ano C</strong>
+                        <span class="status-tag active">Ativa</span>
+                    </div>
+                    <span class="turma-turno">Noturno</span>
+                    <div class="turma-stats">
+                        <p>Alunos matriculados: <span>25</span></p>
+                        <p>Média da turma: <span>8.9</span></p>
+                        <div class="progress-bar"><div style="width: 89%;"></div></div>
+                        <p>Frequência: <span>96%</span></p>
+                        <div class="progress-bar"><div style="width: 96%; background-color: var(--cor-verde);"></div></div>
+                    </div>
+                    <div class="turma-footer">
+                        <p>Professor responsável</p>
+                        <strong>Prof. Beatriz Lima</strong>
+                        <span>Química</span>
+                        <div class="turma-actions">
+                            <a href="#" class="btn-details">Ver detalhes</a>
+                            <a href="#" class="btn-edit">Editar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Acadêmica - Colégio Paulo de Alcantara</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="ph ph-house"></i> <span>Dashboard</span>
+                </a>
+                <a href="alunos.html" class="nav-item">
+                    <i class="ph ph-graduation-cap"></i> <span>Alunos</span>
+                </a>
+                <a href="professores.html" class="nav-item">
+                    <i class="ph ph-chalkboard-teacher"></i> <span>Professores</span>
+                </a>
+                <a href="academico.html" class="nav-item active">
+                    <i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span>
+                </a>
+                <a href="documentos.html" class="nav-item">
+                    <i class="ph ph-newspaper"></i> <span>Documentos</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="ph ph-calendar"></i> <span>Calendário</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="ph ph-gear"></i> <span>Configurações</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="ph ph-sign-out"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="welcome-message">
+                    <h1>Gestão Acadêmica</h1>
+                    <p>Gerenciamento de cursos, turmas e disciplinas</p>
+                </div>
+                <div class="user-profile">
+                    <i class="ph ph-bell"></i>
+                    <div class="user-info">
+                        <strong>Marcela Santos</strong>
+                        <span>marcelasantos45@sec.edu.br</span>
+                    </div>
+                    <div class="user-avatar">MS</div>
+                </div>
+            </header>
+
+            <div class="tabs">
+                <button class="tab-button active" data-tab="tab1">Cursos</button>
+                <button class="tab-button" data-tab="tab2">Turmas</button>
+                <button class="tab-button" data-tab="tab3">Disciplinas</button>
+            </div>
+
+            <div class="widgets-grid" style="grid-column: span 4;">
+                <div class="widget" style="grid-column: span 4;">
+                    <div class="section-header">
+                        <h3 class="section-title">Cursos Oferecidos</h3>
+                        <button class="btn-action primary">+ Novo Curso</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Curso</th>
+                                    <th>Séries</th>
+                                    <th>Total de Alunos</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tab1" class="tab-content">
+                                <tr>
+                                    <td><strong>Ensino Fundamental I</strong></td>
+                                    <td>1º ao 5º ano</td>
+                                    <td>320</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ensino Fundamental II</strong></td>
+                                    <td>6º ao 9º ano</td>
+                                    <td>456</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ensino Médio</strong></td>
+                                    <td>1º ao 3º ano</td>
+                                    <td>508</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                            </tbody>
+                            <tbody id="tab2" class="tab-content" style="display: none;">
+                                <tr>
+                                    <td><strong>Turma 5º Ano A</strong></td>
+                                    <td>5º ano</td>
+                                    <td>35</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Turma 6º Ano B</strong></td>
+                                    <td>6º ano</td>
+                                    <td>38</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Turma 9º Ano C</strong></td>
+                                    <td>9º ano</td>
+                                    <td>32</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                            </tbody>
+                            <tbody id="tab3" class="tab-content" style="display: none;">
+                                <tr>
+                                    <td><strong>Matemática</strong></td>
+                                    <td>Fundamental e Médio</td>
+                                    <td>320</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Português</strong></td>
+                                    <td>Fundamental e Médio</td>
+                                    <td>320</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ciências</strong></td>
+                                    <td>Fundamental e Médio</td>
+                                    <td>280</td>
+                                    <td><button class="btn-edit">Editar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

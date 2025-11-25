@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunicados</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="lancamento-notas.html" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
+                <a href="frequencia.html" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
+                <a href="materiais.html" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
+                <a href="calendario.html" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="comunicados.html" class="nav-item active"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
+                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="index.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-title-section">
+                <h1>Comunicados</h1>
+                <p>Envie mensagens e comunicados para alunos e turmas</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 300px; gap: 25px; margin-bottom: 25px;">
+                <!-- Formulário de Novo Comunicado -->
+                <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 2px solid #8ED6D7;">
+                    <h2 style="margin-top: 0; color: #092F76;">Novo Comunicado</h2>
+                    <p style="color: #6c757d; margin-bottom: 20px;">Envie uma mensagem para alunos ou turmas</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Destinatário</label>
+                        <input type="text" id="destinatario" placeholder="Ex: Todos os pais, 9º Ano A, etc." style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Assunto</label>
+                        <input type="text" id="assunto" placeholder="Digite o assunto do comunicado" style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Mensagem</label>
+                        <textarea id="mensagem" placeholder="Digite sua mensagem aqui..." style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; min-height: 150px; box-sizing: border-box; font-family: inherit;"></textarea>
+                    </div>
+
+                    <button onclick="enviarComunicado()" style="width: 100%; background-color: #092F76; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background-color 0.2s;">
+                        <i class="ph ph-paper-plane-tilt"></i>
+                        Enviar Comunicado
+                    </button>
+                </div>
+
+                <!-- Card Estatísticas -->
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
+                    <h3 style="margin: 0 0 20px; color: #092F76;">Estatísticas</h3>
+                    <div style="margin-bottom: 20px;">
+                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Enviados hoje</p>
+                        <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">2</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Esta semana</p>
+                        <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">8</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Este mês</p>
+                        <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">24</p>
+                    </div>
+                    <div style="padding-top: 20px; border-top: 1px solid #E0E0E0;">
+                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Alcance total</p>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: #092F76; margin: 0;">180 alunos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comunicados Enviados -->
+            <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
+                <h2 style="margin-top: 0; margin-bottom: 8px; color: #092F76; display: flex; align-items: center; gap: 10px;">
+                    <i class="ph ph-chat-dots"></i>
+                    Comunicados Enviados
+                </h2>
+                <p style="color: #6c757d; margin-top: 0; margin-bottom: 20px;">Histórico de mensagens enviadas</p>
+
+                <div id="listaComunicados" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Items adicionados dinamicamente -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="sistema.js"></script>
+    <script>
+        function enviarComunicado() {
+            const destinatario = document.getElementById('destinatario').value;
+            const assunto = document.getElementById('assunto').value;
+            const mensagem = document.getElementById('mensagem').value;
+
+            if (!destinatario || !assunto || !mensagem) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            const lista = document.getElementById('listaComunicados');
+            const data = new Date();
+            const dataFormatada = data.toLocaleDateString('pt-BR');
+
+            const item = document.createElement('div');
+            item.style.cssText = 'padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa;';
+            item.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                    <div>
+                        <h4 style="margin: 0 0 5px; color: #092F76;">${assunto}</h4>
+                        <p style="margin: 0 0 8px; color: #6c757d; font-size: 0.9rem;"><strong>${destinatario}</strong> • ${dataFormatada}</p>
+                        <p style="margin: 0; color: #495057; font-size: 0.95rem;">${mensagem}</p>
+                    </div>
+                    <span style="background-color: #8ED6D7; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">Enviado</span>
+                </div>
+            `;
+            
+            lista.insertBefore(item, lista.firstChild);
+
+            document.getElementById('destinatario').value = '';
+            document.getElementById('assunto').value = '';
+            document.getElementById('mensagem').value = '';
+        }
+
+        // Carregar comunicados iniciais
+        window.addEventListener('load', function() {
+            const lista = document.getElementById('listaComunicados');
+            const comunicados = [
+                { assunto: 'Reunião de pais - 1º Bimestre', destinatario: 'Pais e responsáveis', data: '01/10/2025', status: 'Enviado' },
+                { assunto: 'Material para próxima aula', destinatario: 'Alunos: Física', data: '30/09/2025', status: 'Enviado' },
+                { assunto: 'A prova de recuperação será na próxima semana', destinatario: 'A prova de recuperação será', data: '01/10/2025', status: 'Enviado' }
+            ];
+
+            comunicados.forEach(com => {
+                const item = document.createElement('div');
+                item.style.cssText = 'padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa;';
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px; color: #092F76;">${com.assunto}</h4>
+                            <p style="margin: 0 0 8px; color: #6c757d; font-size: 0.9rem;"><strong>${com.destinatario}</strong> • ${com.data}</p>
+                        </div>
+                        <span style="background-color: #8ED6D7; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">${com.status}</span>
+                    </div>
+                `;
+                lista.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>

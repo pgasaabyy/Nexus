@@ -1,0 +1,109 @@
+/* ===== ARQUIVO CSS DEDICADO PARA: CONFIGURACOES.HTML (Configurações) ===== */
+
+/* Estilo para o widget principal de configurações */
+.configuracoes-widget {
+    padding: 30px;
+    border-top: none; /* Remove a borda colorida padrão */
+}
+
+/* Estilo para as seções do formulário */
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.section-subtitle {
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
+    margin-bottom: 20px;
+}
+
+/* Estilo para o layout de linha com duas colunas */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Estilo para os grupos de formulário */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: var(--cor-texto-secundario);
+    font-size: 0.9rem;
+}
+
+/* Estilo para os campos de input (leitura e edição) */
+.configuracoes-form input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    font-family: var(--fonte-principal);
+    font-size: 1rem;
+    color: var(--cor-texto-principal);
+    background-color: #f8f9fa; /* Fundo levemente cinza para campos readonly */
+    transition: border-color 0.2s;
+}
+
+/* Estilo para campos que podem ser editados (se houver) */
+.configuracoes-form input:not([readonly]) {
+    background-color: var(--cor-widget);
+}
+
+.configuracoes-form input:not([readonly]):focus {
+    border-color: var(--cor-azul-escuro);
+    outline: none;
+}
+
+/* Estilo para o botão de ação */
+.form-actions {
+    margin-top: 30px;
+}
+
+.btn-submit {
+    background-color: var(--cor-azul-escuro);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #072255;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-row .form-group {
+        margin-bottom: 15px;
+    }
+}

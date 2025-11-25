@@ -1,0 +1,50 @@
+/* ===== ARQUIVO CSS DEDICADO PARA: CALENDARIO.HTML (Calendário Escolar) ===== */
+
+/* Estilos para o container do calendário */
+.calendar-container {
+    padding: 20px;
+    background-color: var(--cor-widget);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--cor-sombra);
+    border: 1px solid var(--cor-borda);
+    min-height: 70vh; /* Para dar uma altura mínima à área do calendário */
+}
+
+/* Estilos para o botão "Novo Evento" */
+.calendar-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.btn-novo-evento {
+    background-color: var(--cor-azul-escuro);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-novo-evento:hover {
+    background-color: #072255;
+}
+
+.btn-novo-evento i {
+    font-size: 1.2rem;
+}
+
+/* Placeholder para o calendário (apenas para visualização do layout) */
+.calendar-placeholder {
+    /* Estilos para simular a área do calendário */
+    border: 1px dashed var(--cor-borda);
+    padding: 50px;
+    text-align: center;
+    color: var(--cor-texto-secundario);
+    font-size: 1.2rem;
+    border-radius: 10px;
+}

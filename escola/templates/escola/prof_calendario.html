@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Acadêmico</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
+                <a href="lancamento-notas.html" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
+                <a href="frequencia.html" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
+                <a href="materiais.html" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
+                <a href="calendario.html" class="nav-item active"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
+                <a href="comunicados.html" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
+                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
+                <a href="index.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div class="page-title-section">
+                    <h1>Calendário Acadêmico</h1>
+                    <p>Visualize provas, reuniões e eventos importantes</p>
+                </div>
+                <button onclick="adicionarEvento()" style="background-color: #092F76; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-plus"></i>
+                    Novo Evento
+                </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; margin-bottom: 25px;">
+                <!-- Calendário -->
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
+                    <div id="calendar" style="text-align: center;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <button onclick="mesAnterior()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">‹</button>
+                            <h3 id="mesAno" style="margin: 0; color: #092F76; font-weight: 700;"></h3>
+                            <button onclick="proximoMes()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">›</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Su</div>
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Mo</div>
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Tu</div>
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">We</div>
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Th</div>
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Fr</div>
+                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Sa</div>
+                        </div>
+                        <div id="diasCalendario" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;"></div>
+                    </div>
+                </div>
+
+                <!-- Próximos Eventos -->
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
+                    <h2 style="margin-top: 0; margin-bottom: 8px; color: #092F76; display: flex; align-items: center; gap: 10px;">
+                        <i class="ph ph-calendar-dots"></i>
+                        Próximos Eventos
+                    </h2>
+                    <p style="color: #6c757d; margin: 0 0 20px;">Eventos e compromissos agendados</p>
+
+                    <div id="listaEventos" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Items adicionados dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards de Estatísticas -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px;">
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; text-align: center;">
+                    <p style="color: #6c757d; margin: 0 0 10px; font-size: 0.9rem;">Provas Agendadas</p>
+                    <p style="font-size: 2.2rem; font-weight: 700; color: #092F76; margin: 0;">2</p>
+                    <p style="color: #6c757d; margin: 10px 0 0; font-size: 0.9rem;">Próximos 15 dias</p>
+                </div>
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; text-align: center;">
+                    <p style="color: #6c757d; margin: 0 0 10px; font-size: 0.9rem;">Reuniões</p>
+                    <p style="font-size: 2.2rem; font-weight: 700; color: #092F76; margin: 0;">2</p>
+                    <p style="color: #6c757d; margin: 10px 0 0; font-size: 0.9rem;">Este mês</p>
+                </div>
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; text-align: center;">
+                    <p style="color: #6c757d; margin: 0 0 10px; font-size: 0.9rem;">Prazos</p>
+                    <p style="font-size: 2.2rem; font-weight: 700; color: #092F76; margin: 0;">1</p>
+                    <p style="color: #6c757d; margin: 10px 0 0; font-size: 0.9rem;">Esta semana</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="sistema.js"></script>
+    <script>
+        let mesAtual = new Date().getMonth();
+        let anoAtual = new Date().getFullYear();
+
+        const meses = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+
+        const eventos = [
+            { titulo: 'Prova de Matemática- 1º ano', data: '5', tipo: 'Prova', hora: '' },
+            { titulo: 'Conselho de Classe', data: '15', tipo: 'Evento', hora: '15:00' },
+            { titulo: 'Entrega de Trabalho- Física', data: '18', tipo: 'Trabalho', hora: '23:59' },
+            { titulo: 'Prova de Recuperação', data: '20', tipo: 'Acadêmico', hora: '10:00' }
+        ];
+
+        function renderCalendario() {
+            const mesAnoEl = document.getElementById('mesAno');
+            mesAnoEl.textContent = `${meses[mesAtual]} ${anoAtual}`;
+
+            const diasContainer = document.getElementById('diasCalendario');
+            diasContainer.innerHTML = '';
+
+            const primeiro = new Date(anoAtual, mesAtual, 1).getDay();
+            const diasNoMes = new Date(anoAtual, mesAtual + 1, 0).getDate();
+
+            for (let i = 0; i < primeiro; i++) {
+                const vazio = document.createElement('div');
+                vazio.style.cssText = 'padding: 10px; color: #ddd;';
+                vazio.textContent = '';
+                diasContainer.appendChild(vazio);
+            }
+
+            const hoje = new Date();
+            for (let dia = 1; dia <= diasNoMes; dia++) {
+                const diaEl = document.createElement('div');
+                const ehHoje = dia === hoje.getDate() && mesAtual === hoje.getMonth() && anoAtual === hoje.getFullYear();
+                diaEl.style.cssText = `padding: 12px; border-radius: 8px; cursor: pointer; font-weight: ${ehHoje ? 700 : 400}; color: ${ehHoje ? 'white' : '#092F76'}; background-color: ${ehHoje ? '#092F76' : '#f0f4f8'}; transition: all 0.2s;`;
+                diaEl.textContent = dia;
+                diaEl.onmouseover = () => { if (!ehHoje) diaEl.style.backgroundColor = '#e0e8f2'; };
+                diaEl.onmouseout = () => { if (!ehHoje) diaEl.style.backgroundColor = '#f0f4f8'; };
+                diasContainer.appendChild(diaEl);
+            }
+
+            renderEventos();
+        }
+
+        function renderEventos() {
+            const listaEventos = document.getElementById('listaEventos');
+            listaEventos.innerHTML = '';
+
+            eventos.forEach(evt => {
+                const item = document.createElement('div');
+                item.style.cssText = 'padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: start;';
+                
+                let badge = '#8ED6D7';
+                if (evt.tipo === 'Prova') badge = '#8ED6D7';
+                else if (evt.tipo === 'Evento') badge = '#92c8e0';
+                else if (evt.tipo === 'Acadêmico') badge = '#ff6b6b';
+                
+                item.innerHTML = `
+                    <div>
+                        <h4 style="margin: 0 0 8px; color: #092F76;">${evt.titulo}</h4>
+                        <p style="margin: 0 0 5px; color: #6c757d; font-size: 0.9rem;"><i class="ph ph-calendar-blank"></i> ${evt.data}/${mesAtual + 1}/${anoAtual} ${evt.hora ? 'às ' + evt.hora : ''}</p>
+                    </div>
+                    <span style="background-color: ${badge}; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">${evt.tipo}</span>
+                `;
+                listaEventos.appendChild(item);
+            });
+        }
+
+        function mesAnterior() {
+            mesAtual--;
+            if (mesAtual < 0) {
+                mesAtual = 11;
+                anoAtual--;
+            }
+            renderCalendario();
+        }
+
+        function proximoMes() {
+            mesAtual++;
+            if (mesAtual > 11) {
+                mesAtual = 0;
+                anoAtual++;
+            }
+            renderCalendario();
+        }
+
+        function adicionarEvento() {
+            alert('Funcionalidade de adicionar evento será implementada em breve!');
+        }
+
+        renderCalendario();
+    </script>
+</body>
+</html>

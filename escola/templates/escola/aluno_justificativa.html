@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Justificativa de Faltas - Colégio Paulo de Alcântara</title>
+    <link rel="stylesheet" href="{% static 'escola/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'escola/css/justificativa.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="justificativa-body">
+    <div class="justificativa-container">
+        <div class="justificativa-header">
+            <a href="{% url 'aluno_frequencia' %}" class="back-btn">
+                <i class="ph-bold ph-arrow-left"></i> Voltar
+            </a>
+            <h2>Justificar Falta</h2>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" class="btn-enviar">Enviar</button>
+        </form>
+    </div>
+    <script src="{% static 'escola/js/justificativa.js' %}"></script>
+</body>
+</html>

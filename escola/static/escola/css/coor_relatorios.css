@@ -1,0 +1,207 @@
+/* ===== ARQUIVO CSS DEDICADO PARA: RELATORIOS.HTML (Relatórios) ===== */
+
+/* Estilo para o botão de exportação */
+.export-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.btn-export {
+    background-color: var(--cor-azul-escuro);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-export:hover {
+    background-color: #072255;
+}
+
+.btn-export i {
+    font-size: 1.2rem;
+}
+
+/* Ajuste no Grid de Widgets para a página de Relatórios */
+.relatorios-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+/* Estilo para os KPIs pequenos (4 colunas) */
+.kpi-card-small {
+    background-color: var(--cor-widget);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--cor-sombra);
+    border: 1px solid var(--cor-borda);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.kpi-header-small {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--cor-texto-secundario);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.kpi-header-small i {
+    font-size: 1.2rem;
+    color: var(--cor-verde); /* Simulação de cor do ícone de gráfico */
+}
+
+.kpi-value-small {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-texto-principal);
+    margin-bottom: 5px;
+}
+
+.kpi-footer-small {
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
+    margin-top: 5px;
+}
+
+/* Estilo para os widgets de gráfico (2 colunas) */
+.widget.chart-widget {
+    grid-column: span 2;
+    height: 350px; 
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--cor-sombra);
+    border: 1px solid var(--cor-borda);
+    background-color: var(--cor-widget); /* Garantir fundo */
+    
+    /* NOVAS PROPRIEDADES PARA CORRIGIR O ERRO */
+    display: flex;
+    flex-direction: column; /* Organiza titulo e grafico em coluna */
+    overflow: hidden;       /* Garante que nada saia da borda arredondada */
+}
+
+.chart-container {
+    flex: 1;                /* Ocupa todo o espaço restante abaixo do título */
+    position: relative;     /* Necessário para o Chart.js */
+    min-height: 0;          /* CRUCIAL: Permite que o container encolha se necessário */
+    width: 100%;
+}
+
+.widget.chart-widget canvas {
+    /* Força o canvas a respeitar o container pai */
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+
+
+.chart-subtitle {
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
+    margin-top: -10px; /* Ajuste fino */
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Garante que o texto não seja esmagado */
+}
+
+/* Estilo para a seção de Relatórios Disponíveis */
+.relatorios-disponiveis {
+    grid-column: span 4;
+    padding: 25px;
+    border-top: none; /* Remove a borda colorida padrão */
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--cor-sombra);
+    border: 1px solid var(--cor-borda);
+}
+
+.relatorios-disponiveis h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--cor-texto-principal); /* Cor do ícone e título */
+}
+
+.relatorios-disponiveis h3 i {
+    font-size: 1.5rem;
+    color: var(--cor-amarelo);
+}
+
+.relatorios-disponiveis .widget-subtitle {
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.download-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.download-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--cor-texto-principal);
+    font-weight: 500;
+    transition: background-color 0.2s;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.download-item:hover {
+    background-color: #f1f3f5;
+}
+
+.download-item i {
+    font-size: 1.2rem;
+    color: var(--cor-azul-escuro);
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .relatorios-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .kpi-card-small {
+        grid-column: span 1;
+    }
+    .widget.chart-widget {
+        grid-column: span 2;
+    }
+    .relatorios-disponiveis {
+        grid-column: span 2;
+    }
+    .download-links {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .relatorios-grid {
+        grid-template-columns: 1fr;
+    }
+    .kpi-card-small, .widget.chart-widget, .relatorios-disponiveis {
+        grid-column: span 1;
+    }
+    .download-links {
+        flex-direction: column;
+    }
+}
