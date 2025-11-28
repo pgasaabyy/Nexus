@@ -147,4 +147,3 @@ if (avisosDaPagina.length > 0) {
 
 // Sempre mostrar notificações
 mostrarNotificacoes();
-

@@ -3,6 +3,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frequência Escolar - Colégio Paulo de Alcântara</title>
     <link rel="stylesheet" href="{% static 'escola/css/base.css' %}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -10,25 +11,151 @@
 <body>
     <div class="container">
         <aside class="sidebar">
-            <div class="school-logo"><div class="logo-circle"><span>PA</span></div><div class="school-name"><div>Colégio Paulo de</div><div>Alcântara</div></div></div>
+            <div class="school-logo">
+                <div class="logo-circle"><span>PA</span></div>
+                <div class="school-name"><div>Colégio Paulo de</div><div>Alcântara</div></div>
+            </div>
+            
             <nav class="nav-menu">
-                <a href="{% url 'dashboard_aluno' %}" class="nav-item"><i class="ph-bold ph-house"></i> Visão Geral</a>
-                <a href="{% url 'aluno_boletim' %}" class="nav-item"><i class="ph-bold ph-exam"></i> Boletim</a>
-                <a href="{% url 'aluno_horario' %}" class="nav-item"><i class="ph-bold ph-clock"></i> Horário</a>
-                <a href="{% url 'aluno_frequencia' %}" class="nav-item active"><i class="ph-bold ph-check-circle"></i> Frequência</a>
-                <a href="{% url 'aluno_calendario' %}" class="nav-item"><i class="ph-bold ph-calendar"></i> Calendário</a>
-                <a href="{% url 'aluno_configuracoes' %}" class="nav-item"><i class="ph-bold ph-gear"></i> Configurações</a>
+                <a href="{% url 'dashboard_aluno' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    Visão Geral
+                </a>
+                <a href="{% url 'aluno_boletim' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Boletim Escolar
+                </a>
+                <a href="{% url 'aluno_calendario' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Calendário
+                </a>
+                <a href="{% url 'aluno_horario' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Horários
+                </a>
+                <a href="{% url 'aluno_configuracoes' %}" class="nav-item">
+                    <img src="{% static 'escola/imgs/configuracao-removebg-preview.png' %}" alt="Configurações" class="config-icon" style="width: 20px;">
+                    Configurações
+                </a>
             </nav>
-            <div class="logout-container"><a href="{% url 'logout' %}" class="logout-btn"><i class="ph-bold ph-sign-out"></i> Sair</a></div>
+            
+            <a href="{% url 'logout' %}" style="text-decoration: none;">
+                <button class="logout-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </button>
+            </a>
         </aside>
 
-        <main class="main-content">
-            <h1>Frequência</h1>
-            <div class="actions">
-                <a href="{% url 'aluno_justificativa' %}" class="btn-justify">Justificar Falta</a>
+         <main class="main-content">
+            <header class="header">
+                <h1 class="page-title">Dashboard Aluno</h1>
+                <div class="header-right">
+                    <button class="notification-btn">
+                        <div class="notification-panel hidden"><div class="notif-list" id="notifList"></div></div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </button>
+                    <div class="user-info">
+                        <div class="user-details">
+                            <div class="user-name">{{ aluno.nome }}</div>
+                            <div class="user-email">{{ aluno.email }}</div>
+                        </div>
+                        <div class="user-avatar">
+                            {% if aluno.foto %}<img src="{{ aluno.foto.url }}" style="width:100%; height:100%; border-radius:50%;">{% else %}{{ aluno.nome|slice:":2"|upper }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="frequencia-page">
+                <div class="frequencia-header-section">
+                    <h2 class="section-title">Frequência Escolar</h2>
+                    <a href="{% url 'exportar_frequencia_pdf' %}" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Baixar
+                    </a>
+                </div>
+
+                <div class="student-info-card">
+                    <h3 class="student-name">{{ aluno.nome }}</h3>
+                    <div class="student-details-row">
+                        <span><strong>RM:</strong> {{ aluno.matricula }}</span>
+                        <span><strong>Turma:</strong> {{ aluno.turma_atual.codigo }}</span>
+                    </div>
+                </div>
+
+                <div class="attendance-section">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Matérias</th>
+                                <th>Aulas</th>
+                                <th>Faltas</th>
+                                <th>Freq. Final</th>
+                                <th>Status</th>
+                                <th>Justificativas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in frequencia %}
+                            <tr>
+                                <td>{{ item.disciplina }}</td>
+                                <td>{{ item.total_aulas }}</td>
+                                <td>{{ item.faltas }}</td>
+                                <td>{{ item.porcentagem }}%</td>
+                                <td>
+                                    <span style="color: {% if item.status == 'Atenção' %}red{% else %}green{% endif %}; font-weight: bold;">
+                                        {{ item.status }}
+                                    </span>
+                                </td>
+                                <td>-</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" style="text-align: center;">Nenhuma frequência registrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="freq-bottom-section">
+                    <div class="freq-chart-section">
+                        <h3 class="chart-title">Gráfico de frequência escolar</h3>
+                        <div class="freq-chart-container">
+                            <svg class="freq-pie-chart" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#5DADE2" stroke-width="20" stroke-dasharray="251.2 0" transform="rotate(-90 50 50)"></circle>
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#003366" stroke-width="20" stroke-dasharray="213.52 37.68" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                            </svg>
+                            <div class="freq-chart-label">85%</div>
+                        </div>
+                        <div class="freq-legend">
+                            <div class="freq-legend-item"><div class="freq-legend-color" style="background-color: #003366;"></div><span>Frequência</span></div>
+                            <div class="freq-legend-item"><div class="freq-legend-color" style="background-color: #5DADE2;"></div><span>Faltas</span></div>
+                        </div>
+                    </div>
+
+                    <div class="criteria-section">
+                        <h3 class="criteria-title">Critérios de justificativa de faltas</h3>
+                        <div class="criteria-content">
+                            <p><strong>Informamos que apenas as faltas devidamente justificadas poderão ser consideradas como ausências justificadas.</strong> As justificativas devem ser apresentadas com documentação comprobatória.</p>
+                            <ul class="criteria-list">
+                                <li>Atestado médico: Deve conter assinatura, carimbo e data de emissão, além de especificar o período de afastamento.</li>
+                                <li>Declaração de comparecimento: Para consultas, exames ou procedimentos médicos.</li>
+                                <li>Comprovante judicial: Mediante apresentação de comprovante oficial.</li>
+                                <li>Óbito de familiar próximo: Pai, mãe, cônjuge ou representante legal, com apresentação de certidão de óbito.</li>
+                            </ul>
+                            <p class="criteria-note">As justificativas devem ser entregues em até 3 dias úteis após o retorno do aluno.</p>
+                        </div>
+                        <a href="{% url 'aluno_justificativa' %}" class="btn-primary" style="text-decoration: none; display: block; text-align: center;">Justifique suas faltas</a>
+                    </div>
+                </div>
             </div>
-            </main>
+        </main>
     </div>
+
     <script src="{% static 'escola/js/base.js' %}"></script>
     <script src="{% static 'escola/js/frequencia.js' %}"></script>
 </body>

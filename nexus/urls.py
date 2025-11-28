@@ -1,9 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
+# Importando TODAS as views necessárias
 from escola.views import (
     # API e Gerais
     AlunoViewSet, NotaViewSet, home, login_view, logout_view,
+    
+    # Exportação
+    exportar_boletim_pdf, exportar_frequencia_pdf, exportar_frequencia_excel,
     
     # Secretaria
     dashboard_secretaria, secretaria_alunos, secretaria_professores, 
@@ -19,8 +24,9 @@ from escola.views import (
     professor_materiais, professor_calendario, professor_comunicados,
     professor_configuracoes,
     
-    # Aluno
-    dashboard_aluno
+    # Aluno (Adicionei as que faltavam aqui na importação)
+    dashboard_aluno, aluno_boletim, aluno_horario, aluno_frequencia,
+    aluno_calendario, aluno_configuracoes, aluno_justificativa, aluno_evento
 )
 
 router = DefaultRouter()
@@ -62,6 +68,24 @@ urlpatterns = [
     path('dashboard/professor/comunicados/', professor_comunicados, name='professor_comunicados'),
     path('dashboard/professor/configuracoes/', professor_configuracoes, name='professor_configuracoes'),
 
-    # --- ALUNO ---
+    # =======================================================
+    # --- ROTAS DO ALUNO (CORRIGIDAS) ---
+    # =======================================================
     path('dashboard/aluno/', dashboard_aluno, name='dashboard_aluno'),
+    
+    # Navegação do Menu (Essas faltavam e causavam o erro)
+    path('dashboard/aluno/boletim/', aluno_boletim, name='aluno_boletim'),
+    path('dashboard/aluno/horario/', aluno_horario, name='aluno_horario'),
+    path('dashboard/aluno/frequencia/', aluno_frequencia, name='aluno_frequencia'),
+    path('dashboard/aluno/calendario/', aluno_calendario, name='aluno_calendario'),
+    path('dashboard/aluno/configuracoes/', aluno_configuracoes, name='aluno_configuracoes'),
+    
+    # Rotas Extras
+    path('dashboard/aluno/justificativa/', aluno_justificativa, name='aluno_justificativa'),
+    path('dashboard/aluno/evento/', aluno_evento, name='aluno_evento'),
+
+    # Exportação de Arquivos
+    path('dashboard/aluno/boletim/pdf/', exportar_boletim_pdf, name='exportar_boletim_pdf'),
+    path('dashboard/aluno/frequencia/pdf/', exportar_frequencia_pdf, name='exportar_frequencia_pdf'),
+    path('dashboard/aluno/frequencia/excel/', exportar_frequencia_excel, name='exportar_frequencia_excel'),
 ]

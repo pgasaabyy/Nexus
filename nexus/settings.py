@@ -133,9 +133,10 @@ USE_TZ = True
 
 # settings.py
 
+import os
+
 STATIC_URL = 'static/'
 
-# Isso diz pro Django: "Procure dentro das pastas dos apps"
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
