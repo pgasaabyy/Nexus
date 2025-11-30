@@ -115,3 +115,48 @@ class Frequencia(models.Model):
     def __str__(self):
         status = "Presente" if self.presente else "Falta"
         return f"{self.data_aula} - {status}"
+
+
+class Evento(models.Model):
+    TIPO_CHOICES = [
+        ('feriado', 'Feriado'),
+        ('prova', 'Prova'),
+        ('trabalho', 'Entrega de Trabalho'),
+        ('evento', 'Evento Escolar'),
+        ('reuniao', 'Reunião'),
+    ]
+    titulo = models.CharField(max_length=200)
+    data = models.DateField()
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    descricao = models.TextField(blank=True, null=True)
+    # Se quiser que o evento seja só para uma turma (opcional)
+    turma = models.ForeignKey('Turma', on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.titulo} ({self.data})"
+
+# --- GRADE HORÁRIA ---
+# ... (seus outros modelos acima)
+class HorarioAula(models.Model):
+    DIA_SEMANA_CHOICES = [
+        ('SEG', 'Segunda-feira'),
+        ('TER', 'Terça-feira'),
+        ('QUA', 'Quarta-feira'),
+        ('QUI', 'Quinta-feira'),
+        ('SEX', 'Sexta-feira'),
+        ('SAB', 'Sábado'),
+    ]
+    
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='horarios')
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
+    dia_semana = models.CharField(max_length=3, choices=DIA_SEMANA_CHOICES)
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+
+    class Meta:
+        ordering = ['hora_inicio', 'dia_semana']
+        verbose_name = "Horário de Aula"
+        verbose_name_plural = "Horários de Aula"
+
+    def __str__(self):
+        return f"{self.turma} - {self.get_dia_semana_display()} - {self.hora_inicio}" 

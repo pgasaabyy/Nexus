@@ -162,3 +162,94 @@ function renderHolidayLegends() {
 
   holidayLegends.innerHTML = legendsHTML
 }
+
+// Edit buttons functionality
+const editButtons = document.querySelectorAll(".edit-btn")
+editButtons.forEach((btn) => {
+  btn.addEventListener("click", function () {
+    const parent = this.closest(".info-value-with-edit")
+    const currentValue = parent.querySelector("span").textContent
+    const label = this.closest(".info-item").querySelector("label").textContent
+
+    const newValue = prompt(`Editar ${label}:`, currentValue)
+    if (newValue && newValue !== currentValue) {
+      parent.querySelector("span").textContent = newValue
+      alert("Informação atualizada com sucesso!")
+    }
+  })
+})
+
+// Edit avatar button
+const editAvatarBtn = document.querySelector(".edit-avatar-btn")
+if (editAvatarBtn) {
+  editAvatarBtn.addEventListener("click", () => {
+    alert("Funcionalidade de editar foto em desenvolvimento!")
+  })
+}
+
+// Modal functionality removed - now using separate page
+const fileInput = document.getElementById("document")
+const fileLabel = document.querySelector(".file-hint")
+
+// File upload handling (kept for potential future use)
+if (fileInput) {
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files.length > 0) {
+      fileLabel.textContent = e.target.files[0].name
+    } else {
+      fileLabel.textContent = "Nenhum Arquivo selecionado"
+    }
+  })
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const backBtn = document.querySelector(".back-btn")
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "index.html"
+    })
+  }
+})
+
+// File upload handling
+const documentoInput = document.getElementById('documento');
+const fileNameSpan = document.querySelector('.file-name');
+
+if (documentoInput && fileNameSpan) {
+    documentoInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            fileNameSpan.textContent = e.target.files[0].name;
+        } else {
+            fileNameSpan.textContent = 'Nenhum Arquvi selecionado';
+        }
+    });
+}
+
+// Form submission
+const form = document.getElementById('justificativaForm');
+if (form) {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const justificativa = document.getElementById('justificativa').value;
+        const diaFalta = document.getElementById('diaFalta').value;
+        const documento = documentoInput.files[0];
+
+        if (!justificativa.trim()) {
+            alert('Por favor, preencha a justificativa.');
+            return;
+        }
+
+        if (!diaFalta) {
+            alert('Por favor, selecione o dia da falta.');
+            return;
+        }
+
+        // Success message
+        alert('Justificativa enviada com sucesso!');
+        
+        // Redirect back to frequency page
+        window.location.href = 'frenquencia.html';
+    });
+}

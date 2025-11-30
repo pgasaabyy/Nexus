@@ -3,34 +3,154 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horários Escolares - Colégio Paulo de Alcântara</title>
     <link rel="stylesheet" href="{% static 'escola/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'escola/css/horario.css' %}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Pequeno ajuste para tabela dinâmica se não tiver no CSS externo */
+        .subject-cell {
+            background-color: #e3f2fd;
+            color: #092F76;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: block;
+            text-align: center;
+        }
+        .empty-cell {
+            color: #ccc;
+            text-align: center;
+            font-size: 20px;
+        }
+        .intervalo {
+            background-color: #eee;
+            color: #666;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="school-logo">
                 <div class="logo-circle"><span>PA</span></div>
                 <div class="school-name"><div>Colégio Paulo de</div><div>Alcântara</div></div>
             </div>
+            
             <nav class="nav-menu">
-                <a href="{% url 'dashboard_aluno' %}" class="nav-item"><i class="ph-bold ph-house"></i> Visão Geral</a>
-                <a href="{% url 'aluno_boletim' %}" class="nav-item"><i class="ph-bold ph-exam"></i> Boletim</a>
-                <a href="{% url 'aluno_horario' %}" class="nav-item active"><i class="ph-bold ph-clock"></i> Horário</a>
-                <a href="{% url 'aluno_frequencia' %}" class="nav-item"><i class="ph-bold ph-check-circle"></i> Frequência</a>
-                <a href="{% url 'aluno_calendario' %}" class="nav-item"><i class="ph-bold ph-calendar"></i> Calendário</a>
-                <a href="{% url 'aluno_configuracoes' %}" class="nav-item"><i class="ph-bold ph-gear"></i> Configurações</a>
+                <a href="{% url 'dashboard_aluno' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    Visão Geral
+                </a>
+                <a href="{% url 'aluno_boletim' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Boletim Escolar
+                </a>
+                <a href="{% url 'aluno_calendario' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Calendário
+                </a>
+                <a href="{% url 'aluno_horario' %}" class="nav-item active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Horários
+                </a>
+                <a href="{% url 'aluno_configuracoes' %}" class="nav-item">
+                    <img src="{% static 'escola/imgs/configuracao-removebg-preview.png' %}" alt="Configurações" class="config-icon" style="width: 20px;">
+                    Configurações
+                </a>
             </nav>
-            <div class="logout-container"><a href="{% url 'logout' %}" class="logout-btn"><i class="ph-bold ph-sign-out"></i> Sair</a></div>
+            
+            <a href="{% url 'logout' %}" style="text-decoration: none;">
+                <button class="logout-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </button>
+            </a>
         </aside>
 
-        <main class="main-content">
-            <h1>Horário das Aulas</h1>
-            <div class="horario-container">
-               </div>
+         <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="page-title">Dashboard Aluno</h1>
+                <div class="header-right">
+                    <button class="notification-btn">
+                        <div class="notification-panel hidden"><div class="notif-list" id="notifList"></div></div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </button>
+                    <div class="user-info">
+                        <div class="user-details">
+                            <div class="user-name">{{ aluno.nome }}</div>
+                            <div class="user-email">{{ aluno.email }}</div>
+                        </div>
+                        <div class="user-avatar">
+                            {% if aluno.foto %}<img src="{{ aluno.foto.url }}" style="width:100%; height:100%; border-radius:50%;">{% else %}{{ aluno.nome|slice:":2"|upper }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Horário Content -->
+            <div class="page-content" style="padding: 20px;">
+                <a href="{% url 'dashboard_aluno' %}" class="back-btn" style="display: flex; align-items: center; gap: 5px; text-decoration: none; color: #666; margin-bottom: 20px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Voltar
+                </a>
+
+                <h2 style="color: #092F76; margin-bottom: 20px;">Grade Horária - {{ aluno.turma_atual.codigo }}</h2>
+
+                <div class="schedule-container" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <table class="schedule-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 15px; background: #f8f9fa; color: #092F76;">Horário</th>
+                                <th style="padding: 15px; background: #f8f9fa; color: #092F76;">Segunda</th>
+                                <th style="padding: 15px; background: #f8f9fa; color: #092F76;">Terça</th>
+                                <th style="padding: 15px; background: #f8f9fa; color: #092F76;">Quarta</th>
+                                <th style="padding: 15px; background: #f8f9fa; color: #092F76;">Quinta</th>
+                                <th style="padding: 15px; background: #f8f9fa; color: #092F76;">Sexta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for hora, dias in grade.items %}
+                                {% if hora == "09:30" %}
+                                    <!-- INTERVALO -->
+                                    <tr>
+                                        <td style="padding: 15px; text-align: center; font-weight: bold; color: #555;">{{ hora }}</td>
+                                        <td colspan="5" class="intervalo">INTERVALO</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td style="padding: 15px; text-align: center; font-weight: bold; color: #555; border-bottom: 1px solid #eee;">{{ hora }}</td>
+                                        
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            {% if dias.SEG %}<span class="subject-cell">{{ dias.SEG }}</span>{% else %}<div class="empty-cell">-</div>{% endif %}
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            {% if dias.TER %}<span class="subject-cell">{{ dias.TER }}</span>{% else %}<div class="empty-cell">-</div>{% endif %}
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            {% if dias.QUA %}<span class="subject-cell">{{ dias.QUA }}</span>{% else %}<div class="empty-cell">-</div>{% endif %}
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            {% if dias.QUI %}<span class="subject-cell">{{ dias.QUI }}</span>{% else %}<div class="empty-cell">-</div>{% endif %}
+                                        </td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                                            {% if dias.SEX %}<span class="subject-cell">{{ dias.SEX }}</span>{% else %}<div class="empty-cell">-</div>{% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
     </div>
+    <script src="{% static 'escola/js/base.js' %}"></script>
 </body>
 </html>

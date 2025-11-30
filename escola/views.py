@@ -1,17 +1,24 @@
-from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from openpyxl import Workbook
+import json
 import io
+from django.db.models import Q
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from rest_framework import viewsets
-from .models import Aluno, Nota, Turma, Professor, Disciplina, Aviso, Frequencia, Matricula
-from .serializers import AlunoSerializer, NotaSerializer
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from openpyxl import Workbook
 
+# IMPORTAÇÃO DOS MODELOS (Adicionados Evento e HorarioAula)
+from .models import (
+    Aluno, Nota, Turma, Professor, Disciplina, 
+    Aviso, Frequencia, Matricula, Evento, HorarioAula
+)
+from .serializers import AlunoSerializer, NotaSerializer
 
 # --- API (Mantida para uso futuro) ---
 class AlunoViewSet(viewsets.ModelViewSet):
@@ -22,7 +29,9 @@ class NotaViewSet(viewsets.ModelViewSet):
     queryset = Nota.objects.all()
     serializer_class = NotaSerializer
 
-# --- PÁGINAS GERAIS ---
+# =======================================================
+# PÁGINAS GERAIS (LOGIN / HOME)
+# =======================================================
 
 def home(request):
     return render(request, 'escola/index.html')
@@ -38,19 +47,19 @@ def login_view(request):
             login(request, user)
             
             # --- REDIRECIONAMENTO INTELIGENTE ---
-            # 1. Verifica se é Aluno
+            
+            # 1. Aluno
             if hasattr(user, 'perfil_aluno'):
                 return redirect('dashboard_aluno')
             
-            # 2. Verifica se é Superusuário (Admin/Secretaria)
-            elif user.is_superuser:
-                # Se tiver dashboard da secretaria, mude para 'dashboard_secretaria'
-                return redirect('/admin/') 
+            # 2. Secretaria ou Admin (Superusuário)
+            elif user.groups.filter(name='Secretaria').exists() or user.is_superuser:
+                return redirect('dashboard_secretaria') 
             
-            # 3. Futuro: Verificar Professor
-            # elif hasattr(user, 'perfil_professor'):
-            #     return redirect('dashboard_professor')
-            
+            # 3. Professor (Futuro)
+            # elif user.groups.filter(name='Professor').exists():
+            #    return redirect('dashboard_professor')
+
             else:
                 return redirect('home')
         else:
@@ -77,7 +86,7 @@ def dashboard_aluno(request):
 
     avisos = Aviso.objects.order_by('-data_criacao')[:3]
 
-    contexto = {
+    context = {
         'aluno': aluno,
         'media': media_geral,
         'faltas': faltas_totais,
@@ -93,7 +102,6 @@ def aluno_boletim(request):
     except AttributeError:
         return redirect('home')
 
-    # Busca disciplinas e notas
     boletim_completo = []
     if turma:
         disciplinas = turma.curso.disciplinas.all()
@@ -125,8 +133,6 @@ def aluno_frequencia(request):
     except AttributeError:
         return redirect('home')
 
-    # Busca dados de frequência
-    # Aqui vamos listar quantas faltas ele tem por matéria
     frequencia_detalhada = []
     if aluno.turma_atual:
         for disciplina in aluno.turma_atual.curso.disciplinas.all():
@@ -141,7 +147,6 @@ def aluno_frequencia(request):
                 disciplina=disciplina
             ).count()
 
-            # Evita divisão por zero
             porcentagem = 100
             if total_aulas > 0:
                 presencas = total_aulas - faltas
@@ -167,43 +172,67 @@ def aluno_frequencia(request):
 
 @login_required
 def aluno_horario(request):
-    # Passamos o aluno para o nome aparecer no cabeçalho
     try:
         aluno = request.user.perfil_aluno
+        turma = aluno.turma_atual
     except AttributeError:
-        aluno = None
-    return render(request, 'escola/aluno_horario.html', {'aluno': aluno})
+        return redirect('home')
 
-@login_required
-def aluno_justificativa(request):
-    try:
-        aluno = request.user.perfil_aluno
-    except AttributeError:
-        aluno = None
-    return render(request, 'escola/aluno_justificativa.html', {'aluno': aluno})
+    # Lógica da Grade Horária
+    grade_horaria = {}
+    horarios_padrao = ["07:00", "07:50", "08:40", "09:30", "09:50", "10:40", "11:30"]
+
+    if turma:
+        aulas = HorarioAula.objects.filter(turma=turma).select_related('disciplina')
+        
+        for hora in horarios_padrao:
+            grade_horaria[hora] = {'SEG': None, 'TER': None, 'QUA': None, 'QUI': None, 'SEX': None}
+            
+            for aula in aulas:
+                if aula.hora_inicio.strftime('%H:%M') == hora:
+                    grade_horaria[hora][aula.dia_semana] = aula.disciplina.nome
+
+    return render(request, 'escola/aluno_horario.html', {
+        'aluno': aluno, 
+        'grade': grade_horaria
+    })
 
 @login_required
 def aluno_calendario(request):
     try:
         aluno = request.user.perfil_aluno
     except AttributeError:
-        aluno = None
-    return render(request, 'escola/aluno_calendario.html', {'aluno': aluno})
+        return redirect('home')
+
+    # Lógica do Calendário (JSON)
+    eventos_query = Evento.objects.filter(
+        Q(turma__isnull=True) | Q(turma=aluno.turma_atual)
+    ).values('titulo', 'data', 'tipo')
+
+    eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
+
+    return render(request, 'escola/aluno_calendario.html', {
+        'aluno': aluno,
+        'eventos_json': eventos_json
+    })
+
+# --- Views Simples ---
+@login_required
+def aluno_justificativa(request):
+    try: aluno = request.user.perfil_aluno
+    except AttributeError: aluno = None
+    return render(request, 'escola/aluno_justificativa.html', {'aluno': aluno})
 
 @login_required
 def aluno_evento(request):
-    try:
-        aluno = request.user.perfil_aluno
-    except AttributeError:
-        aluno = None
+    try: aluno = request.user.perfil_aluno
+    except AttributeError: aluno = None
     return render(request, 'escola/aluno_evento.html', {'aluno': aluno})
 
 @login_required
 def aluno_configuracoes(request):
-    try:
-        aluno = request.user.perfil_aluno
-    except AttributeError:
-        aluno = None
+    try: aluno = request.user.perfil_aluno
+    except AttributeError: aluno = None
     return render(request, 'escola/aluno_configuracoes.html', {'aluno': aluno})
 
 # =======================================================
@@ -217,24 +246,21 @@ def exportar_boletim_pdf(request):
     except AttributeError:
         return redirect('home')
 
-    # Configuração do PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="boletim_{aluno.matricula}.pdf"'
     
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
     
-    # Cabeçalho
     p.setFont("Helvetica-Bold", 16)
     p.drawString(50, 800, f"Boletim Escolar - Nexus")
     p.setFont("Helvetica", 12)
     p.drawString(50, 780, f"Aluno: {aluno.nome}")
     p.drawString(50, 765, f"Matrícula: {aluno.matricula}")
-    p.drawString(50, 750, f"Turma: {aluno.turma_atual.codigo if aluno.turma_atual else 'Sem Turma'}")    
-    # Linha divisória
+    p.drawString(50, 750, f"Turma: {aluno.turma_atual.codigo if aluno.turma_atual else 'Sem Turma'}")
+    
     p.line(50, 740, 550, 740)
     
-    # Dados das Notas
     y = 710
     p.setFont("Helvetica-Bold", 10)
     p.drawString(50, y, "DISCIPLINA")
@@ -254,13 +280,9 @@ def exportar_boletim_pdf(request):
             p.drawString(50, y, str(disciplina.nome))
             p.drawString(250, y, str(round(media, 1)))
             
-            # Cor condicional simples
-            if status == "Recuperação":
-                p.setFillColor(colors.red)
-            elif status == "Aprovado":
-                p.setFillColor(colors.green)
-            else:
-                p.setFillColor(colors.black)
+            if status == "Recuperação": p.setFillColor(colors.red)
+            elif status == "Aprovado": p.setFillColor(colors.green)
+            else: p.setFillColor(colors.black)
                 
             p.drawString(400, y, status)
             p.setFillColor(colors.black) # Reseta cor
@@ -268,13 +290,11 @@ def exportar_boletim_pdf(request):
 
     p.showPage()
     p.save()
-    
     buffer.seek(0)
     return HttpResponse(buffer, content_type='application/pdf')
 
 @login_required
 def exportar_frequencia_pdf(request):
-    # Lógica similar para PDF de frequência
     try:
         aluno = request.user.perfil_aluno
     except AttributeError:
@@ -322,12 +342,9 @@ def exportar_frequencia_excel(request):
     except AttributeError:
         return redirect('home')
 
-    # Criação do Excel
     wb = Workbook()
     ws = wb.active
     ws.title = "Frequência"
-
-    # Cabeçalho
     ws.append(['Disciplina', 'Total Aulas', 'Faltas', '% Presença', 'Situação'])
 
     if aluno.turma_atual:
@@ -336,7 +353,6 @@ def exportar_frequencia_excel(request):
             total = Frequencia.objects.filter(matricula__aluno=aluno, disciplina=disciplina).count()
             porc = int(((total - faltas)/total)*100) if total > 0 else 100
             status = "Atenção" if porc < 75 else "Regular"
-            
             ws.append([disciplina.nome, total, faltas, f"{porc}%", status])
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -345,34 +361,53 @@ def exportar_frequencia_excel(request):
     return response
 
 # =======================================================
-# ÁREA DA SECRETARIA
+# ÁREA DA SECRETARIA (Gestão Completa)
 # =======================================================
+
 @login_required
 def dashboard_secretaria(request):
+    # Segurança: Verifica grupo
+    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+        return redirect('home')
+
+    # KPIs
     total_alunos = Aluno.objects.count()
-    contexto = {'total_alunos': total_alunos}
-    return render(request, 'escola/dashboard_secretaria.html', contexto)
+    total_professores = Professor.objects.count()
+    total_turmas = Turma.objects.count()
+    
+    # Lista Recente
+    ultimos_alunos = Aluno.objects.order_by('-id')[:5]
+
+    context = {
+        'total_alunos': total_alunos,
+        'total_professores': total_professores,
+        'total_turmas': total_turmas,
+        'ultimos_alunos': ultimos_alunos
+    }
+    return render(request, 'escola/dashboard_secretaria.html', context)
 
 @login_required
 def secretaria_alunos(request):
-    alunos = Aluno.objects.all()
+    alunos = Aluno.objects.all().order_by('nome')
     return render(request, 'escola/alunos.html', {'alunos': alunos})
 
 @login_required
 def secretaria_professores(request):
-    professores = Professor.objects.all()
+    professores = Professor.objects.all().order_by('nome')
     return render(request, 'escola/professores.html', {'professores': professores})
 
 @login_required
 def secretaria_academico(request):
-    return render(request, 'escola/academico.html')
+    turmas = Turma.objects.all()
+    disciplinas = Disciplina.objects.all()
+    return render(request, 'escola/academico.html', {'turmas': turmas, 'disciplinas': disciplinas})
 
 @login_required
 def secretaria_documentos(request):
     return render(request, 'escola/documentos.html')
 
 # =======================================================
-# ÁREA DA COORDENAÇÃO
+# ÁREA DA COORDENAÇÃO (Placeholders)
 # =======================================================
 @login_required
 def dashboard_coordenacao(request):
@@ -407,7 +442,7 @@ def coordenacao_configuracoes(request):
     return render(request, 'escola/configuracoes.html')
 
 # =======================================================
-# ÁREA DO PROFESSOR
+# ÁREA DO PROFESSOR (Placeholders)
 # =======================================================
 @login_required
 def dashboard_professor(request):

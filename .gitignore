@@ -1,0 +1,40 @@
+# Python (Arquivos compilados)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django (Banco de dados local e logs)
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Virtual Environment (Sua VENV não deve ir para o Git)
+venv/
+env/
+.venv/
+Scripts/
+Lib/
+
+# Media (Uploads de usuários - fotos de perfil, pdfs)
+# Mantemos a pasta mas ignoramos o conteúdo
+media/
+nexus/media/
+!media/.gitkeep
+
+# Static (Arquivos coletados para produção - se houver)
+staticfiles/
+
+# Editor / IDE (Configurações do VS Code, Pycharm, etc)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment Variables (Senhas e Chaves secretas)
+.env
+
+# Windows (Arquivos de sistema)
+Thumbs.db
+ehthumbs.db
+Desktop.ini

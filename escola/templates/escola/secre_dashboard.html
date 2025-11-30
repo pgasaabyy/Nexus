@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Colégio Paulo de Alcantara</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Dashboard - Secretaria Nexus</title>
+    <link rel="stylesheet" href="{% static 'escola/css/secretaria.css' %}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
@@ -15,28 +16,30 @@
                 <span>Colégio Paulo de Alcantara</span>
             </div>
             <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item active">
+                <a href="{% url 'dashboard_secretaria' %}" class="nav-item active">
                     <i class="ph ph-house"></i> <span>Dashboard</span>
                 </a>
-                <a href="alunos.html" class="nav-item">
+                <a href="{% url 'secretaria_alunos' %}" class="nav-item">
                     <i class="ph ph-graduation-cap"></i> <span>Alunos</span>
                 </a>
-                <a href="professores.html" class="nav-item">
+                <a href="{% url 'secretaria_professores' %}" class="nav-item">
                     <i class="ph ph-chalkboard-teacher"></i> <span>Professores</span>
                 </a>
-                <a href="academico.html" class="nav-item">
+                <a href="{% url 'secretaria_academico' %}" class="nav-item">
                     <i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span>
                 </a>
-                <a href="documentos.html" class="nav-item">
+                <a href="{% url 'secretaria_documentos' %}" class="nav-item">
                     <i class="ph ph-newspaper"></i> <span>Documentos</span>
                 </a>
+                
                 <a href="#" class="nav-item">
                     <i class="ph ph-calendar"></i> <span>Calendário</span>
                 </a>
                 <a href="#" class="nav-item">
                     <i class="ph ph-gear"></i> <span>Configurações</span>
                 </a>
-                <a href="#" class="nav-item logout">
+                
+                <a href="{% url 'logout' %}" class="nav-item logout">
                     <i class="ph ph-sign-out"></i> <span>Logout</span>
                 </a>
             </nav>
@@ -45,25 +48,26 @@
         <main class="main-content">
             <header class="main-header">
                 <div class="welcome-message">
-                    <h1>Bem-Vindo Marcela!</h1>
+                    <h1>Bem-Vindo(a), {{ user.first_name|default:"Administrador" }}!</h1>
                 </div>
                 <div class="user-profile">
                     <i class="ph ph-bell"></i>
                     <div class="user-info">
-                        <strong>Marcela Santos</strong>
-                        <span>marcelasantos45@sec.edu.br</span>
+                        <strong>{{ user.username|title }}</strong>
+                        <span>Secretaria</span>
                     </div>
-                    <div class="user-avatar">MS</div>
+                    <div class="user-avatar">AD</div>
                 </div>
             </header>
 
             <div class="widgets-grid">
+                
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <span>Total de Alunos</span>
                         <i class="ph ph-graduation-cap"></i>
                     </div>
-                    <div class="kpi-value">1,284</div>
+                    <div class="kpi-value">{{ total_alunos }}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -71,7 +75,7 @@
                         <span>Professores Ativos</span>
                         <i class="ph ph-users"></i>
                     </div>
-                    <div class="kpi-value">87</div>
+                    <div class="kpi-value">{{ total_professores }}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -79,7 +83,7 @@
                         <span>Turmas Abertas</span>
                         <i class="ph ph-book-open"></i>
                     </div>
-                    <div class="kpi-value">42</div>
+                    <div class="kpi-value">{{ total_turmas }}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -94,35 +98,31 @@
                 </div>
 
                 <div class="widget table-widget">
-                    <h3><i class="ph ph-trend-up"></i> Matrículas Recentes</h3>
+                    <h3><i class="ph ph-trend-up"></i> Alunos Cadastrados Recentemente</h3>
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Aluno</th>
                                 <th>Turma</th>
-                                <th>Data</th>
+                                <th>Matrícula</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for aluno in ultimos_alunos %}
                             <tr>
-                                <td><strong>Ana Silva</strong></td>
-                                <td>9º Ano</td>
-                                <td>2025-10-01</td>
-                                <td><span class="status-tag ativo">Ativo</span></td>
+                                <td><strong>{{ aluno.nome }}</strong></td>
+                                <td>{{ aluno.turma_atual.codigo|default:"Sem Turma" }}</td>
+                                <td>{{ aluno.matricula }}</td>
+                                <td>
+                                    <span class="status-tag ativo">Ativo</span>
+                                </td>
                             </tr>
+                            {% empty %}
                             <tr>
-                                <td><strong>Carlos Santos</strong></td>
-                                <td>8º Ano</td>
-                                <td>2025-10-02</td>
-                                <td><span class="status-tag pendente">Pendente</span></td>
+                                <td colspan="4" style="text-align: center; padding: 20px;">Nenhum aluno encontrado.</td>
                             </tr>
-                            <tr>
-                                <td><strong>Maria Oliveira</strong></td>
-                                <td>7º Ano</td>
-                                <td>2025-10-03</td>
-                                <td><span class="status-tag ativo">Ativo</span></td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -155,6 +155,6 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="{% static 'escola/js/secretaria.js' %}"></script>
 </body>
-</html>
+</html> 
