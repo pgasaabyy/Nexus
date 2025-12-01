@@ -1,156 +1,59 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Professores - Colégio Paulo de Alcantara</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Gestão de Professores</title>
+    <link rel="stylesheet" href="{% static 'escola/css/secretaria.css' %}">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
     <div class="dashboard-container">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de Alcantara</span>
-            </div>
+            <div class="sidebar-header"><div class="logo-circle">PA</div><span>Colégio Paulo de Alcantara</span></div>
             <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
-                    <i class="ph ph-house"></i> <span>Dashboard</span>
-                </a>
-                <a href="alunos.html" class="nav-item">
-                    <i class="ph ph-graduation-cap"></i> <span>Alunos</span>
-                </a>
-                <a href="professores.html" class="nav-item active">
-                    <i class="ph ph-chalkboard-teacher"></i> <span>Professores</span>
-                </a>
-                <a href="academico.html" class="nav-item">
-                    <i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span>
-                </a>
-                <a href="documentos.html" class="nav-item">
-                    <i class="ph ph-newspaper"></i> <span>Documentos</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="ph ph-calendar"></i> <span>Calendário</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="ph ph-gear"></i> <span>Configurações</span>
-                </a>
-                <a href="#" class="nav-item logout">
-                    <i class="ph ph-sign-out"></i> <span>Logout</span>
-                </a>
+                <a href="{% url 'dashboard_secretaria' %}" class="nav-item"><i class="ph ph-house"></i> <span>Dashboard</span></a>
+                <a href="{% url 'secretaria_alunos' %}" class="nav-item"><i class="ph ph-graduation-cap"></i> <span>Alunos</span></a>
+                <a href="{% url 'secretaria_professores' %}" class="nav-item active"><i class="ph ph-chalkboard-teacher"></i> <span>Professores</span></a>
+                <a href="{% url 'secretaria_academico' %}" class="nav-item"><i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span></a>
+                <a href="{% url 'secretaria_documentos' %}" class="nav-item"><i class="ph ph-newspaper"></i> <span>Documentos</span></a>
+<a href="{% url 'secretaria_calendario' %}" class="nav-item"><i class="ph ph-calendar"></i> <span>Calendário</span></a>
+                <a href="{% url 'secretaria_configuracoes' %}" class="nav-item"><i class="ph ph-gear"></i> <span>Configurações</span></a>
+                <a href="{% url 'logout' %}" class="nav-item logout"><i class="ph ph-sign-out"></i> <span>Sair</span></a>
             </nav>
         </aside>
 
         <main class="main-content">
             <header class="main-header">
-                <div class="welcome-message">
-                    <h1>Gestão de Professores</h1>
-                    <p>Cadastro e gerenciamento de professores</p>
-                </div>
-                <div class="user-profile">
-                    <i class="ph ph-bell"></i>
-                    <div class="user-info">
-                        <strong>Marcela Santos</strong>
-                        <span>marcelasantos45@sec.edu.br</span>
-                    </div>
-                    <div class="user-avatar">MS</div>
-                </div>
+                <h1>Corpo Docente</h1>
+                <a href="/admin/escola/professor/add/" target="_blank" class="btn-action primary">+ Novo Professor</a>
             </header>
 
-            <div class="widgets-grid" style="grid-column: span 4;">
-                <div class="widget" style="grid-column: span 4;">
-                    <div class="section-header">
-                        <h3 class="section-title">Lista de Professores</h3>
-                        <button class="btn-action primary">+ Novo Professor</button>
-                    </div>
+            <div class="search-box">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="searchProfessores" placeholder="Pesquisar professor...">
+            </div>
 
-                    <div class="search-box">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" id="searchProfessores" placeholder="Pesquisar por nome, CPF ou Email">
-                    </div>
-
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>CPF</th>
-                                    <th>Disciplinas</th>
-                                    <th>Turmas</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-professores">
-                                <tr>
-                                    <td><strong>Prof. Roberto</strong></td>
-                                    <td>123.456.789-00</td>
-                                    <td>Matemática</td>
-                                    <td>3 Turmas</td>
-                                    <td><span class="status-tag ativo">Ativo</span></td>
-                                    <td class="action-icons">
-                                        <i class="ph ph-pencil-simple"></i>
-                                        <i class="ph ph-eye"></i>
-                                        <i class="ph ph-file-text"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Prof. Juliana</strong></td>
-                                    <td>987.654.321-00</td>
-                                    <td>Português</td>
-                                    <td>4 Turmas</td>
-                                    <td><span class="status-tag ativo">Ativo</span></td>
-                                    <td class="action-icons">
-                                        <i class="ph ph-pencil-simple"></i>
-                                        <i class="ph ph-eye"></i>
-                                        <i class="ph ph-file-text"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Prof. Marcos</strong></td>
-                                    <td>456.789.123-00</td>
-                                    <td>História</td>
-                                    <td>2 Turmas</td>
-                                    <td><span class="status-tag ferias">Férias</span></td>
-                                    <td class="action-icons">
-                                        <i class="ph ph-pencil-simple"></i>
-                                        <i class="ph ph-eye"></i>
-                                        <i class="ph ph-file-text"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Prof. Fernanda</strong></td>
-                                    <td>321.654.987-00</td>
-                                    <td>Ciências</td>
-                                    <td>3 Turmas</td>
-                                    <td><span class="status-tag ativo">Ativo</span></td>
-                                    <td class="action-icons">
-                                        <i class="ph ph-pencil-simple"></i>
-                                        <i class="ph ph-eye"></i>
-                                        <i class="ph ph-file-text"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Prof. André</strong></td>
-                                    <td>789.123.456-00</td>
-                                    <td>Educação Física</td>
-                                    <td>5 Turmas</td>
-                                    <td><span class="status-tag ativo">Ativo</span></td>
-                                    <td class="action-icons">
-                                        <i class="ph ph-pencil-simple"></i>
-                                        <i class="ph ph-eye"></i>
-                                        <i class="ph ph-file-text"></i>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="widget table-widget">
+                <table class="data-table">
+                    <thead><tr><th>Nome</th><th>Email</th><th>Especialidade</th><th>Admissão</th><th>Ações</th></tr></thead>
+                    <tbody>
+                        {% for prof in professores %}
+                        <tr>
+                            <td><strong>{{ prof.nome }}</strong></td>
+                            <td>{{ prof.email }}</td>
+                            <td>{{ prof.especialidade|default:"Geral" }}</td>
+                            <td>{{ prof.data_admissao|date:"d/m/Y" }}</td>
+                            <td><a href="/admin/escola/professor/{{ prof.id }}/change/" target="_blank" style="color:#092F76;"><i class="ph ph-pencil-simple"></i></a></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" style="text-align:center;">Nenhum professor encontrado.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
-
-    <script src="script.js"></script>
+    <script src="{% static 'escola/js/secretaria.js' %}"></script>
 </body>
 </html>

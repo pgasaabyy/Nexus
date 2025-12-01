@@ -12,11 +12,14 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from openpyxl import Workbook
+from django.db.models import Count
+from django.utils import timezone
+from .models import Documento
 
-# IMPORTAÇÃO DOS MODELOS (Adicionados Evento e HorarioAula)
+# IMPORTAÇÃO DOS MODELOS
 from .models import (
     Aluno, Nota, Turma, Professor, Disciplina, 
-    Aviso, Frequencia, Matricula, Evento, HorarioAula
+    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso
 )
 from .serializers import AlunoSerializer, NotaSerializer
 
@@ -46,17 +49,21 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
-            # --- REDIRECIONAMENTO INTELIGENTE ---
+            # --- REDIRECIONAMENTO INTELIGENTE (CORRIGIDO) ---
             
-            # 1. Aluno
-            if hasattr(user, 'perfil_aluno'):
+            # 1. PRIORIDADE MÁXIMA: Superusuário (Admin do Django)
+            if user.is_superuser:
+                return redirect('/admin/') 
+            
+            # 2. Aluno
+            elif hasattr(user, 'perfil_aluno'):
                 return redirect('dashboard_aluno')
             
-            # 2. Secretaria ou Admin (Superusuário)
-            elif user.groups.filter(name='Secretaria').exists() or user.is_superuser:
+            # 3. Secretaria (Membros do grupo Secretaria)
+            elif user.groups.filter(name='Secretaria').exists():
                 return redirect('dashboard_secretaria') 
             
-            # 3. Professor (Futuro)
+            # 4. Professor (Futuro)
             # elif user.groups.filter(name='Professor').exists():
             #    return redirect('dashboard_professor')
 
@@ -92,7 +99,7 @@ def dashboard_aluno(request):
         'faltas': faltas_totais,
         'avisos': avisos
     }
-    return render(request, 'escola/aluno_dashboard.html', contexto)
+    return render(request, 'escola/aluno_dashboard.html', context)
 
 @login_required
 def aluno_boletim(request):
@@ -178,7 +185,6 @@ def aluno_horario(request):
     except AttributeError:
         return redirect('home')
 
-    # Lógica da Grade Horária
     grade_horaria = {}
     horarios_padrao = ["07:00", "07:50", "08:40", "09:30", "09:50", "10:40", "11:30"]
 
@@ -204,7 +210,6 @@ def aluno_calendario(request):
     except AttributeError:
         return redirect('home')
 
-    # Lógica do Calendário (JSON)
     eventos_query = Evento.objects.filter(
         Q(turma__isnull=True) | Q(turma=aluno.turma_atual)
     ).values('titulo', 'data', 'tipo')
@@ -253,7 +258,7 @@ def exportar_boletim_pdf(request):
     p = canvas.Canvas(buffer, pagesize=A4)
     
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(50, 800, f"Boletim Escolar - Nexus")
+    p.drawString(50, 800, "Boletim Escolar - Nexus")
     p.setFont("Helvetica", 12)
     p.drawString(50, 780, f"Aluno: {aluno.nome}")
     p.drawString(50, 765, f"Matrícula: {aluno.matricula}")
@@ -285,7 +290,7 @@ def exportar_boletim_pdf(request):
             else: p.setFillColor(colors.black)
                 
             p.drawString(400, y, status)
-            p.setFillColor(colors.black) # Reseta cor
+            p.setFillColor(colors.black)
             y -= 20
 
     p.showPage()
@@ -366,7 +371,7 @@ def exportar_frequencia_excel(request):
 
 @login_required
 def dashboard_secretaria(request):
-    # Segurança: Verifica grupo
+    # Segurança: Verifica grupo OU Superusuário (mas sem redirecionar admin pro admin)
     if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
         return redirect('home')
 
@@ -384,27 +389,124 @@ def dashboard_secretaria(request):
         'total_turmas': total_turmas,
         'ultimos_alunos': ultimos_alunos
     }
-    return render(request, 'escola/dashboard_secretaria.html', context)
+    
+    return render(request, 'escola/secre_dashboard.html', context)
 
 @login_required
 def secretaria_alunos(request):
     alunos = Aluno.objects.all().order_by('nome')
-    return render(request, 'escola/alunos.html', {'alunos': alunos})
+    return render(request, 'escola/secre_alunos.html', {'alunos': alunos})
 
 @login_required
 def secretaria_professores(request):
     professores = Professor.objects.all().order_by('nome')
-    return render(request, 'escola/professores.html', {'professores': professores})
+    return render(request, 'escola/secre_professores.html', {'professores': professores})
 
 @login_required
 def secretaria_academico(request):
-    turmas = Turma.objects.all()
+    # Otimização com Count para evitar muitas queries
+    cursos = Curso.objects.annotate(total_turmas=Count('turma'))
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))
     disciplinas = Disciplina.objects.all()
-    return render(request, 'escola/academico.html', {'turmas': turmas, 'disciplinas': disciplinas})
+    
+    context = {
+        'cursos': cursos,
+        'turmas': turmas,
+        'disciplinas': disciplinas
+    }
+    return render(request, 'escola/secre_academico.html', context)
 
 @login_required
 def secretaria_documentos(request):
-    return render(request, 'escola/documentos.html')
+    # Validação de acesso igual às outras páginas da secretaria
+    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+        from django.utils import timezone
+from .models import Documento  # importa o model novo
+
+@login_required
+def secretaria_documentos(request):
+    # 1. Segurança: só Secretaria ou Superusuário
+    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+
+    # 2. Filtros (GET)
+    tipo_filtro = request.GET.get('tipo')
+    status_filtro = request.GET.get('status')
+    busca_aluno = request.GET.get('aluno')
+
+    documentos = Documento.objects.select_related('aluno').order_by('-data_solicitacao')
+
+    if tipo_filtro and tipo_filtro != 'TODOS':
+        documentos = documentos.filter(tipo=tipo_filtro)
+
+    if status_filtro and status_filtro != 'TODOS':
+        documentos = documentos.filter(status=status_filtro)
+
+    if busca_aluno:
+        documentos = documentos.filter(aluno__nome__icontains=busca_aluno)
+
+    # 3. Cadastro de novo documento (POST)
+    if request.method == 'POST':
+        aluno_id = request.POST.get('aluno_id')
+        tipo = request.POST.get('tipo')
+        descricao = request.POST.get('descricao')
+
+        if not aluno_id or not tipo:
+            messages.error(request, "Selecione um aluno e um tipo de documento.")
+        else:
+            try:
+                aluno = Aluno.objects.get(id=aluno_id)
+                doc = Documento.objects.create(
+                    aluno=aluno,
+                    tipo=tipo,
+                    descricao=descricao,
+                    status='PENDENTE',
+                    criado_por=request.user
+                )
+                messages.success(request, f"Documento criado para o aluno {aluno.nome}.")
+                return redirect('secretaria_documentos')
+            except Aluno.DoesNotExist:
+                messages.error(request, "Aluno não encontrado.")
+
+    context = {
+        'documentos': documentos,
+        'tipos_choices': Documento.TIPOS_CHOICES,
+        'status_choices': Documento.STATUS_CHOICES,
+        'tipo_filtro': tipo_filtro or 'TODOS',
+        'status_filtro': status_filtro or 'TODOS',
+        'busca_aluno': busca_aluno or '',
+        'alunos': Aluno.objects.all().order_by('nome'),  # para o select do formulário
+    }
+    return render(request, 'escola/secre_documentos.html', context)
+
+    return render(request, 'escola/secre_documentos.html')
+
+
+@login_required
+def secretaria_calendario(request):
+    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+
+    eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo') 
+
+    eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
+
+    context = {
+        'eventos_json': eventos_json,
+    }
+    
+    return render(request, 'escola/secre_calendario.html', context)
+
+@login_required
+def secretaria_configuracoes(request):
+    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+    return render(request, 'escola/secre_configuracoes.html')
 
 # =======================================================
 # ÁREA DA COORDENAÇÃO (Placeholders)

@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.contrib.auth.models import User  # Importação essencial!
+from django.db import models
+from django.contrib.auth.models import User
 
 # --- CURSOS E DISCIPLINAS ---
 class Curso(models.Model):
@@ -160,3 +162,29 @@ class HorarioAula(models.Model):
 
     def __str__(self):
         return f"{self.turma} - {self.get_dia_semana_display()} - {self.hora_inicio}" 
+
+class Documento(models.Model):
+    TIPOS_CHOICES = [
+        ('DECLARACAO_MATRICULA', 'Declaração de Matrícula'),
+        ('HISTORICO', 'Histórico Escolar'),
+        ('ATESTADO_FREQUENCIA', 'Atestado de Frequência'),
+        ('OUTRO', 'Outro'),
+    ]
+
+    STATUS_CHOICES = [
+        ('PENDENTE', 'Pendente'),
+        ('EMITIDO', 'Emitido'),
+        ('ENTREGUE', 'Entregue'),
+    ]
+
+    aluno = models.ForeignKey('Aluno', on_delete=models.CASCADE, related_name='documentos')
+    tipo = models.CharField(max_length=50, choices=TIPOS_CHOICES)
+    descricao = models.TextField(blank=True, null=True)
+    data_solicitacao = models.DateTimeField(auto_now_add=True)
+    data_emissao = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDENTE')
+    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} - {self.aluno.nome}"
+

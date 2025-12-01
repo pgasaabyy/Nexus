@@ -104,3 +104,74 @@ document.querySelectorAll(".module-card, .dashboard-card, .team-card, .stat-card
 })
 
 console.log("NEXUS Sistema inicializado!")
+
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Lógica das Abas (Tabs) ---
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    if (tabButtons.length > 0) {
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 1. Remove 'active' de todos os botões
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // 2. Adiciona 'active' no botão clicado
+                button.classList.add('active');
+
+                // 3. Esconde todos os conteúdos
+                tabContents.forEach(content => content.style.display = 'none');
+
+                // 4. Mostra o conteúdo correspondente (data-tab)
+                const tabId = button.getAttribute('data-tab');
+                const activeContent = document.getElementById(tabId);
+                if (activeContent) {
+                    activeContent.style.display = 'table-row-group'; // Mostra como corpo de tabela
+                }
+            });
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- LÓGICA DE ABAS (TABS) ---
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    if (tabButtons.length > 0) {
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active de todos
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.style.display = 'none');
+                
+                // Ativa o clicado
+                button.classList.add('active');
+                
+                const tabId = button.getAttribute('data-tab');
+                const content = document.getElementById(tabId);
+                
+                if (content) {
+                    // Se for uma tabela (tbody), usa table-row-group, senão block
+                    content.style.display = content.tagName === 'TBODY' ? 'table-row-group' : 'block';
+                }
+            });
+        });
+    }
+
+    // --- LÓGICA DE PESQUISA ---
+    const searchInput = document.querySelector('input[id^="search"]');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.data-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    }
+    
+    console.log("Secretaria JS carregado.");
+});
