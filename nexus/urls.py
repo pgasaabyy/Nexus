@@ -6,6 +6,8 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from escola import views
+from escola.views import dashboard_aluno as home
+
 
 
 
@@ -80,19 +82,22 @@ urlpatterns = [
     # =======================================================
     # --- ROTAS DO ALUNO (CORRIGIDAS) ---
     # =======================================================
-    path('dashboard/aluno/', views.dashboard_aluno, name='dashboard_aluno'),
-    path('dashboard/secretaria/', views.dashboard_secretaria, name='dashboard_secretaria'),
-    
-    # Navegação do Menu (Essas faltavam e causavam o erro)
-    path('dashboard/aluno/boletim/', aluno_boletim, name='aluno_boletim'),
-    path('dashboard/aluno/horario/', aluno_horario, name='aluno_horario'),
-    path('dashboard/aluno/frequencia/', aluno_frequencia, name='aluno_frequencia'),
-    path('dashboard/aluno/calendario/', aluno_calendario, name='aluno_calendario'),
-    path('dashboard/aluno/configuracoes/', aluno_configuracoes, name='aluno_configuracoes'),
-    
+    # ROTAS DO ALUNO
+path('dashboard/aluno/', views.dashboard_aluno, name='dashboard_aluno'),
+
+path('dashboard/aluno/boletim/', aluno_boletim, name='aluno_boletim'),
+path('dashboard/aluno/horario/', aluno_horario, name='aluno_horario'),
+path('dashboard/aluno/frequencia/', aluno_frequencia, name='aluno_frequencia'),
+path('dashboard/aluno/calendario/', aluno_calendario, name='aluno_calendario'),
+path('dashboard/aluno/configuracoes/', aluno_configuracoes, name='aluno_configuracoes'),
+path('dashboard/aluno/justificativa/', aluno_justificativa, name='aluno_justificativa'),
+path('dashboard/aluno/evento/', aluno_evento, name='aluno_evento'),
+
     # Rotas Extras
     path('dashboard/aluno/justificativa/', aluno_justificativa, name='aluno_justificativa'),
     path('dashboard/aluno/evento/', aluno_evento, name='aluno_evento'),
+
+    
 
     # Exportação de Arquivos
     path('dashboard/aluno/boletim/pdf/', exportar_boletim_pdf, name='exportar_boletim_pdf'),

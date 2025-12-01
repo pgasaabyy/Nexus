@@ -12,15 +12,13 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from openpyxl import Workbook
-<<<<<<< HEAD
 from django.db.models import Count
 from django.utils import timezone
 from .models import Documento
-=======
 from django.shortcuts import render
 from django.shortcuts import render
 from .models import Evento
->>>>>>> 59aa913f43bf8515ec9f6c9d5aefff43b989525d
+
 
 # IMPORTAÇÃO DOS MODELOS
 from .models import (
@@ -42,9 +40,6 @@ class NotaViewSet(viewsets.ModelViewSet):
 # PÁGINAS GERAIS (LOGIN / HOME)
 # =======================================================
 
-def home(request):
-    return render(request, 'escola/index.html')
-
 def login_view(request):
     if request.method == 'POST':
         usuario = request.POST.get('username')
@@ -54,37 +49,46 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-            
-            # --- REDIRECIONAMENTO INTELIGENTE (CORRIGIDO) ---
-            
-            # 1. PRIORIDADE MÁXIMA: Superusuário (Admin do Django)
-            if user.is_superuser:
-                return redirect('/admin/') 
-            
-            # 2. Aluno
-            elif hasattr(user, 'perfil_aluno'):
-                return redirect('dashboard_aluno')
-            
-            # 3. Secretaria (Membros do grupo Secretaria)
-            elif user.groups.filter(name='Secretaria').exists():
-                return redirect('dashboard_secretaria') 
-            
-            # 4. Professor (Futuro)
-            # elif user.groups.filter(name='Professor').exists():
-            #    return redirect('dashboard_professor')
 
-            else:
-                return redirect('home')
+            # Superusuário
+            if user.is_superuser:
+                return redirect('/admin/')
+
+            # Aluno
+            if user.groups.filter(name='aluno').exists():
+                return redirect('dashboard_aluno')
+
+            # Secretaria
+            if user.groups.filter(name='secretaria').exists():
+                return redirect('dashboard_secretaria')
+
+            # Professor
+            if user.groups.filter(name='professor').exists():
+                return redirect('dashboard_professor')
+
+            # Coordenador
+            if user.groups.filter(name='coordenacao').exists():
+                return redirect('dashboard_coordenacao')
+
+            # fallback
+            return redirect('home')
+
         else:
             messages.error(request, 'Usuário ou senha incorretos.')
-            
+    
     return render(request, 'escola/login.html')
 
+
+    
 
 
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+def home(request):
+    return render(request, 'escola/index.html')
+
 
 # =======================================================
 # ÁREA DO ALUNO (Lógica Completa)
@@ -415,10 +419,7 @@ def secretaria_professores(request):
 @login_required
 def secretaria_academico(request):
     # Otimização com Count para evitar muitas queries
-<<<<<<< HEAD
-=======
     from django.db.models import Count
->>>>>>> 59aa913f43bf8515ec9f6c9d5aefff43b989525d
     cursos = Curso.objects.annotate(total_turmas=Count('turma'))
     turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))
     disciplinas = Disciplina.objects.all()
@@ -432,7 +433,6 @@ def secretaria_academico(request):
 
 @login_required
 def secretaria_documentos(request):
-<<<<<<< HEAD
     # Validação de acesso igual às outras páginas da secretaria
     if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
         messages.error(request, "Acesso não autorizado.")
@@ -440,6 +440,7 @@ def secretaria_documentos(request):
         from django.utils import timezone
 from .models import Documento  # importa o model novo
 
+@login_required
 @login_required
 def secretaria_documentos(request):
     # 1. Segurança: só Secretaria ou Superusuário
@@ -463,18 +464,18 @@ def secretaria_documentos(request):
     if busca_aluno:
         documentos = documentos.filter(aluno__nome__icontains=busca_aluno)
 
-    # 3. Cadastro de novo documento (POST)
+    # 3. Cadastro (POST)
     if request.method == 'POST':
         aluno_id = request.POST.get('aluno_id')
         tipo = request.POST.get('tipo')
         descricao = request.POST.get('descricao')
 
         if not aluno_id or not tipo:
-            messages.error(request, "Selecione um aluno e um tipo de documento.")
+            messages.error(request, "Selecione um aluno e um tipo.")
         else:
             try:
                 aluno = Aluno.objects.get(id=aluno_id)
-                doc = Documento.objects.create(
+                Documento.objects.create(
                     aluno=aluno,
                     tipo=tipo,
                     descricao=descricao,
@@ -493,11 +494,10 @@ def secretaria_documentos(request):
         'tipo_filtro': tipo_filtro or 'TODOS',
         'status_filtro': status_filtro or 'TODOS',
         'busca_aluno': busca_aluno or '',
-        'alunos': Aluno.objects.all().order_by('nome'),  # para o select do formulário
+        'alunos': Aluno.objects.all().order_by('nome'),
     }
-    return render(request, 'escola/secre_documentos.html', context)
 
-    return render(request, 'escola/secre_documentos.html')
+    return render(request, 'escola/secre_documentos.html', context)
 
 
 @login_required
@@ -522,9 +522,7 @@ def secretaria_configuracoes(request):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
     return render(request, 'escola/secre_configuracoes.html')
-=======
     return render(request, 'escola/secre_documentos.html')
->>>>>>> 59aa913f43bf8515ec9f6c9d5aefff43b989525d
 
 # =======================================================
 # ÁREA DA COORDENAÇÃO (Placeholders)
