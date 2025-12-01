@@ -96,4 +96,9 @@ Alcantara</span>
         </main>
     </div>
 </body>
+<script>
+    // É VITAL que seu VIEW DO DJANGO para 'aluno_calendario' crie esta variável
+    // Exemplo de Contexto Django: context = { 'eventos_json': json.dumps(list(Eventos.objects.values('dia', 'mes', 'tipo', 'nome', 'importancia')))}
+    const ALL_EVENTS = JSON.parse('{{ eventos_json|safe|default:"[]" }}'); 
+</script>
 </html>

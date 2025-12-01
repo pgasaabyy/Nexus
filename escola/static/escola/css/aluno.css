@@ -320,6 +320,85 @@ a, span {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.notification-btn {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Painel */
+.notification-panel {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 260px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 12px;
+    z-index: 999;
+}
+
+.notification-panel.hidden {
+    display: none;
+}
+
+.notif-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
+}
+
+.notif-list {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-date {
+    background: #003366;
+    color: white;
+    padding: 5px 8px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 45px;
+}
+
+.notif-day {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.notif-month {
+    font-size: 12px;
+}
+
+.notif-text {
+    flex-grow: 1;
+}
+
+.notif-title-item {
+    font-weight: bold;
+}
+
+.notif-sub {
+    color: #666;
+    font-size: 13px;
+}
+
 .user-info {
   display: flex;
   align-items: center;

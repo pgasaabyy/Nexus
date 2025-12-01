@@ -1,6 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from escola.views import dashboard_secretaria
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from escola import views
+
+
 
 # Importando TODAS as views necessárias
 from escola.views import (
@@ -73,7 +80,8 @@ urlpatterns = [
     # =======================================================
     # --- ROTAS DO ALUNO (CORRIGIDAS) ---
     # =======================================================
-    path('dashboard/aluno/', dashboard_aluno, name='dashboard_aluno'),
+    path('dashboard/aluno/', views.dashboard_aluno, name='dashboard_aluno'),
+    path('dashboard/secretaria/', views.dashboard_secretaria, name='dashboard_secretaria'),
     
     # Navegação do Menu (Essas faltavam e causavam o erro)
     path('dashboard/aluno/boletim/', aluno_boletim, name='aluno_boletim'),
@@ -91,3 +99,6 @@ urlpatterns = [
     path('dashboard/aluno/frequencia/pdf/', exportar_frequencia_pdf, name='exportar_frequencia_pdf'),
     path('dashboard/aluno/frequencia/excel/', exportar_frequencia_excel, name='exportar_frequencia_excel'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

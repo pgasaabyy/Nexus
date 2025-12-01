@@ -12,9 +12,15 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from openpyxl import Workbook
+<<<<<<< HEAD
 from django.db.models import Count
 from django.utils import timezone
 from .models import Documento
+=======
+from django.shortcuts import render
+from django.shortcuts import render
+from .models import Evento
+>>>>>>> 59aa913f43bf8515ec9f6c9d5aefff43b989525d
 
 # IMPORTAÇÃO DOS MODELOS
 from .models import (
@@ -74,6 +80,8 @@ def login_view(request):
             
     return render(request, 'escola/login.html')
 
+
+
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -81,6 +89,8 @@ def logout_view(request):
 # =======================================================
 # ÁREA DO ALUNO (Lógica Completa)
 # =======================================================
+
+
 
 @login_required
 def dashboard_aluno(request):
@@ -405,6 +415,10 @@ def secretaria_professores(request):
 @login_required
 def secretaria_academico(request):
     # Otimização com Count para evitar muitas queries
+<<<<<<< HEAD
+=======
+    from django.db.models import Count
+>>>>>>> 59aa913f43bf8515ec9f6c9d5aefff43b989525d
     cursos = Curso.objects.annotate(total_turmas=Count('turma'))
     turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))
     disciplinas = Disciplina.objects.all()
@@ -418,6 +432,7 @@ def secretaria_academico(request):
 
 @login_required
 def secretaria_documentos(request):
+<<<<<<< HEAD
     # Validação de acesso igual às outras páginas da secretaria
     if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
         messages.error(request, "Acesso não autorizado.")
@@ -507,6 +522,9 @@ def secretaria_configuracoes(request):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
     return render(request, 'escola/secre_configuracoes.html')
+=======
+    return render(request, 'escola/secre_documentos.html')
+>>>>>>> 59aa913f43bf8515ec9f6c9d5aefff43b989525d
 
 # =======================================================
 # ÁREA DA COORDENAÇÃO (Placeholders)

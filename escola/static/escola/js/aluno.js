@@ -1,3 +1,181 @@
+// Navigation active state
+document.addEventListener("DOMContentLoaded", () => {
+  const currentPage = window.location.pathname.split("/").pop() || "base.html"
+  const navItems = document.querySelectorAll(".nav-item")
+
+  navItems.forEach((item) => {
+    const href = item.getAttribute("href")
+    // Check if current page matches or if we're on base.html and link is to base.html
+    if (href === currentPage || (currentPage === "" && href === "base.html")) {
+      item.classList.add("active")
+    } else {
+      item.classList.remove("active")
+    }
+  })
+})
+
+// Logout functionality
+const logoutBtn = document.querySelector(".logout-btn")
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    if (confirm("Tem certeza que deseja sair?")) {
+      alert("Logout realizado com sucesso!")
+      // In a real app, this would redirect to login page
+    }
+  })
+}
+
+
+// adicionar evento
+async function addEvent(title, date, type){
+  const res = await fetch('/api/events/add/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken()},
+    body: JSON.stringify({title, date, event_type: type})
+  });
+  return res.json();
+}
+
+// listar eventos com filtro
+async function getEvents(type=null){
+  let url = '/api/events/';
+  if(type) url += '?type=' + type;
+  const res = await fetch(url);
+  return res.json();
+}
+
+// helper csrftoken (se você estiver usando cookies)
+function csrftoken(){
+  const name = 'csrftoken';
+  const val = document.cookie.split('; ').find(row => row.startsWith(name+'='));
+  return val ? val.split('=')[1] : '';
+}
+// ==== SISTEMA GLOBAL DE NOTIFICAÇÕES ====
+
+// Elementos
+const notifBtn = document.querySelector('.notification-btn');
+const notifPanel = document.querySelector('.notification-panel');
+const notifList = document.getElementById('notifList');
+
+// Alternar painel ao clicar
+notifBtn.addEventListener('click', () => {
+    notifPanel.classList.toggle('hidden');
+});
+
+// Fechar ao clicar fora
+document.addEventListener('click', (e) => {
+    if (!notifBtn.contains(e.target) && !notifPanel.contains(e.target)) {
+        notifPanel.classList.add('hidden');
+    }
+});
+
+// ------------------------------
+// 1. Ler avisos da página (se existir)
+// ------------------------------
+function lerAvisosDaPagina() {
+    const avisos = document.querySelectorAll('.aviso-item');
+    const lista = [];
+
+    avisos.forEach(aviso => {
+        lista.push({
+            dia: aviso.querySelector('.date-day').innerText,
+            mes: aviso.querySelector('.date-month').innerText,
+            titulo: aviso.querySelector('.aviso-title').innerText,
+            subtitulo: aviso.querySelector('.aviso-subtitle').innerText
+        });
+    });
+
+    return lista;
+}
+
+// ------------------------------
+// 2. Salvar avisos no localStorage
+// ------------------------------
+function salvarAvisosGlobal(avisos) {
+    if (avisos.length > 0) {
+        localStorage.setItem('avisosEscola', JSON.stringify(avisos));
+    }
+}
+
+// ------------------------------
+// 3. Carregar avisos do localStorage
+// ------------------------------
+function carregarAvisosGlobais() {
+    const dados = localStorage.getItem('avisosEscola');
+    return dados ? JSON.parse(dados) : [];
+}
+
+// ------------------------------
+// 4. Criar item no sino
+// ------------------------------
+function criarItemNotificacao(aviso) {
+    const item = document.createElement('div');
+    item.classList.add('notif-item');
+
+    item.innerHTML = `
+        <div class="notif-date">
+            <div class="notif-day">${aviso.dia}</div>
+            <div class="notif-month">${aviso.mes}</div>
+        </div>
+        <div class="notif-text">
+            <div class="notif-title-item">${aviso.titulo}</div>
+            <div class="notif-sub">${aviso.subtitulo}</div>
+        </div>
+    `;
+
+    notifList.appendChild(item);
+}
+
+// ------------------------------
+// 5. Mostrar notificações no sino
+// ------------------------------
+function mostrarNotificacoes() {
+    notifList.innerHTML = "";
+    const avisos = carregarAvisosGlobais();
+    avisos.forEach(aviso => criarItemNotificacao(aviso));
+}
+
+// ------------------------------
+// 6. Executar no carregamento da página
+// ------------------------------
+
+// Se esta página tiver avisos, salva eles
+const avisosDaPagina = lerAvisosDaPagina();
+if (avisosDaPagina.length > 0) {
+    salvarAvisosGlobal(avisosDaPagina);
+}
+
+// Sempre mostrar notificações
+mostrarNotificacoes();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('add-event-form');
+    
+    // Adiciona um "listener" para o evento de submit do formulário
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
+
+        // Coleta os dados
+        const eventName = document.getElementById('event-name').value;
+        const eventDay = document.getElementById('event-day').value;
+        const eventMonth = document.getElementById('event-month').options[document.getElementById('event-month').selectedIndex].text;
+        const eventType = document.getElementById('event-type').options[document.getElementById('event-type').selectedIndex].text;
+        const eventTime = document.getElementById('event-time').value;
+
+        // Cria a mensagem de resumo
+        let message = `Evento Cadastrado com Sucesso!\n\n`;
+        message += `Nome: ${eventName}\n`;
+        message += `Data: ${eventDay} de ${eventMonth}\n`;
+        message += `Tipo: ${eventType}\n`;
+        message += `Horário: ${eventTime || 'Não informado'}\n`;
+
+        alert(message);
+        
+        // Redireciona de volta para o calendário
+        window.location.href = 'calendario.html'; 
+    });
+});
+
 const monthSelector = document.getElementById("monthSelector")
 const monthYearDisplay = document.getElementById("calendarMonthYear")
 const calendarGrid = document.getElementById("calendarGrid")
@@ -163,93 +341,62 @@ function renderHolidayLegends() {
   holidayLegends.innerHTML = legendsHTML
 }
 
-// Edit buttons functionality
-const editButtons = document.querySelectorAll(".edit-btn")
-editButtons.forEach((btn) => {
-  btn.addEventListener("click", function () {
-    const parent = this.closest(".info-value-with-edit")
-    const currentValue = parent.querySelector("span").textContent
-    const label = this.closest(".info-item").querySelector("label").textContent
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Funcionalidade do Painel de Notificações
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationPanel = document.getElementById('notificationPanel');
 
-    const newValue = prompt(`Editar ${label}:`, currentValue)
-    if (newValue && newValue !== currentValue) {
-      parent.querySelector("span").textContent = newValue
-      alert("Informação atualizada com sucesso!")
+    if (notificationBtn && notificationPanel) {
+        notificationBtn.addEventListener('click', (e) => {
+            // Previne que o clique feche imediatamente
+            e.stopPropagation();
+            notificationPanel.classList.toggle('hidden');
+        });
+
+        // Fecha o painel se o usuário clicar em qualquer outro lugar
+        document.addEventListener('click', (e) => {
+            if (notificationPanel && !notificationPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationPanel.classList.add('hidden');
+            }
+        });
     }
-  })
-})
 
-// Edit avatar button
-const editAvatarBtn = document.querySelector(".edit-avatar-btn")
-if (editAvatarBtn) {
-  editAvatarBtn.addEventListener("click", () => {
-    alert("Funcionalidade de editar foto em desenvolvimento!")
-  })
-}
+    // ... (Outras funcionalidades do aluno.js virão aqui)
+});
 
-// Modal functionality removed - now using separate page
-const fileInput = document.getElementById("document")
-const fileLabel = document.querySelector(".file-hint")
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (código do painel de notificações acima) ...
 
-// File upload handling (kept for potential future use)
-if (fileInput) {
-  fileInput.addEventListener("change", (e) => {
-    if (e.target.files.length > 0) {
-      fileLabel.textContent = e.target.files[0].name
-    } else {
-      fileLabel.textContent = "Nenhum Arquivo selecionado"
+    // 2. Funcionalidade de Edição de Foto (Autosubmit)
+    const fotoInput = document.getElementById('foto-input');
+    if (fotoInput) {
+        fotoInput.addEventListener('change', () => {
+            document.getElementById('foto-form').submit();
+        });
     }
-  })
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-  const backBtn = document.querySelector(".back-btn")
+    // 3. Funcionalidade de Edição de Nome de Usuário (Toggle)
+    window.toggleEdit = (type) => {
+        if (type === 'username') {
+            const display = document.getElementById('username-display');
+            const form = document.getElementById('username-form');
+            
+            // Toggle visibility
+            display.classList.toggle('hidden');
+            form.classList.toggle('hidden');
 
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      window.location.href = "index.html"
-    })
-  }
-})
+            // Foco no campo de input quando o formulário aparece
+            if (!form.classList.contains('hidden')) {
+                form.querySelector('input[name="username"]').focus();
+            }
 
-// File upload handling
-const documentoInput = document.getElementById('documento');
-const fileNameSpan = document.querySelector('.file-name');
-
-if (documentoInput && fileNameSpan) {
-    documentoInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            fileNameSpan.textContent = e.target.files[0].name;
-        } else {
-            fileNameSpan.textContent = 'Nenhum Arquvi selecionado';
+            // Adiciona evento de Cancelar
+            const cancelBtn = form.querySelector('.cancel-btn');
+            cancelBtn.onclick = () => {
+                display.classList.remove('hidden');
+                form.classList.add('hidden');
+            };
         }
-    });
-}
+    };
+});
 
-// Form submission
-const form = document.getElementById('justificativaForm');
-if (form) {
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const justificativa = document.getElementById('justificativa').value;
-        const diaFalta = document.getElementById('diaFalta').value;
-        const documento = documentoInput.files[0];
-
-        if (!justificativa.trim()) {
-            alert('Por favor, preencha a justificativa.');
-            return;
-        }
-
-        if (!diaFalta) {
-            alert('Por favor, selecione o dia da falta.');
-            return;
-        }
-
-        // Success message
-        alert('Justificativa enviada com sucesso!');
-        
-        // Redirect back to frequency page
-        window.location.href = 'frenquencia.html';
-    });
-}
