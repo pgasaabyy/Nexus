@@ -12,8 +12,11 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from openpyxl import Workbook
+from django.shortcuts import render
+from django.shortcuts import render
+from .models import Evento
 
-# IMPORTAÇÃO DOS MODELOS (Adicionados Evento e HorarioAula)
+# IMPORTAÇÃO DOS MODELOS
 from .models import (
     Aluno, Nota, Turma, Professor, Disciplina, 
     Aviso, Frequencia, Matricula, Evento, HorarioAula
@@ -46,17 +49,21 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
-            # --- REDIRECIONAMENTO INTELIGENTE ---
+            # --- REDIRECIONAMENTO INTELIGENTE (CORRIGIDO) ---
             
-            # 1. Aluno
-            if hasattr(user, 'perfil_aluno'):
+            # 1. PRIORIDADE MÁXIMA: Superusuário (Admin do Django)
+            if user.is_superuser:
+                return redirect('/admin/') 
+            
+            # 2. Aluno
+            elif hasattr(user, 'perfil_aluno'):
                 return redirect('dashboard_aluno')
             
-            # 2. Secretaria ou Admin (Superusuário)
-            elif user.groups.filter(name='Secretaria').exists() or user.is_superuser:
+            # 3. Secretaria (Membros do grupo Secretaria)
+            elif user.groups.filter(name='Secretaria').exists():
                 return redirect('dashboard_secretaria') 
             
-            # 3. Professor (Futuro)
+            # 4. Professor (Futuro)
             # elif user.groups.filter(name='Professor').exists():
             #    return redirect('dashboard_professor')
 
@@ -67,6 +74,8 @@ def login_view(request):
             
     return render(request, 'escola/login.html')
 
+
+
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -74,6 +83,8 @@ def logout_view(request):
 # =======================================================
 # ÁREA DO ALUNO (Lógica Completa)
 # =======================================================
+
+
 
 @login_required
 def dashboard_aluno(request):
@@ -92,7 +103,7 @@ def dashboard_aluno(request):
         'faltas': faltas_totais,
         'avisos': avisos
     }
-    return render(request, 'escola/aluno_dashboard.html', contexto)
+    return render(request, 'escola/aluno_dashboard.html', context)
 
 @login_required
 def aluno_boletim(request):
@@ -178,7 +189,6 @@ def aluno_horario(request):
     except AttributeError:
         return redirect('home')
 
-    # Lógica da Grade Horária
     grade_horaria = {}
     horarios_padrao = ["07:00", "07:50", "08:40", "09:30", "09:50", "10:40", "11:30"]
 
@@ -204,7 +214,6 @@ def aluno_calendario(request):
     except AttributeError:
         return redirect('home')
 
-    # Lógica do Calendário (JSON)
     eventos_query = Evento.objects.filter(
         Q(turma__isnull=True) | Q(turma=aluno.turma_atual)
     ).values('titulo', 'data', 'tipo')
@@ -253,7 +262,7 @@ def exportar_boletim_pdf(request):
     p = canvas.Canvas(buffer, pagesize=A4)
     
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(50, 800, f"Boletim Escolar - Nexus")
+    p.drawString(50, 800, "Boletim Escolar - Nexus")
     p.setFont("Helvetica", 12)
     p.drawString(50, 780, f"Aluno: {aluno.nome}")
     p.drawString(50, 765, f"Matrícula: {aluno.matricula}")
@@ -285,7 +294,7 @@ def exportar_boletim_pdf(request):
             else: p.setFillColor(colors.black)
                 
             p.drawString(400, y, status)
-            p.setFillColor(colors.black) # Reseta cor
+            p.setFillColor(colors.black)
             y -= 20
 
     p.showPage()
@@ -366,7 +375,7 @@ def exportar_frequencia_excel(request):
 
 @login_required
 def dashboard_secretaria(request):
-    # Segurança: Verifica grupo
+    # Segurança: Verifica grupo OU Superusuário (mas sem redirecionar admin pro admin)
     if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
         return redirect('home')
 
@@ -384,27 +393,37 @@ def dashboard_secretaria(request):
         'total_turmas': total_turmas,
         'ultimos_alunos': ultimos_alunos
     }
-    return render(request, 'escola/dashboard_secretaria.html', context)
+    
+    return render(request, 'escola/secre_dashboard.html', context)
 
 @login_required
 def secretaria_alunos(request):
     alunos = Aluno.objects.all().order_by('nome')
-    return render(request, 'escola/alunos.html', {'alunos': alunos})
+    return render(request, 'escola/secre_alunos.html', {'alunos': alunos})
 
 @login_required
 def secretaria_professores(request):
     professores = Professor.objects.all().order_by('nome')
-    return render(request, 'escola/professores.html', {'professores': professores})
+    return render(request, 'escola/secre_professores.html', {'professores': professores})
 
 @login_required
 def secretaria_academico(request):
-    turmas = Turma.objects.all()
+    # Otimização com Count para evitar muitas queries
+    from django.db.models import Count
+    cursos = Curso.objects.annotate(total_turmas=Count('turma'))
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))
     disciplinas = Disciplina.objects.all()
-    return render(request, 'escola/academico.html', {'turmas': turmas, 'disciplinas': disciplinas})
+    
+    context = {
+        'cursos': cursos,
+        'turmas': turmas,
+        'disciplinas': disciplinas
+    }
+    return render(request, 'escola/secre_academico.html', context)
 
 @login_required
 def secretaria_documentos(request):
-    return render(request, 'escola/documentos.html')
+    return render(request, 'escola/secre_documentos.html')
 
 # =======================================================
 # ÁREA DA COORDENAÇÃO (Placeholders)
