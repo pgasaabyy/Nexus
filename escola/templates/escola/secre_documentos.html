@@ -1,40 +1,352 @@
+{% extends 'escola/base_secretaria.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Documentos</title>
-    <link rel="stylesheet" href="{% static 'escola/css/secretaria.css' %}">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header"><div class="logo-circle">PA</div><span>Colégio Paulo de Alcantara</span></div>
-            <nav class="sidebar-nav">
-                <a href="{% url 'dashboard_secretaria' %}" class="nav-item"><i class="ph ph-house"></i> <span>Dashboard</span></a>
-                <a href="{% url 'secretaria_alunos' %}" class="nav-item"><i class="ph ph-graduation-cap"></i> <span>Alunos</span></a>
-                <a href="{% url 'secretaria_professores' %}" class="nav-item"><i class="ph ph-chalkboard-teacher"></i> <span>Professores</span></a>
-                <a href="{% url 'secretaria_academico' %}" class="nav-item"><i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span></a>
-                <a href="{% url 'secretaria_documentos' %}" class="nav-item active"><i class="ph ph-newspaper"></i> <span>Documentos</span></a>
-<a href="{% url 'secretaria_calendario' %}" class="nav-item"><i class="ph ph-calendar"></i> <span>Calendário</span></a>
-                <a href="{% url 'secretaria_configuracoes' %}" class="nav-item"><i class="ph ph-gear"></i> <span>Configurações</span></a>
-                <a href="{% url 'logout' %}" class="nav-item logout"><i class="ph ph-sign-out"></i> <span>Sair</span></a>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <header class="main-header"><h1>Documentos</h1></header>
-            <div class="documents-grid">
-                <div class="document-card">
-                    <div class="card-header"><i class="ph ph-file-text" style="font-size:24px; color:#092F76;"></i><span class="badge approved">Aprovado</span></div>
-                    <h3>Histórico - Exemplo</h3>
-                    <button class="btn-outline">Baixar</button>
-                </div>
-                <!-- Adicione mais cards aqui -->
-            </div>
-        </main>
+{% block title %}Documentos - Secretaria{% endblock %}
+{% block nav_documentos %}active{% endblock %}
+{% block page_title %}Gestão de Documentos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .filters-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .filters-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+    .filter-group {
+        flex: 1;
+        min-width: 150px;
+    }
+    .filter-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 14px;
+    }
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .btn-filter {
+        padding: 10px 20px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .btn-filter:hover {
+        background: #002244;
+    }
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 24px;
+    }
+    @media (max-width: 992px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .data-table thead {
+        background: #f8f9fa;
+    }
+    .data-table th {
+        padding: 14px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        font-size: 13px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .data-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+    }
+    .data-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+    .status-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-tag.pendente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .status-tag.emitido {
+        background: #cce5ff;
+        color: #004085;
+    }
+    .status-tag.entregue {
+        background: #d4edda;
+        color: #155724;
+    }
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .form-card-header {
+        background: #003366;
+        color: white;
+        padding: 16px 20px;
+        font-weight: 600;
+    }
+    .form-card-body {
+        padding: 20px;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 14px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .btn-submit:hover {
+        background: #002244;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 48px;
+        color: #666;
+    }
+    .actions-cell {
+        display: flex;
+        gap: 8px;
+    }
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+    .action-btn.view {
+        background: #e3f2fd;
+        color: #003366;
+    }
+    .action-btn.view:hover {
+        background: #bbdefb;
+    }
+    .action-btn.approve {
+        background: #d4edda;
+        color: #155724;
+    }
+    .action-btn.approve:hover {
+        background: #c3e6cb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p style="color: #666; margin: 0;">Gerencie solicitações de documentos dos alunos</p>
     </div>
-    <script src="{% static 'escola/js/secretaria.js' %}"></script>
-</body>
-</html>
+</div>
+
+<div class="filters-section">
+    <form method="GET" class="filters-row">
+        <div class="filter-group">
+            <label for="aluno">Buscar Aluno</label>
+            <input type="text" name="aluno" id="aluno" value="{{ busca_aluno }}" placeholder="Nome do aluno...">
+        </div>
+        <div class="filter-group" style="max-width: 180px;">
+            <label for="tipo">Tipo</label>
+            <select name="tipo" id="tipo">
+                <option value="TODOS">Todos os tipos</option>
+                {% for tipo in tipos_choices %}
+                <option value="{{ tipo.0 }}" {% if tipo_filtro == tipo.0 %}selected{% endif %}>{{ tipo.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group" style="max-width: 150px;">
+            <label for="status">Status</label>
+            <select name="status" id="status">
+                <option value="TODOS">Todos</option>
+                {% for status in status_choices %}
+                <option value="{{ status.0 }}" {% if status_filtro == status.0 %}selected{% endif %}>{{ status.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn-filter">Filtrar</button>
+    </form>
+</div>
+
+<div class="content-grid">
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Tipo</th>
+                    <th>Data Solicitação</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documentos %}
+                <tr>
+                    <td><strong>{{ doc.aluno.nome }}</strong></td>
+                    <td>{{ doc.get_tipo_display }}</td>
+                    <td>{{ doc.data_solicitacao|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <span class="status-tag {% if doc.status == 'PENDENTE' %}pendente{% elif doc.status == 'EMITIDO' %}emitido{% else %}entregue{% endif %}">
+                            {{ doc.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="action-btn view" title="Visualizar">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            {% if doc.status == 'PENDENTE' %}
+                            <button class="action-btn approve" title="Emitir">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <p style="margin-top: 16px;">Nenhum documento encontrado</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 8px;">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Nova Solicitação
+        </div>
+        <div class="form-card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="aluno_id">Aluno</label>
+                    <select name="aluno_id" id="aluno_id" required>
+                        <option value="">Selecione um aluno</option>
+                        {% for aluno in alunos %}
+                        <option value="{{ aluno.id }}">{{ aluno.nome }} ({{ aluno.matricula }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de Documento</label>
+                    <select name="tipo" id="tipo_doc" required>
+                        <option value="">Selecione o tipo</option>
+                        {% for tipo in tipos_choices %}
+                        <option value="{{ tipo.0 }}">{{ tipo.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Observações</label>
+                    <textarea name="descricao" id="descricao" placeholder="Observações adicionais (opcional)"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    Solicitar Documento
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

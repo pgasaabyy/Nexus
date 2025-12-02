@@ -4,6 +4,11 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação.
 
 ## Alterações Recentes
+- **02/12/2025 (Atualização):** Refatoração completa dos templates para usar herança de base templates
+  - Templates de aluno (dashboard, boletim, frequência, calendário, horário) agora estendem base_aluno.html
+  - Templates de secretaria (alunos, documentos, professores) agora estendem base_secretaria.html
+  - CSS padronizado em todas as páginas usando padrão aluno.css (cor primária #003366)
+  - Dashboards com dados dinâmicos e design consistente
 - **02/12/2025:** Implementação de CRUD completo para alunos (secretaria) e eventos (coordenação)
 - Novo branding NEXUS com logo atualizado em todas as páginas
 - Formulários de adicionar/editar/excluir alunos na secretaria
@@ -13,6 +18,13 @@ Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O
 - Migração para PostgreSQL, organização de rotas, criação de templates base padronizados
 - Corrigido sistema de autenticação com redirecionamento por função
 - Criado comando `criar_dados_teste` para popular o banco com dados de exemplo
+
+## Padrão de Design CSS
+- Cor primária: #003366 (azul escuro)
+- Cor secundária: #0066cc (azul claro)
+- Cartões com border-radius: 12px e box-shadow: 0 2px 8px rgba(0,0,0,0.08)
+- Fonte: Sistema padrão (sans-serif)
+- Botões com border-radius: 8px e transições suaves
 
 ## Arquitetura do Projeto
 

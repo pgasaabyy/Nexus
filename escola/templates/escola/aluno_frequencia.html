@@ -1,161 +1,314 @@
+{% extends 'escola/base_aluno.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frequência Escolar - Colégio Paulo de Alcântara</title>
-    <link rel="stylesheet" href="{% static 'escola/css/aluno.css' %}">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body>
-    <div class="container">
-        <aside class="sidebar">
-            <div class="school-logo">
-                <div class="logo-circle"><span>PA</span></div>
-                <div class="school-name"><div>Colégio Paulo de</div><div>Alcântara</div></div>
-            </div>
-            
-            <nav class="nav-menu">
-                <a href="{% url 'dashboard_aluno' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                    Visão Geral
-                </a>
-                <a href="{% url 'aluno_boletim' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    Boletim Escolar
-                </a>
-                <a href="{% url 'aluno_calendario' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    Calendário
-                </a>
-                <a href="{% url 'aluno_horario' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    Horários
-                </a>
-                <a href="{% url 'aluno_configuracoes' %}" class="nav-item">
-                    <img src="{% static 'escola/imgs/configuracao-removebg-preview.png' %}" alt="Configurações" class="config-icon" style="width: 20px;">
-                    Configurações
-                </a>
-            </nav>
-            
-            <a href="{% url 'logout' %}" style="text-decoration: none;">
-                <button class="logout-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    Logout
-                </button>
-            </a>
-        </aside>
 
-         <main class="main-content">
-            <header class="header">
-                <h1 class="page-title">Dashboard Aluno</h1>
-                <div class="header-right">
-                    <button class="notification-btn">
-                        <div class="notification-panel hidden"><div class="notif-list" id="notifList"></div></div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                    </button>
-                    <div class="user-info">
-                        <div class="user-details">
-                            <div class="user-name">{{ aluno.nome }}</div>
-                            <div class="user-email">{{ aluno.email }}</div>
-                        </div>
-                        <div class="user-avatar">
-                            {% if aluno.foto %}<img src="{{ aluno.foto.url }}" style="width:100%; height:100%; border-radius:50%;">{% else %}{{ aluno.nome|slice:":2"|upper }}{% endif %}
-                        </div>
-                    </div>
-                </div>
-            </header>
+{% block title %}Frequência Escolar - Aluno{% endblock %}
+{% block nav_frequencia %}active{% endblock %}
+{% block page_title %}Frequência Escolar{% endblock %}
 
-            <div class="frequencia-page">
-                <div class="frequencia-header-section">
-                    <h2 class="section-title">Frequência Escolar</h2>
-                    <a href="{% url 'exportar_frequencia_pdf' %}" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Baixar
-                    </a>
-                </div>
+{% block extra_css %}
+<style>
+    .frequencia-page {
+        max-width: 1000px;
+    }
+    .frequencia-header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: white;
+        color: #003366;
+        border: 1px solid #003366;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+        background: #003366;
+        color: white;
+    }
+    .student-info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .student-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #003366;
+        margin: 0 0 8px 0;
+    }
+    .student-details-row {
+        display: flex;
+        gap: 24px;
+        color: #666;
+        font-size: 14px;
+    }
+    .attendance-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .attendance-table thead {
+        background: #f8f9fa;
+    }
+    .attendance-table th {
+        padding: 14px 16px;
+        text-align: center;
+        font-weight: 600;
+        color: #333;
+        font-size: 13px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .attendance-table th:first-child {
+        text-align: left;
+    }
+    .attendance-table td {
+        padding: 14px 16px;
+        text-align: center;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+    }
+    .attendance-table td:first-child {
+        text-align: left;
+        font-weight: 500;
+    }
+    .attendance-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+    .status-ok {
+        color: #28a745;
+        font-weight: 600;
+    }
+    .status-attention {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    .freq-bottom-section {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 24px;
+    }
+    @media (max-width: 768px) {
+        .freq-bottom-section {
+            grid-template-columns: 1fr;
+        }
+    }
+    .freq-chart-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 20px 0;
+    }
+    .freq-chart-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 16px;
+    }
+    .freq-pie-chart {
+        width: 100%;
+        height: 100%;
+    }
+    .freq-chart-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 28px;
+        font-weight: 700;
+        color: #003366;
+    }
+    .freq-legend {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+    }
+    .freq-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: #666;
+    }
+    .freq-legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+    }
+    .criteria-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .criteria-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 16px 0;
+    }
+    .criteria-content {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.6;
+    }
+    .criteria-content p {
+        margin: 0 0 12px 0;
+    }
+    .criteria-list {
+        margin: 12px 0;
+        padding-left: 20px;
+    }
+    .criteria-list li {
+        margin-bottom: 8px;
+    }
+    .criteria-note {
+        font-size: 13px;
+        color: #666;
+        font-style: italic;
+    }
+    .btn-primary {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 12px 24px;
+        background: #003366;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+    .btn-primary:hover {
+        background: #002244;
+    }
+</style>
+{% endblock %}
 
-                <div class="student-info-card">
-                    <h3 class="student-name">{{ aluno.nome }}</h3>
-                    <div class="student-details-row">
-                        <span><strong>RM:</strong> {{ aluno.matricula }}</span>
-                        <span><strong>Turma:</strong> {{ aluno.turma_atual.codigo }}</span>
-                    </div>
-                </div>
-
-                <div class="attendance-section">
-                    <table class="attendance-table">
-                        <thead>
-                            <tr>
-                                <th>Matérias</th>
-                                <th>Aulas</th>
-                                <th>Faltas</th>
-                                <th>Freq. Final</th>
-                                <th>Status</th>
-                                <th>Justificativas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in frequencia %}
-                            <tr>
-                                <td>{{ item.disciplina }}</td>
-                                <td>{{ item.total_aulas }}</td>
-                                <td>{{ item.faltas }}</td>
-                                <td>{{ item.porcentagem }}%</td>
-                                <td>
-                                    <span style="color: {% if item.status == 'Atenção' %}red{% else %}green{% endif %}; font-weight: bold;">
-                                        {{ item.status }}
-                                    </span>
-                                </td>
-                                <td>-</td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="6" style="text-align: center;">Nenhuma frequência registrada.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="freq-bottom-section">
-                    <div class="freq-chart-section">
-                        <h3 class="chart-title">Gráfico de frequência escolar</h3>
-                        <div class="freq-chart-container">
-                            <svg class="freq-pie-chart" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="40" fill="none" stroke="#5DADE2" stroke-width="20" stroke-dasharray="251.2 0" transform="rotate(-90 50 50)"></circle>
-                                <circle cx="50" cy="50" r="40" fill="none" stroke="#003366" stroke-width="20" stroke-dasharray="213.52 37.68" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
-                            </svg>
-                            <div class="freq-chart-label">85%</div>
-                        </div>
-                        <div class="freq-legend">
-                            <div class="freq-legend-item"><div class="freq-legend-color" style="background-color: #003366;"></div><span>Frequência</span></div>
-                            <div class="freq-legend-item"><div class="freq-legend-color" style="background-color: #5DADE2;"></div><span>Faltas</span></div>
-                        </div>
-                    </div>
-
-                    <div class="criteria-section">
-                        <h3 class="criteria-title">Critérios de justificativa de faltas</h3>
-                        <div class="criteria-content">
-                            <p><strong>Informamos que apenas as faltas devidamente justificadas poderão ser consideradas como ausências justificadas.</strong> As justificativas devem ser apresentadas com documentação comprobatória.</p>
-                            <ul class="criteria-list">
-                                <li>Atestado médico: Deve conter assinatura, carimbo e data de emissão, além de especificar o período de afastamento.</li>
-                                <li>Declaração de comparecimento: Para consultas, exames ou procedimentos médicos.</li>
-                                <li>Comprovante judicial: Mediante apresentação de comprovante oficial.</li>
-                                <li>Óbito de familiar próximo: Pai, mãe, cônjuge ou representante legal, com apresentação de certidão de óbito.</li>
-                            </ul>
-                            <p class="criteria-note">As justificativas devem ser entregues em até 3 dias úteis após o retorno do aluno.</p>
-                        </div>
-                        <a href="{% url 'aluno_justificativa' %}" class="btn-primary" style="text-decoration: none; display: block; text-align: center;">Justifique suas faltas</a>
-                    </div>
-                </div>
-            </div>
-        </main>
+{% block content %}
+<div class="frequencia-page">
+    <div class="frequencia-header-section">
+        <h2 class="section-title">Frequência Escolar</h2>
+        <a href="{% url 'exportar_frequencia_pdf' %}" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Baixar PDF
+        </a>
     </div>
 
-    <script src="{% static 'escola/js/aluno.js' %}"></script>
-</body>
-</html>
+    <div class="student-info-card">
+        <h3 class="student-name">{{ aluno.nome }}</h3>
+        <div class="student-details-row">
+            <span><strong>RM:</strong> {{ aluno.matricula }}</span>
+            <span><strong>Turma:</strong> {{ aluno.turma_atual.codigo|default:"-" }}</span>
+        </div>
+    </div>
+
+    <div class="attendance-section">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Matérias</th>
+                    <th>Total Aulas</th>
+                    <th>Faltas</th>
+                    <th>Frequência</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in frequencia %}
+                <tr>
+                    <td>{{ item.disciplina }}</td>
+                    <td>{{ item.total_aulas }}</td>
+                    <td>{{ item.faltas }}</td>
+                    <td><strong>{{ item.porcentagem }}%</strong></td>
+                    <td>
+                        <span class="{% if item.status == 'Atenção' %}status-attention{% else %}status-ok{% endif %}">
+                            {{ item.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 32px; color: #666;">
+                        Nenhuma frequência registrada até o momento.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="freq-bottom-section">
+        <div class="freq-chart-section">
+            <h3 class="chart-title">Frequência Geral</h3>
+            <div class="freq-chart-container">
+                <svg class="freq-pie-chart" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#e0e0e0" stroke-width="20"></circle>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#003366" stroke-width="20" 
+                            stroke-dasharray="{{ frequencia_geral|default:85 }} {% widthratio 100 1 1 %}" 
+                            stroke-dashoffset="25" 
+                            transform="rotate(-90 50 50)"></circle>
+                </svg>
+                <div class="freq-chart-label">{{ frequencia_geral|default:"85" }}%</div>
+            </div>
+            <div class="freq-legend">
+                <div class="freq-legend-item">
+                    <div class="freq-legend-color" style="background-color: #003366;"></div>
+                    <span>Presença</span>
+                </div>
+                <div class="freq-legend-item">
+                    <div class="freq-legend-color" style="background-color: #e0e0e0;"></div>
+                    <span>Faltas</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="criteria-section">
+            <h3 class="criteria-title">Critérios para Justificativa de Faltas</h3>
+            <div class="criteria-content">
+                <p><strong>Apenas faltas devidamente justificadas serão consideradas como ausências justificadas.</strong> As justificativas devem ser apresentadas com documentação comprobatória.</p>
+                <ul class="criteria-list">
+                    <li><strong>Atestado médico:</strong> Deve conter assinatura, carimbo e data, além de especificar o período de afastamento.</li>
+                    <li><strong>Declaração de comparecimento:</strong> Para consultas, exames ou procedimentos médicos.</li>
+                    <li><strong>Comprovante judicial:</strong> Mediante apresentação de comprovante oficial.</li>
+                    <li><strong>Óbito de familiar:</strong> Com apresentação de certidão de óbito.</li>
+                </ul>
+                <p class="criteria-note">As justificativas devem ser entregues em até 3 dias úteis após o retorno do aluno.</p>
+            </div>
+            <a href="{% url 'aluno_justificativa' %}" class="btn-primary">Justificar Faltas</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

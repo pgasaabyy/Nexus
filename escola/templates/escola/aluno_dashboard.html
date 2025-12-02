@@ -1,247 +1,460 @@
+{% extends 'escola/base_aluno.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Aluno - Colégio Paulo de Alcântara</title>
-    <link rel="stylesheet" href="{% static 'escola/css/aluno.css' %}">
-</head>
-<body>
-    <div class="container">
-        <aside class="sidebar">
-            <div class="school-logo">
-                <div class="logo-circle">
-                    <span>PA</span>
-                </div>
-                <div class="school-name">
-                    <div>Colégio Paulo de</div>
-                    <div>Alcântara</div>
-                </div>
-            </div>
-            
-            <nav class="nav-menu">
-                <a href="{% url 'dashboard_aluno' %}" class="nav-item active">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    </svg>
-                    Visão Geral
-                </a>
-                
-                <a href="{% url 'aluno_boletim' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    Boletim Escolar
-                </a>
-                
-                <a href="{% url 'aluno_calendario' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    Calendário
-                </a>
-                
-                <a href="{% url 'aluno_horario' %}" class="nav-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    Horários
-                </a>
 
-                <a href="{% url 'aluno_configuracoes' %}" class="nav-item">
-                    <img src="{% static 'escola/img/configuracao-removebg-preview.png' %}" alt="Config" class="config-icon" style="width: 20px;"> 
-                    Configurações 
-                </a>
-            </nav>
-            
-            <a href="{% url 'logout' %}" style="text-decoration: none;">
-                <button class="logout-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    Logout
-                </button>
-            </a>
-        </aside>
+{% block title %}Dashboard - Aluno{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block page_title %}Dashboard Aluno{% endblock %}
 
-        <main class="main-content">
-            <header class="header">
-                <h1 class="page-title">Dashboard Aluno</h1>
-                <div class="header-right">
-                    <button class="notification-btn" id="notificationBtn">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-    </svg>
-    </button>
+{% block extra_css %}
+<style>
+    .welcome-section {
+        margin-bottom: 24px;
+    }
+    .welcome-section h2 {
+        font-size: 24px;
+        color: #333;
+        font-weight: 400;
+    }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+    }
+    .widget {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid #e0e0e0;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .widget:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .widget-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #003366;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .boletim-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .boletim-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 12px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+    }
+    .boletim-row:last-child {
+        border-bottom: none;
+    }
+    .boletim-row.header {
+        font-weight: 600;
+        color: #666;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .subject {
+        color: #333;
+    }
+    .grade {
+        font-weight: 600;
+        color: #003366;
+        text-align: center;
+    }
+    .status {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+    }
+    .status-approved {
+        background: #d4edda;
+        color: #155724;
+    }
+    .status-recovery {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .status-pending {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+    .frequencia-widget .chart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+    }
+    .frequencia-big-number {
+        font-size: 48px;
+        font-weight: 700;
+        color: #003366;
+    }
+    .frequencia-label {
+        color: #666;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+    .frequencia-bar {
+        width: 100%;
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        margin-top: 16px;
+        overflow: hidden;
+    }
+    .frequencia-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #003366, #0066cc);
+        border-radius: 4px;
+        transition: width 0.5s;
+    }
+    .horario-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .horario-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        align-items: center;
+    }
+    .horario-row .time {
+        font-weight: 600;
+        color: #003366;
+        font-size: 14px;
+    }
+    .horario-row .subject {
+        color: #333;
+        font-size: 14px;
+    }
+    .calendar-mini {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        text-align: center;
+    }
+    .calendar-mini .day-name {
+        font-size: 11px;
+        color: #666;
+        font-weight: 600;
+        padding: 4px;
+    }
+    .calendar-mini .day {
+        font-size: 12px;
+        padding: 6px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    .calendar-mini .day.today {
+        background: #003366;
+        color: white;
+    }
+    .calendar-mini .day.has-event {
+        background: #e3f2fd;
+        color: #003366;
+    }
+    .avisos-widget {
+        grid-column: span 2;
+    }
+    .avisos-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .avisos-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .aviso-item {
+        display: flex;
+        gap: 16px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        align-items: flex-start;
+    }
+    .aviso-date {
+        background: #003366;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-align: center;
+        min-width: 50px;
+    }
+    .aviso-date .date-day {
+        font-size: 18px;
+        font-weight: 700;
+    }
+    .aviso-date .date-month {
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+    .aviso-text {
+        flex: 1;
+    }
+    .aviso-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+    .aviso-subtitle {
+        font-size: 13px;
+        color: #666;
+    }
+    .media-geral {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        background: linear-gradient(135deg, #003366, #0066cc);
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .media-geral .number {
+        font-size: 36px;
+        font-weight: 700;
+    }
+    .media-geral .label {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    .widget-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    @media (max-width: 768px) {
+        .avisos-widget {
+            grid-column: span 1;
+        }
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
 
-<div class="notification-panel hidden" id="notificationPanel">
-    <h4 style="padding: 10px 15px; border-bottom: 1px solid #eee; margin: 0; font-size: 1.1em; color: #333;">Avisos Escolares</h4>
-    <div class="notif-list" id="notifList" style="max-height: 300px; overflow-y: auto;">
-        {% for aviso in avisos %}
-        <div class="notif-item" style="padding: 10px 15px; border-bottom: 1px solid #f4f4f4; cursor: pointer;">
-            <div style="font-weight: bold; color: #092F76;">{{ aviso.titulo }}</div>
-            <div style="font-size: 0.85em; color: #666;">{{ aviso.data_criacao|date:"d/m M" }} - {{ aviso.conteudo|truncatechars:50 }}</div>
-        </div>
-        {% empty %}
-        <div style="padding: 15px; color: #999; text-align: center;">Nenhum aviso novo.</div>
-        {% endfor %}
+{% block notifications %}
+{% for aviso in avisos %}
+<div class="notif-item">
+    <div class="notif-date">
+        <div class="notif-day">{{ aviso.data_criacao|date:"d" }}</div>
+        <div class="notif-month">{{ aviso.data_criacao|date:"M" }}</div>
     </div>
-    <a href="#avisos" style="display: block; text-align: center; padding: 10px; background-color: #f0f0f0; text-decoration: none; color: #092F76; border-top: 1px solid #ccc; font-size: 0.9em; font-weight: bold;">Ver mais na Dashboard</a>
+    <div class="notif-text">
+        <div class="notif-title-item">{{ aviso.titulo }}</div>
+        <div class="notif-sub">{{ aviso.conteudo|truncatechars:50 }}</div>
+    </div>
 </div>
-                    <div class="user-info">
-                        <div class="user-details">
-                            <div class="user-name">{{ aluno.nome }}</div>
-                            <div class="user-email">{{ aluno.email }}</div>
-                        </div>
-                        <div class="user-avatar">
-                            {% if aluno.nome %}{{ aluno.nome|slice:":2"|upper }}{% else %}AL{% endif %}
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <div class="welcome-section">
-                <h2>Seja bem vindo, {{ aluno.nome|default:"Aluno" }}!</h2>
-            </div>
-
-            <div class="dashboard-grid">
-                
-                <a href="{% url 'aluno_boletim' %}" style="text-decoration: none; color: inherit;">
-                    <section>
-                        <div class="widget boletim-widget">
-                            <h3 class="widget-title">Boletim Escolar</h3>
-                            <div class="boletim-content">
-                                <div class="boletim-row">
-                                    <span class="subject">Matérias</span>
-                                    <span class="grade-label">Média</span>
-                                    <span class="grade-label">Status</span>
-                                </div>
-                                <div class="boletim-row">
-                                    <span class="subject">Matemática</span>
-                                    <span class="grade">8,0</span>
-                                    <span class="status status-approved">aprovado</span>
-                                </div>
-                                <div class="boletim-row">
-                                    <span class="subject">Biologia</span>
-                                    <span class="grade">9,5</span>
-                                    <span class="status status-approved">aprovado</span>
-                                </div>
-                                <div class="boletim-row">
-                                    <span class="subject">Português</span>
-                                    <span class="grade">9,0</span>
-                                    <span class="status status-approved">aprovado</span>
-                                </div>
-                                <div class="boletim-row" style="margin-top: 10px; font-size: 0.9rem; color: #666;">
-                                    Clique para ver o boletim completo...
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </a>
-
-                <a href="{% url 'aluno_calendario' %}" style="text-decoration: none; color: inherit;">
-                    <section>
-                        <div class="widget calendar-widget">
-                            <h3 class="widget-title">Fevereiro 2025</h3>
-                            <div class="calendar">
-                                <div class="calendar-header">
-                                    <div class="day-name">D</div><div class="day-name">S</div><div class="day-name">T</div><div class="day-name">Q</div><div class="day-name">Q</div><div class="day-name">S</div><div class="day-name">S</div>
-                                </div>
-                                <div class="calendar-days">
-                                    <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div>
-                                    <div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day">10</div>
-                                    <div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div>
-                                    <div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day">19</div><div class="day">20</div>
-                                    <div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day">24</div><div class="day">25</div>
-                                    <div class="day">26</div><div class="day">27</div>
-                                    <div class="day" style="background-color: #092F76; color: white; border-radius: 50%;">28</div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </a>
-
-                <a href="{% url 'aluno_frequencia' %}" style="text-decoration: none; color: inherit;">
-                    <section>
-                        <div class="widget frequencia-widget">
-                            <h3 class="widget-title">Faltas Totais</h3>
-                            <div class="chart-container">
-                                <div class="chart-label" style="font-size: 3rem; color: #092F76;">
-                                    {{ faltas }}
-                                </div>
-                                <div style="text-align: center; color: #666;">Faltas registradas</div>
-                            </div>
-                        </div>
-                    </section>
-                </a>
-
-                <a href="{% url 'aluno_horario' %}" style="text-decoration: none; color: inherit;">
-                    <section>
-                        <div class="widget horario-widget">
-                            <h3 class="widget-title">Horário</h3>
-                            <div class="horario-content">
-                                <div class="horario-row">
-                                    <span class="time">7:00</span>
-                                    <span class="subject">Matemática</span>
-                                </div>
-                                <div class="horario-row">
-                                    <span class="time">7:50</span>
-                                    <span class="subject">Matemática</span>
-                                </div>
-                                <div class="horario-row">
-                                    <span class="time">8:40</span>
-                                    <span class="subject">Biologia</span>
-                                </div>
-                                <div class="horario-row">
-                                    <span class="time">9:30</span>
-                                    <span class="subject">Intervalo</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </a>
-
-                <div class="widget avisos-widget">
-                    <div class="avisos-header">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
-                        <h3 class="widget-title">Avisos Escolares</h3>
-                    </div>
-                    
-                    <div class="avisos-content">
-                        {% for aviso in avisos %}
-                        <div class="aviso-item">
-                            <div class="aviso-date">
-                                <div class="date-day">{{ aviso.data_criacao|date:"d" }}</div>
-                                <div class="date-month">{{ aviso.data_criacao|date:"M" }}</div>
-                            </div>
-                            <div class="aviso-text">
-                                <div class="aviso-title">{{ aviso.titulo }}</div>
-                                <div class="aviso-subtitle">{{ aviso.conteudo|truncatechars:30 }}</div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div style="padding: 10px; color: #666;">Nenhum aviso novo.</div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-            </div>
-        </main>
+{% empty %}
+<div class="notif-item">
+    <div class="notif-text">
+        <div class="notif-title-item">Sem notificações</div>
+        <div class="notif-sub">Você está em dia!</div>
     </div>
+</div>
+{% endfor %}
+{% endblock %}
 
-    <script src="{% static 'escola/js/aluno.js' %}"></script>
-</body>
-</html>
+{% block content %}
+<div class="welcome-section">
+    <h2>Seja bem-vindo(a), {{ aluno.nome|default:"Aluno" }}!</h2>
+</div>
+
+{% if media %}
+<div class="media-geral">
+    <div class="number">{{ media }}</div>
+    <div>
+        <div class="label">Média Geral</div>
+        <div style="font-size: 12px; opacity: 0.8;">Todas as disciplinas</div>
+    </div>
+</div>
+{% endif %}
+
+<div class="dashboard-grid">
+    <a href="{% url 'aluno_boletim' %}" class="widget-link">
+        <div class="widget boletim-widget">
+            <h3 class="widget-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                Boletim Escolar
+            </h3>
+            <div class="boletim-content">
+                <div class="boletim-row header">
+                    <span>Matéria</span>
+                    <span style="text-align: center;">Média</span>
+                    <span style="text-align: center;">Status</span>
+                </div>
+                {% if aluno.turma_atual %}
+                    {% for disciplina in aluno.turma_atual.curso.disciplinas.all|slice:":4" %}
+                    <div class="boletim-row">
+                        <span class="subject">{{ disciplina.nome }}</span>
+                        <span class="grade">-</span>
+                        <span class="status status-pending">Cursando</span>
+                    </div>
+                    {% empty %}
+                    <div class="boletim-row">
+                        <span class="subject" colspan="3" style="color: #666;">Nenhuma disciplina cadastrada</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 12px; color: #666; text-align: center;">
+                        Você não está matriculado em nenhuma turma.
+                    </div>
+                {% endif %}
+                <div style="margin-top: 12px; font-size: 13px; color: #0066cc; text-align: center;">
+                    Ver boletim completo →
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <a href="{% url 'aluno_frequencia' %}" class="widget-link">
+        <div class="widget frequencia-widget">
+            <h3 class="widget-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <path d="M9 14l2 2 4-4"></path>
+                </svg>
+                Frequência
+            </h3>
+            <div class="chart-container">
+                <div class="frequencia-big-number">{{ faltas|default:"0" }}</div>
+                <div class="frequencia-label">Faltas Registradas</div>
+                <div class="frequencia-bar">
+                    <div class="frequencia-bar-fill" style="width: {% if faltas %}{% widthratio faltas 20 100 %}{% else %}100{% endif %}%;"></div>
+                </div>
+                <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                    {% if faltas > 10 %}
+                        ⚠️ Atenção com as faltas
+                    {% else %}
+                        ✓ Frequência regular
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <a href="{% url 'aluno_horario' %}" class="widget-link">
+        <div class="widget horario-widget">
+            <h3 class="widget-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Próximas Aulas
+            </h3>
+            <div class="horario-content">
+                <div class="horario-row">
+                    <span class="time">07:00</span>
+                    <span class="subject">1ª Aula</span>
+                </div>
+                <div class="horario-row">
+                    <span class="time">07:50</span>
+                    <span class="subject">2ª Aula</span>
+                </div>
+                <div class="horario-row">
+                    <span class="time">08:40</span>
+                    <span class="subject">3ª Aula</span>
+                </div>
+                <div class="horario-row">
+                    <span class="time">09:30</span>
+                    <span class="subject">Intervalo</span>
+                </div>
+                <div style="margin-top: 12px; font-size: 13px; color: #0066cc; text-align: center;">
+                    Ver horário completo →
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <a href="{% url 'aluno_calendario' %}" class="widget-link">
+        <div class="widget calendar-widget">
+            <h3 class="widget-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Calendário
+            </h3>
+            <div class="calendar-mini">
+                <div class="day-name">D</div>
+                <div class="day-name">S</div>
+                <div class="day-name">T</div>
+                <div class="day-name">Q</div>
+                <div class="day-name">Q</div>
+                <div class="day-name">S</div>
+                <div class="day-name">S</div>
+                {% for i in "1234567"|make_list %}
+                <div class="day">{{ forloop.counter }}</div>
+                {% endfor %}
+                {% for i in "12345678901234"|make_list %}
+                <div class="day {% if forloop.counter == 2 %}today{% endif %}">{{ forloop.counter|add:7 }}</div>
+                {% endfor %}
+            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: #0066cc; text-align: center;">
+                Ver calendário completo →
+            </div>
+        </div>
+    </a>
+
+    <div class="widget avisos-widget">
+        <div class="avisos-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <h3 class="widget-title" style="margin-bottom: 0;">Avisos Escolares</h3>
+        </div>
+        <div class="avisos-content">
+            {% for aviso in avisos %}
+            <div class="aviso-item">
+                <div class="aviso-date">
+                    <div class="date-day">{{ aviso.data_criacao|date:"d" }}</div>
+                    <div class="date-month">{{ aviso.data_criacao|date:"M" }}</div>
+                </div>
+                <div class="aviso-text">
+                    <div class="aviso-title">{{ aviso.titulo }}</div>
+                    <div class="aviso-subtitle">{{ aviso.conteudo|truncatechars:100 }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="padding: 24px; color: #666; text-align: center;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" style="margin-bottom: 8px;">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <div>Nenhum aviso no momento</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'escola/js/aluno.js' %}"></script>
+{% endblock %}
