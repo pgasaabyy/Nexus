@@ -30,3 +30,13 @@ reportlab
 sqlparse
 tablib
 tzdata
+Django
+django-crispy-forms
+django-filter
+django-import-export
+djangorestframework
+openpyxl
+pillow
+psycopg2-binary
+reportlab
+tablib
