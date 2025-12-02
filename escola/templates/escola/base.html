@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nexus{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'escola/img/icon-nexus.png' %}">
+    <link rel="stylesheet" href="{% static 'escola/css/aluno.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        {% block sidebar %}
+        <aside class="sidebar">
+            <div class="school-logo">
+                <div class="logo-circle">N</div>
+                <span class="school-name">NEXUS<br>Sistema Escolar</span>
+            </div>
+            
+            <nav class="nav-menu">
+                {% block nav_items %}{% endblock %}
+            </nav>
+            
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+            </a>
+        </aside>
+        {% endblock %}
+        
+        <main class="main-content">
+            <header class="header">
+                <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                
+                <div class="header-right">
+                    <button class="notification-btn" onclick="toggleNotifications()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </button>
+                    
+                    <div class="user-info">
+                        <div class="user-details">
+                            <span class="user-name">{% block user_name %}Usuário{% endblock %}</span>
+                            <span class="user-email">{% block user_role %}Sistema{% endblock %}</span>
+                        </div>
+                        <div class="user-avatar">{% block user_initials %}U{% endblock %}</div>
+                    </div>
+                </div>
+            </header>
+            
+            {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <div class="notification-panel hidden" id="notificationPanel">
+        <div class="notif-title">Notificações</div>
+        <div class="notif-list">
+            {% block notifications %}
+            <div class="notif-item">
+                <div class="notif-text">
+                    <div class="notif-title-item">Sem notificações</div>
+                    <div class="notif-sub">Você está em dia!</div>
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+    
+    <script>
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            panel.classList.toggle('hidden');
+        }
+        
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('notificationPanel');
+            const btn = document.querySelector('.notification-btn');
+            if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -433,16 +433,6 @@ def secretaria_academico(request):
 
 @login_required
 def secretaria_documentos(request):
-    # Validação de acesso igual às outras páginas da secretaria
-    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
-        messages.error(request, "Acesso não autorizado.")
-        return redirect('home')
-        from django.utils import timezone
-from .models import Documento  # importa o model novo
-
-@login_required
-@login_required
-def secretaria_documentos(request):
     # 1. Segurança: só Secretaria ou Superusuário
     if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
         messages.error(request, "Acesso não autorizado.")
@@ -522,7 +512,6 @@ def secretaria_configuracoes(request):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
     return render(request, 'escola/secre_configuracoes.html')
-    return render(request, 'escola/secre_documentos.html')
 
 # =======================================================
 # ÁREA DA COORDENAÇÃO (Placeholders)
