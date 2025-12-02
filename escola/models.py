@@ -1,11 +1,9 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
-from django.contrib.auth.models import User  # Importação essencial!
-from django.db import models
 from django.contrib.auth.models import User
 
-# --- CURSOS E DISCIPLINAS ---
+
 class Curso(models.Model):
     nome = models.CharField(max_length=100)
     codigo = models.CharField(max_length=20, unique=True)
@@ -15,6 +13,11 @@ class Curso(models.Model):
     def __str__(self):
         return self.nome
 
+    class Meta:
+        verbose_name = "Curso"
+        verbose_name_plural = "Cursos"
+
+
 class Disciplina(models.Model):
     nome = models.CharField(max_length=100)
     ementa = models.TextField(blank=True, null=True)
@@ -23,9 +26,18 @@ class Disciplina(models.Model):
     def __str__(self):
         return self.nome
 
-# --- ESTRUTURA ---
+    class Meta:
+        verbose_name = "Disciplina"
+        verbose_name_plural = "Disciplinas"
+
+
 class Turma(models.Model):
-    TURNO_CHOICES = [('Manhã', 'Manhã'), ('Tarde', 'Tarde'), ('Noite', 'Noite'), ('Integral', 'Integral')]
+    TURNO_CHOICES = [
+        ('Manhã', 'Manhã'),
+        ('Tarde', 'Tarde'),
+        ('Noite', 'Noite'),
+        ('Integral', 'Integral')
+    ]
     codigo = models.CharField(max_length=50)
     semestre = models.CharField(max_length=20)
     turno = models.CharField(max_length=10, choices=TURNO_CHOICES)
@@ -34,9 +46,19 @@ class Turma(models.Model):
     def __str__(self):
         return f"{self.codigo} ({self.semestre})"
 
-class Professor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='perfil_professor')
+    class Meta:
+        verbose_name = "Turma"
+        verbose_name_plural = "Turmas"
 
+
+class Professor(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='perfil_professor'
+    )
     nome = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -46,7 +68,11 @@ class Professor(models.Model):
     def __str__(self):
         return self.nome
 
-# --- AVISOS (NOVO) ---
+    class Meta:
+        verbose_name = "Professor"
+        verbose_name_plural = "Professores"
+
+
 class Aviso(models.Model):
     titulo = models.CharField(max_length=200)
     conteudo = models.TextField()
@@ -56,42 +82,60 @@ class Aviso(models.Model):
     def __str__(self):
         return self.titulo
 
-# --- ALUNOS ---
+    class Meta:
+        verbose_name = "Aviso"
+        verbose_name_plural = "Avisos"
+        ordering = ['-data_criacao']
+
+
 class Aluno(models.Model):
-    # Relacionamento com o usuário do Django (Login)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='perfil_aluno')
-    
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='perfil_aluno'
+    )
     matricula = models.CharField(max_length=20, unique=True)
     nome = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     cpf = models.CharField(max_length=14, unique=True)
     data_nascimento = models.DateField()
     telefone = models.CharField(max_length=20, blank=True, null=True)
-    
-    # Campo para vincular o aluno a uma turma atual (facilita o dashboard)
-    turma_atual = models.ForeignKey(Turma, on_delete=models.SET_NULL, null=True, blank=True, related_name='alunos_turma')
+    turma_atual = models.ForeignKey(
+        Turma,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='alunos_turma'
+    )
     foto = models.ImageField(upload_to='alunos_fotos/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.nome} ({self.matricula})"
 
-    # Métodos Inteligentes para o Dashboard
     def calcular_media_geral(self):
-        # Busca todas as notas através das matrículas do aluno
         notas = Nota.objects.filter(matricula__aluno=self)
         if not notas.exists():
             return 0
-        soma = sum([n.valor for n in notas])
+        soma = sum([float(n.valor) for n in notas])
         return round(soma / len(notas), 1)
 
     def contar_faltas(self):
-        # Busca todas as faltas através das matrículas do aluno
         return Frequencia.objects.filter(matricula__aluno=self, presente=False).count()
 
-# --- VÍNCULOS E DADOS ACADÊMICOS ---
+    class Meta:
+        verbose_name = "Aluno"
+        verbose_name_plural = "Alunos"
+
+
 class Matricula(models.Model):
-    STATUS_CHOICES = [('Ativo', 'Ativo'), ('Trancado', 'Trancado'), ('Concluido', 'Concluido')]
-    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='registros') 
+    STATUS_CHOICES = [
+        ('Ativo', 'Ativo'),
+        ('Trancado', 'Trancado'),
+        ('Concluido', 'Concluído')
+    ]
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='registros')
     turma = models.ForeignKey(Turma, on_delete=models.PROTECT)
     data_matricula = models.DateField(default=timezone.now)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Ativo')
@@ -99,15 +143,29 @@ class Matricula(models.Model):
     def __str__(self):
         return f"{self.aluno} - {self.turma}"
 
+    class Meta:
+        verbose_name = "Matrícula"
+        verbose_name_plural = "Matrículas"
+
+
 class Nota(models.Model):
     matricula = models.ForeignKey(Matricula, on_delete=models.CASCADE)
     disciplina = models.ForeignKey(Disciplina, on_delete=models.PROTECT)
-    valor = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    valor = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
     tipo_avaliacao = models.CharField(max_length=50)
     data_lancamento = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"{self.valor} - {self.disciplina}"
+
+    class Meta:
+        verbose_name = "Nota"
+        verbose_name_plural = "Notas"
+
 
 class Frequencia(models.Model):
     matricula = models.ForeignKey(Matricula, on_delete=models.CASCADE)
@@ -119,6 +177,11 @@ class Frequencia(models.Model):
     def __str__(self):
         status = "Presente" if self.presente else "Falta"
         return f"{self.data_aula} - {status}"
+
+    class Meta:
+        verbose_name = "Frequência"
+        verbose_name_plural = "Frequências"
+        unique_together = ['matricula', 'disciplina', 'data_aula']
 
 
 class Evento(models.Model):
@@ -133,14 +196,17 @@ class Evento(models.Model):
     data = models.DateField()
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     descricao = models.TextField(blank=True, null=True)
-    # Se quiser que o evento seja só para uma turma (opcional)
-    turma = models.ForeignKey('Turma', on_delete=models.CASCADE, null=True, blank=True)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.titulo} ({self.data})"
 
-# --- GRADE HORÁRIA ---
-# ... (seus outros modelos acima)
+    class Meta:
+        verbose_name = "Evento"
+        verbose_name_plural = "Eventos"
+        ordering = ['data']
+
+
 class HorarioAula(models.Model):
     DIA_SEMANA_CHOICES = [
         ('SEG', 'Segunda-feira'),
@@ -163,7 +229,8 @@ class HorarioAula(models.Model):
         verbose_name_plural = "Horários de Aula"
 
     def __str__(self):
-        return f"{self.turma} - {self.get_dia_semana_display()} - {self.hora_inicio}" 
+        return f"{self.turma} - {self.get_dia_semana_display()} - {self.hora_inicio}"
+
 
 class Documento(models.Model):
     TIPOS_CHOICES = [
@@ -179,7 +246,7 @@ class Documento(models.Model):
         ('ENTREGUE', 'Entregue'),
     ]
 
-    aluno = models.ForeignKey('Aluno', on_delete=models.CASCADE, related_name='documentos')
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='documentos')
     tipo = models.CharField(max_length=50, choices=TIPOS_CHOICES)
     descricao = models.TextField(blank=True, null=True)
     data_solicitacao = models.DateTimeField(auto_now_add=True)
@@ -190,3 +257,6 @@ class Documento(models.Model):
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.aluno.nome}"
 
+    class Meta:
+        verbose_name = "Documento"
+        verbose_name_plural = "Documentos"

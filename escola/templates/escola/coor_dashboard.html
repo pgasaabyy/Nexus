@@ -1,221 +1,104 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard da Coordenação</title>
-    <!-- Link para o novo arquivo CSS dedicado -->
-    <link rel="stylesheet" href="dashboard-coordenacao.css">
-    
-    <!-- Fontes e Ícones -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Biblioteca de Gráficos (Chart.js ) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de  
-Alcantara</span>
+{% extends 'escola/base_coordenacao.html' %}
+
+{% block title %}Dashboard - Coordenação{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-section">
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-value">{{ total_alunos }}</span>
+                <span class="stat-label">Total de Alunos</span>
             </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-coordenacao.html" class="nav-item active">
-                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
-                </a>
-
-                <a href="gestao-alunos-avancada.html" class="nav-item">
-                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
-                </a>
-
-                <a href="gestao-professores.html" class="nav-item">
-                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
-                </a>
-
-                <a href="turmas.html" class="nav-item">
-                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
-                </a>
-
-                <a href="relatorios.html" class="nav-item">
-                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
-                </a>
-
-                <a href="calendario.html" class="nav-item">
-                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
-                </a>
-
-                <a href="comunicados.html" class="nav-item">
-                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
-                </a>
-
-                <a href="configuracoes.html" class="nav-item">
-                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
-                </a>
-
-                <a href="#" class="nav-item logout">
-                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
-        <main class="main-content">
-            <header class="main-header">
-                <div class="welcome-message">
-                    <h1>Seja bem vinda Marina!</h1>
-                    <p>Aqui é o dashboard da coordenação</p>
-                </div>
-                <div class="user-profile">
-                    <i class="ph ph-bell"></i>
-                    <div class="user-info">
-                        <strong>Marina Rodrigues</strong>
-                        <span>marinarodrigues11@coor.edu.br</span>
-                    </div>
-                    <div class="user-avatar">MR</div>
-                </div>
-            </header>
-
-            <div class="widgets-grid">
-                <!-- KPIs -->
-                <div class="kpi-card">
-                    <div class="kpi-header"><span>Total de Alunos</span><i class="ph ph-student"></i></div>
-                    <div class="kpi-value">1,284</div>
-                    <div class="kpi-footer"><span class="positive"><i class="ph-bold ph-arrow-up"></i> 5.2%</span> vs. mês anterior</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-header"><span>Professores Ativos</span><i class="ph ph-users"></i></div>
-                    <div class="kpi-value">48</div>
-                    <div class="kpi-footer"><span class="positive"><i class="ph-bold ph-arrow-up"></i> 2.1%</span> vs. mês anterior</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-header"><span>Turmas Criadas</span><i class="ph ph-book-open"></i></div>
-                    <div class="kpi-value">36</div>
-                    <div class="kpi-footer">Distribuídas em 3 turnos</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-header"><span>Taxa de Aprovação</span><i class="ph ph-check-circle"></i></div>
-                    <div class="kpi-value">92%</div>
-                    <div class="kpi-footer"><span class="positive"><i class="ph-bold ph-arrow-up"></i> 3.5%</span> vs. mês anterior</div>
-                </div>
-
-                <!-- Gráficos -->
-                <div class="widget chart-widget">
-                    <h3>Desempenho por Turmas</h3>
-                    <canvas id="desempenhoTurmasChart"></canvas>
-                </div>
-                <div class="widget chart-widget">
-                    <h3>Frequência Semanal</h3>
-                    <canvas id="frequenciaSemanalChart"></canvas>
-                </div>
-
-                <!-- Desempenho por Turma (Lista) -->
-                <div class="widget list-widget">
-                    <h3>Desempenho por turma</h3>
-                    <ul class="performance-list">
-                        <li>
-                            <div class="class-info">
-                                <strong>3º Ano A</strong>
-                                <span>32 alunos</span>
-                            </div>
-                            <div class="class-stats">
-                                <div class="stat-item">
-                                    <span>Média: <strong>8.5</strong></span>
-                                    <span>Freq: <strong>95%</strong></span>
-                                </div>
-                                <div class="progress-bar"><div style="width: 85%;"></div></div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="class-info">
-                                <strong>3º Ano B</strong>
-                                <span>30 alunos</span>
-                            </div>
-                            <div class="class-stats">
-                                <div class="stat-item">
-                                    <span>Média: <strong>7.8</strong></span>
-                                    <span>Freq: <strong>92%</strong></span>
-                                </div>
-                                <div class="progress-bar"><div style="width: 78%;"></div></div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="class-info">
-                                <strong>2º Ano A</strong>
-                                <span>28 alunos</span>
-                            </div>
-                            <div class="class-stats">
-                                <div class="stat-item">
-                                    <span>Média: <strong>8.2</strong></span>
-                                    <span>Freq: <strong>94%</strong></span>
-                                </div>
-                                <div class="progress-bar"><div style="width: 82%;"></div></div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="class-info">
-                                <strong>2º Ano B</strong>
-                                <span>31 alunos</span>
-                            </div>
-                            <div class="class-stats">
-                                <div class="stat-item">
-                                    <span>Média: <strong>7.5</strong></span>
-                                    <span>Freq: <strong>89%</strong></span>
-                                </div>
-                                <div class="progress-bar"><div style="width: 75%;"></div></div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Atividades Pendentes -->
-                <div class="widget list-widget">
-                    <h3>Atividades Pendentes</h3>
-                    <ul class="pending-list">
-                        <li>
-                            <div class="pending-info">
-                                <strong>Prof. Maria Silva</strong>
-                                <span>3º Ano A - Matemática</span>
-                            </div>
-                            <span class="status-tag pendente">Pendente</span>
-                            <a href="#" class="btn-validate">Validar</a>
-                        </li>
-                        <li>
-                            <div class="pending-info">
-                                <strong>Prof. João Santos</strong>
-                                <span>2º Ano B - Português</span>
-                            </div>
-                            <span class="status-tag aprovado">Aprovado</span>
-                        </li>
-                        <li>
-                            <div class="pending-info">
-                                <strong>Prof. Ana Costa</strong>
-                                <span>1º Ano C - História</span>
-                            </div>
-                            <span class="status-tag pendente">Pendente</span>
-                            <a href="#" class="btn-validate">Validar</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Ações Rápidas -->
-                <div class="widget actions-widget">
-                    <h3><i class="ph ph-lightning"></i> Ações Rápidas</h3>
-                    <div class="actions-buttons">
-                        <a href="#" class="btn-action primary">Validar Notas Pendentes</a>
-                        <a href="#" class="btn-action secondary">Gerar Relatório Mensal</a>
-                        <a href="#" class="btn-action secondary">Enviar Comunicado</a>
-                    </div>
-                </div>
+            <div class="stat-icon blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
             </div>
-        </main>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-value">{{ total_professores }}</span>
+                <span class="stat-label">Professores</span>
+            </div>
+            <div class="stat-icon green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-value">{{ total_turmas }}</span>
+                <span class="stat-label">Turmas Ativas</span>
+            </div>
+            <div class="stat-icon purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+        </div>
     </div>
-
-    <!-- Script para inicializar os gráficos -->
-    <script src="charts-init.js"></script>
-</body>
-</html>
+    
+    <div class="content-grid">
+        <div class="content-card">
+            <div class="card-header">
+                <h3>Turmas por Número de Alunos</h3>
+            </div>
+            <div class="card-body">
+                {% if turmas %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Turma</th>
+                            <th>Alunos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for turma in turmas %}
+                        <tr>
+                            <td>{{ turma.codigo }}</td>
+                            <td>{{ turma.total_alunos }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="empty-message">Nenhuma turma cadastrada.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="card-header">
+                <h3>Avisos Recentes</h3>
+                <a href="{% url 'coordenacao_comunicados' %}" class="link-more">Ver todos</a>
+            </div>
+            <div class="card-body">
+                {% if avisos %}
+                <div class="avisos-list">
+                    {% for aviso in avisos %}
+                    <div class="aviso-item">
+                        <div class="aviso-title">{{ aviso.titulo }}</div>
+                        <div class="aviso-date">{{ aviso.data_criacao|date:"d/m/Y" }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-message">Nenhum aviso recente.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,197 +1,106 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão dos Alunos</title>
-    <!-- Link para o novo arquivo CSS dedicado -->
-    <link rel="stylesheet" href="coor_alunos.css">
+{% extends 'escola/base_coordenacao.html' %}
+
+{% block title %}Alunos - Coordenação{% endblock %}
+{% block nav_alunos %}active{% endblock %}
+{% block page_title %}Gestão de Alunos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
     
-    <!-- Fontes e Ícones -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de  
-Alcantara</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-coordenacao.html" class="nav-item">
-                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
-                </a>
+    .search-form {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    
+    .search-form input,
+    .search-form select {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    
+    .search-form input {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .search-form button {
+        padding: 10px 24px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    
+    .grade-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    
+    .grade-tag.good { background: #d4edda; color: #155724; }
+    .grade-tag.medium { background: #fff3cd; color: #856404; }
+    .grade-tag.low { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}
 
-                <a href="gestao-alunos-avancada.html" class="nav-item active">
-                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
-                </a>
+{% block content %}
+<div class="search-section">
+    <form method="GET" class="search-form">
+        <input type="text" name="busca" placeholder="Buscar por nome ou matrícula..." value="{{ busca }}">
+        <select name="turma">
+            <option value="">Todas as turmas</option>
+            {% for turma in turmas %}
+            <option value="{{ turma.id }}" {% if turma_filtro == turma.id|stringformat:"s" %}selected{% endif %}>
+                {{ turma.codigo }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Buscar</button>
+    </form>
+</div>
 
-                <a href="gestao-professores.html" class="nav-item">
-                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
-                </a>
-
-                <a href="turmas.html" class="nav-item">
-                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
-                </a>
-
-                <a href="relatorios.html" class="nav-item">
-                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
-                </a>
-
-                <a href="calendario.html" class="nav-item">
-                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
-                </a>
-
-                <a href="comunicados.html" class="nav-item">
-                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
-                </a>
-
-                <a href="configuracoes.html" class="nav-item">
-                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
-                </a>
-
-                <a href="#" class="nav-item logout">
-                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
-        <main class="main-content">
-            <header class="main-header">
-                <div class="page-title">
-                    <h1>Gestão dos Alunos</h1>
-                    <p>Dashboard dos Alunos</p>
-                </div>
-                <div class="header-actions">
-                    <a href="#" class="btn-primary"><i class="ph-bold ph-user-plus"></i> Nova Matrícula</a>
-                    <div class="user-profile">
-                        <i class="ph ph-bell"></i>
-                        <div class="user-info">
-                            <strong>Marina Rodrigues</strong>
-                            <span>marinarodrigues11@coor.edu.br</span>
-                        </div>
-                        <div class="user-avatar">MR</div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- KPIs -->
-            <section class="kpi-section">
-                <div class="kpi-card">
-                    <div class="kpi-info">
-                        <span>Total de Alunos</span>
-                        <strong>1,284</strong>
-                    </div>
-                    <div class="kpi-icon blue"><i class="ph ph-student"></i></div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-info">
-                        <span>Média Geral</span>
-                        <strong>8.2</strong>
-                    </div>
-                    <div class="kpi-icon green"><i class="ph ph-graduation-cap"></i></div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-info">
-                        <span>Frequência Média</span>
-                        <strong>93%</strong>
-                    </div>
-                    <div class="kpi-icon blue"><i class="ph ph-user-list"></i></div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-info">
-                        <span>Em Atenção</span>
-                        <strong>24</strong>
-                        <small>Baixo rendimento</small>
-                    </div>
-                    <div class="kpi-icon yellow"><i class="ph ph-warning-circle"></i></div>
-                </div>
-            </section>
-
-            <!-- Tabela de Alunos -->
-            <section class="table-container">
-                <div class="table-header">
-                    <div class="table-title">
-                        <h3>Lista de Alunos</h3>
-                        <p>Gerenciamento completo do corpo estudantil</p>
-                    </div>
-                    <div class="table-controls">
-                        <div class="search-bar">
-                            <i class="ph ph-magnifying-glass"></i>
-                            <input type="text" placeholder="Buscar por nome ou matrícula...">
-                        </div>
-                        <button class="btn-filter"><i class="ph ph-funnel-simple"></i> Todas as turmas <i class="ph ph-caret-down"></i></button>
-                        <button class="btn-export"><i class="ph ph-export"></i> Exportar</button>
-                    </div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Matrícula</th>
-                            <th>Nome</th>
-                            <th>Turma</th>
-                            <th>Média</th>
-                            <th>Frequência</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2024001</td>
-                            <td>Ana Clara Silva</td>
-                            <td>3º Ano A</td>
-                            <td><span class="grade-tag good">8.5</span></td>
-                            <td>95%</td>
-                            <td><span class="status-tag active">Ativo</span></td>
-                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
-                        </tr>
-                        <tr>
-                            <td>2024002</td>
-                            <td>Bruno Santos Costa</td>
-                            <td>3º Ano A</td>
-                            <td><span class="grade-tag medium">7.8</span></td>
-                            <td>88%</td>
-                            <td><span class="status-tag active">Ativo</span></td>
-                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
-                        </tr>
-                        <tr>
-                            <td>2024003</td>
-                            <td>Carla Oliveira</td>
-                            <td>2º Ano B</td>
-                            <td><span class="grade-tag excellent">9.2</span></td>
-                            <td>98%</td>
-                            <td><span class="status-tag active">Ativo</span></td>
-                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
-                        </tr>
-                        <tr>
-                            <td>2024004</td>
-                            <td>Daniel Ferreira</td>
-                            <td>2º Ano A</td>
-                            <td><span class="grade-tag low">6.5</span></td>
-                            <td>82%</td>
-                            <td><span class="status-tag warning">Atenção</span></td>
-                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
-                        </tr>
-                        <tr>
-                            <td>2024005</td>
-                            <td>Eduarda Martins</td>
-                            <td>1º Ano C</td>
-                            <td><span class="grade-tag good">8.9</span></td>
-                            <td>96%</td>
-                            <td><span class="status-tag active">Ativo</span></td>
-                            <td><a href="#" class="btn-details">Ver detalhes</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </main>
+<div class="content-card">
+    <div class="card-header">
+        <h3>Lista de Alunos ({{ alunos|length }})</h3>
     </div>
-</body>
-</html>
+    <div class="card-body">
+        {% if alunos %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                <tr>
+                    <td>{{ aluno.matricula }}</td>
+                    <td>{{ aluno.nome }}</td>
+                    <td>{% if aluno.turma_atual %}{{ aluno.turma_atual.codigo }}{% else %}-{% endif %}</td>
+                    <td>{{ aluno.email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-message">Nenhum aluno encontrado.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

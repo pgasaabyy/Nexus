@@ -1,4 +1,7 @@
 #!/bin/bash
+# Apply migrations
+python3.11 manage.py migrate --no-input
+
 # Collect static files
 python3.11 manage.py collectstatic --noinput --clear
 

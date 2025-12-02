@@ -30,3 +30,4 @@ reportlab
 sqlparse
 tablib
 tzdata
+psycopg2-binary

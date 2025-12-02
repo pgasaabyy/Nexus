@@ -1,138 +1,17 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurações</title>
-    <!-- Link para o CSS principal do dashboard (reutilizado) -->
-    <link rel="stylesheet" href="dashboard-coordenacao.css">
-    <!-- Link para o CSS específico da página de Configurações -->
-    <link rel="stylesheet" href="configuracoes.css">
-    
-    <!-- Fontes e Ícones -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- ===== MENU LATERAL (ASIDE ) ===== -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de  
-Alcantara</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-coordenacao.html" class="nav-item">
-                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
-                </a>
+{% extends 'escola/base_coordenacao.html' %}
 
-                <a href="gestao-alunos-avancada.html" class="nav-item">
-                    <i class="ph-bold ph-student"></i> <span>Alunos</span>
-                </a>
+{% block title %}Configurações - Coordenação{% endblock %}
+{% block nav_config %}active{% endblock %}
+{% block page_title %}Configurações{% endblock %}
 
-                <a href="gestao-professores.html" class="nav-item">
-                    <i class="ph-bold ph-chalkboard-teacher"></i> <span>Professores</span>
-                </a>
-
-                <a href="turmas.html" class="nav-item">
-                    <i class="ph-bold ph-book-open"></i> <span>Turmas</span>
-                </a>
-
-                <a href="relatorios.html" class="nav-item">
-                    <i class="ph-bold ph-chart-line-up"></i> <span>Relatórios</span>
-                </a>
-
-                <a href="calendario.html" class="nav-item">
-                    <i class="ph-bold ph-calendar"></i> <span>Calendário</span>
-                </a>
-
-                <a href="comunicados.html" class="nav-item">
-                    <i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span>
-                </a>
-
-                <a href="configuracoes.html" class="nav-item active">
-                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
-                </a>
-
-                <a href="#" class="nav-item logout">
-                    <i class="ph-bold ph-sign-out"></i> <span>Logout</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- ===== CONTEÚDO PRINCIPAL (MAIN) ===== -->
-        <main class="main-content">
-            <header class="main-header">
-                <div class="welcome-message">
-                    <!-- Título e subtítulo da página -->
-                    <h1>Configurações</h1>
-                    <p>Gerencie preferências e configurações</p>
-                </div>
-                <div class="user-profile">
-                    <i class="ph ph-bell"></i>
-                    <div class="user-info">
-                        <strong>Marina Rodrigues</strong>
-                        <span>marinarodrigues11@coor.edu.br</span>
-                    </div>
-                    <div class="user-avatar">MR</div>
-                </div>
-            </header>
-
-            <!-- Formulário de Configurações -->
-            <div class="widget configuracoes-widget">
-                <form class="configuracoes-form">
-                    <!-- Seção 1: Informações da Escola -->
-                    <div class="form-section">
-                        <h2>Informações da Escola</h2>
-                        <p class="section-subtitle">Dados institucionais e configurações gerais</p>
-
-                        <div class="form-group">
-                            <label for="nome-instituicao">Nome da Instituição</label>
-                            <input type="text" id="nome-instituicao" value="Colégio Exemplo" readonly>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="cnpj">CNPJ</label>
-                                <input type="text" id="cnpj" value="00.000.000/0001-00" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="telefone">Telefone</label>
-                                <input type="text" id="telefone" value="(11) 0000-0000" readonly>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="endereco">Endereço</label>
-                            <input type="text" id="endereco" value="Rua Exemplo, 123 - Bairro" readonly>
-                        </div>
-                    </div>
-
-                    <!-- Seção 2: Ano Letivo -->
-                    <div class="form-section">
-                        <h2>Ano Letivo</h2>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="ano-atual">Ano Atual</label>
-                                <input type="text" id="ano-atual" value="2025" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="bimestre-atual">Bimestre Atual</label>
-                                <input type="text" id="bimestre-atual" value="2º Bimestre" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit">Salvar Alterações</button>
-                    </div>
-                </form>
-            </div>
-        </main>
+{% block content %}
+<div class="content-card">
+    <div class="card-header">
+        <h3>Configurações do Sistema</h3>
     </div>
-</body>
-</html>
+    <div class="card-body">
+        <p>As configurações do sistema serão exibidas aqui.</p>
+        <p style="color: #666; margin-top: 16px;">Para alterações de configuração, entre em contato com o administrador do sistema.</p>
+    </div>
+</div>
+{% endblock %}

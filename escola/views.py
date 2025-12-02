@@ -1,9 +1,10 @@
 import json
 import io
-from django.db.models import Q
+from decimal import Decimal
+from django.db.models import Q, Count, Avg
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -12,35 +13,29 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from openpyxl import Workbook
-from django.db.models import Count
 from django.utils import timezone
-from .models import Documento
-from django.shortcuts import render
-from django.shortcuts import render
-from .models import Evento
 
-
-# IMPORTAÇÃO DOS MODELOS
 from .models import (
     Aluno, Nota, Turma, Professor, Disciplina, 
-    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso
+    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso, Documento
 )
 from .serializers import AlunoSerializer, NotaSerializer
 
-# --- API (Mantida para uso futuro) ---
+
 class AlunoViewSet(viewsets.ModelViewSet):
     queryset = Aluno.objects.all()
     serializer_class = AlunoSerializer
+
 
 class NotaViewSet(viewsets.ModelViewSet):
     queryset = Nota.objects.all()
     serializer_class = NotaSerializer
 
-# =======================================================
-# PÁGINAS GERAIS (LOGIN / HOME)
-# =======================================================
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect_user_by_role(request.user)
+    
     if request.method == 'POST':
         usuario = request.POST.get('username')
         senha = request.POST.get('password')
@@ -49,51 +44,34 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-
-            # Superusuário
-            if user.is_superuser:
-                return redirect('/admin/')
-
-            # Aluno
-            if hasattr(user, 'perfil_aluno'):
-                return redirect('dashboard_aluno')
-
-            # Secretaria
-            if user.groups.filter(name='secretaria').exists():
-                return redirect('dashboard_secretaria')
-
-            # Professor
-            if hasattr(user, 'perfil_professor'):
-                return redirect('dashboard_professor')
-
-            # Coordenador
-            if user.groups.filter(name='coordenacao').exists():
-                return redirect('dashboard_coordenacao')
-
-            # fallback
-            return redirect('home')
-
+            return redirect_user_by_role(user)
         else:
             messages.error(request, 'Usuário ou senha incorretos.')
     
     return render(request, 'escola/login.html')
 
 
-    
+def redirect_user_by_role(user):
+    if user.is_superuser:
+        return redirect('/admin/')
+    if hasattr(user, 'perfil_aluno'):
+        return redirect('dashboard_aluno')
+    if user.groups.filter(name__iexact='secretaria').exists():
+        return redirect('dashboard_secretaria')
+    if hasattr(user, 'perfil_professor'):
+        return redirect('dashboard_professor')
+    if user.groups.filter(name__iexact='coordenacao').exists():
+        return redirect('dashboard_coordenacao')
+    return redirect('home')
 
 
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+
 def home(request):
     return render(request, 'escola/index.html')
-
-
-# =======================================================
-# ÁREA DO ALUNO (Lógica Completa)
-# =======================================================
-
 
 
 @login_required
@@ -103,9 +81,10 @@ def dashboard_aluno(request):
         media_geral = aluno.calcular_media_geral()
         faltas_totais = aluno.contar_faltas()
     except AttributeError:
+        messages.error(request, 'Perfil de aluno não encontrado.')
         return redirect('home')
 
-    avisos = Aviso.objects.order_by('-data_criacao')[:3]
+    avisos = Aviso.objects.order_by('-data_criacao')[:5]
 
     context = {
         'aluno': aluno,
@@ -114,6 +93,7 @@ def dashboard_aluno(request):
         'avisos': avisos
     }
     return render(request, 'escola/aluno_dashboard.html', context)
+
 
 @login_required
 def aluno_boletim(request):
@@ -128,11 +108,12 @@ def aluno_boletim(request):
         disciplinas = turma.curso.disciplinas.all()
         for disciplina in disciplinas:
             notas = Nota.objects.filter(matricula__aluno=aluno, disciplina=disciplina)
-            lista_notas = [n.valor for n in notas]
+            lista_notas = [float(n.valor) for n in notas]
             media = sum(lista_notas) / len(lista_notas) if lista_notas else 0
             
             status = "Aprovado" if media >= 6 else "Recuperação"
-            if not lista_notas: status = "Cursando"
+            if not lista_notas:
+                status = "Cursando"
 
             boletim_completo.append({
                 'disciplina': disciplina.nome,
@@ -147,6 +128,7 @@ def aluno_boletim(request):
     }
     return render(request, 'escola/aluno_boletim.html', contexto)
 
+
 @login_required
 def aluno_frequencia(request):
     try:
@@ -155,6 +137,9 @@ def aluno_frequencia(request):
         return redirect('home')
 
     frequencia_detalhada = []
+    total_presenca = 0
+    total_aulas_geral = 0
+    
     if aluno.turma_atual:
         for disciplina in aluno.turma_atual.curso.disciplinas.all():
             faltas = Frequencia.objects.filter(
@@ -172,10 +157,14 @@ def aluno_frequencia(request):
             if total_aulas > 0:
                 presencas = total_aulas - faltas
                 porcentagem = int((presencas / total_aulas) * 100)
+                total_presenca += presencas
+                total_aulas_geral += total_aulas
 
             status = "Regular"
-            if porcentagem < 75: status = "Atenção"
-            if porcentagem == 100: status = "Excelente"
+            if porcentagem < 75:
+                status = "Atenção"
+            if porcentagem == 100:
+                status = "Excelente"
 
             frequencia_detalhada.append({
                 'disciplina': disciplina.nome,
@@ -185,11 +174,15 @@ def aluno_frequencia(request):
                 'status': status
             })
 
+    porcentagem_geral = int((total_presenca / total_aulas_geral) * 100) if total_aulas_geral > 0 else 100
+    
     contexto = {
         'aluno': aluno,
-        'frequencia': frequencia_detalhada
+        'frequencia': frequencia_detalhada,
+        'porcentagem_geral': porcentagem_geral
     }
     return render(request, 'escola/aluno_frequencia.html', contexto)
+
 
 @login_required
 def aluno_horario(request):
@@ -217,6 +210,7 @@ def aluno_horario(request):
         'grade': grade_horaria
     })
 
+
 @login_required
 def aluno_calendario(request):
     try:
@@ -235,28 +229,33 @@ def aluno_calendario(request):
         'eventos_json': eventos_json
     })
 
-# --- Views Simples ---
+
 @login_required
 def aluno_justificativa(request):
-    try: aluno = request.user.perfil_aluno
-    except AttributeError: aluno = None
+    try:
+        aluno = request.user.perfil_aluno
+    except AttributeError:
+        aluno = None
     return render(request, 'escola/aluno_justificativa.html', {'aluno': aluno})
+
 
 @login_required
 def aluno_evento(request):
-    try: aluno = request.user.perfil_aluno
-    except AttributeError: aluno = None
+    try:
+        aluno = request.user.perfil_aluno
+    except AttributeError:
+        aluno = None
     return render(request, 'escola/aluno_evento.html', {'aluno': aluno})
+
 
 @login_required
 def aluno_configuracoes(request):
-    try: aluno = request.user.perfil_aluno
-    except AttributeError: aluno = None
+    try:
+        aluno = request.user.perfil_aluno
+    except AttributeError:
+        aluno = None
     return render(request, 'escola/aluno_configuracoes.html', {'aluno': aluno})
 
-# =======================================================
-# FUNÇÕES DE EXPORTAÇÃO (PDF/EXCEL)
-# =======================================================
 
 @login_required
 def exportar_boletim_pdf(request):
@@ -265,9 +264,6 @@ def exportar_boletim_pdf(request):
     except AttributeError:
         return redirect('home')
 
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="boletim_{aluno.matricula}.pdf"'
-    
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
     
@@ -290,18 +286,22 @@ def exportar_boletim_pdf(request):
     if aluno.turma_atual:
         for disciplina in aluno.turma_atual.curso.disciplinas.all():
             notas = Nota.objects.filter(matricula__aluno=aluno, disciplina=disciplina)
-            lista_notas = [n.valor for n in notas]
+            lista_notas = [float(n.valor) for n in notas]
             media = sum(lista_notas) / len(lista_notas) if lista_notas else 0
             status = "Aprovado" if media >= 6 else "Recuperação"
-            if not lista_notas: status = "Cursando"
+            if not lista_notas:
+                status = "Cursando"
 
             p.setFont("Helvetica", 10)
             p.drawString(50, y, str(disciplina.nome))
             p.drawString(250, y, str(round(media, 1)))
             
-            if status == "Recuperação": p.setFillColor(colors.red)
-            elif status == "Aprovado": p.setFillColor(colors.green)
-            else: p.setFillColor(colors.black)
+            if status == "Recuperação":
+                p.setFillColor(colors.red)
+            elif status == "Aprovado":
+                p.setFillColor(colors.green)
+            else:
+                p.setFillColor(colors.black)
                 
             p.drawString(400, y, status)
             p.setFillColor(colors.black)
@@ -310,7 +310,11 @@ def exportar_boletim_pdf(request):
     p.showPage()
     p.save()
     buffer.seek(0)
-    return HttpResponse(buffer, content_type='application/pdf')
+    
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="boletim_{aluno.matricula}.pdf"'
+    return response
+
 
 @login_required
 def exportar_frequencia_pdf(request):
@@ -319,14 +323,11 @@ def exportar_frequencia_pdf(request):
     except AttributeError:
         return redirect('home')
 
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="frequencia_{aluno.matricula}.pdf"'
-    
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
     
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(50, 800, f"Relatório de Frequência - Nexus")
+    p.drawString(50, 800, "Relatório de Frequência - Nexus")
     p.setFont("Helvetica", 12)
     p.drawString(50, 780, f"Aluno: {aluno.nome}")
     
@@ -341,7 +342,7 @@ def exportar_frequencia_pdf(request):
         for disciplina in aluno.turma_atual.curso.disciplinas.all():
             faltas = Frequencia.objects.filter(matricula__aluno=aluno, disciplina=disciplina, presente=False).count()
             total = Frequencia.objects.filter(matricula__aluno=aluno, disciplina=disciplina).count()
-            porc = int(((total - faltas)/total)*100) if total > 0 else 100
+            porc = int(((total - faltas) / total) * 100) if total > 0 else 100
 
             p.setFont("Helvetica", 10)
             p.drawString(50, y, str(disciplina.nome))
@@ -352,7 +353,11 @@ def exportar_frequencia_pdf(request):
     p.showPage()
     p.save()
     buffer.seek(0)
-    return HttpResponse(buffer, content_type='application/pdf')
+    
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="frequencia_{aluno.matricula}.pdf"'
+    return response
+
 
 @login_required
 def exportar_frequencia_excel(request):
@@ -370,7 +375,7 @@ def exportar_frequencia_excel(request):
         for disciplina in aluno.turma_atual.curso.disciplinas.all():
             faltas = Frequencia.objects.filter(matricula__aluno=aluno, disciplina=disciplina, presente=False).count()
             total = Frequencia.objects.filter(matricula__aluno=aluno, disciplina=disciplina).count()
-            porc = int(((total - faltas)/total)*100) if total > 0 else 100
+            porc = int(((total - faltas) / total) * 100) if total > 0 else 100
             status = "Atenção" if porc < 75 else "Regular"
             ws.append([disciplina.nome, total, faltas, f"{porc}%", status])
 
@@ -379,47 +384,83 @@ def exportar_frequencia_excel(request):
     wb.save(response)
     return response
 
-# =======================================================
-# ÁREA DA SECRETARIA (Gestão Completa)
-# =======================================================
+
+def check_secretaria_permission(user):
+    return user.is_superuser or user.groups.filter(name__iexact='secretaria').exists()
+
+
+def check_coordenacao_permission(user):
+    return user.is_superuser or user.groups.filter(name__iexact='coordenacao').exists()
+
+
+def check_professor_permission(user):
+    return user.is_superuser or hasattr(user, 'perfil_professor')
+
 
 @login_required
 def dashboard_secretaria(request):
-    # Segurança: Verifica grupo OU Superusuário (mas sem redirecionar admin pro admin)
-    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
         return redirect('home')
 
-    # KPIs
     total_alunos = Aluno.objects.count()
     total_professores = Professor.objects.count()
     total_turmas = Turma.objects.count()
+    total_cursos = Curso.objects.count()
     
-    # Lista Recente
     ultimos_alunos = Aluno.objects.order_by('-id')[:5]
+    documentos_pendentes = Documento.objects.filter(status='PENDENTE').count()
 
     context = {
         'total_alunos': total_alunos,
         'total_professores': total_professores,
         'total_turmas': total_turmas,
-        'ultimos_alunos': ultimos_alunos
+        'total_cursos': total_cursos,
+        'ultimos_alunos': ultimos_alunos,
+        'documentos_pendentes': documentos_pendentes
     }
     
     return render(request, 'escola/secre_dashboard.html', context)
 
+
 @login_required
 def secretaria_alunos(request):
+    if not check_secretaria_permission(request.user):
+        return redirect('home')
+    
     alunos = Aluno.objects.all().order_by('nome')
-    return render(request, 'escola/secre_alunos.html', {'alunos': alunos})
+    turmas = Turma.objects.all()
+    
+    busca = request.GET.get('busca', '')
+    turma_filtro = request.GET.get('turma', '')
+    
+    if busca:
+        alunos = alunos.filter(Q(nome__icontains=busca) | Q(matricula__icontains=busca))
+    if turma_filtro:
+        alunos = alunos.filter(turma_atual_id=turma_filtro)
+    
+    return render(request, 'escola/secre_alunos.html', {
+        'alunos': alunos,
+        'turmas': turmas,
+        'busca': busca,
+        'turma_filtro': turma_filtro
+    })
+
 
 @login_required
 def secretaria_professores(request):
+    if not check_secretaria_permission(request.user):
+        return redirect('home')
+    
     professores = Professor.objects.all().order_by('nome')
     return render(request, 'escola/secre_professores.html', {'professores': professores})
 
+
 @login_required
 def secretaria_academico(request):
-    # Otimização com Count para evitar muitas queries
-    from django.db.models import Count
+    if not check_secretaria_permission(request.user):
+        return redirect('home')
+    
     cursos = Curso.objects.annotate(total_turmas=Count('turma'))
     turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))
     disciplinas = Disciplina.objects.all()
@@ -431,14 +472,13 @@ def secretaria_academico(request):
     }
     return render(request, 'escola/secre_academico.html', context)
 
+
 @login_required
 def secretaria_documentos(request):
-    # 1. Segurança: só Secretaria ou Superusuário
-    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+    if not check_secretaria_permission(request.user):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
 
-    # 2. Filtros (GET)
     tipo_filtro = request.GET.get('tipo')
     status_filtro = request.GET.get('status')
     busca_aluno = request.GET.get('aluno')
@@ -454,7 +494,6 @@ def secretaria_documentos(request):
     if busca_aluno:
         documentos = documentos.filter(aluno__nome__icontains=busca_aluno)
 
-    # 3. Cadastro (POST)
     if request.method == 'POST':
         aluno_id = request.POST.get('aluno_id')
         tipo = request.POST.get('tipo')
@@ -492,12 +531,11 @@ def secretaria_documentos(request):
 
 @login_required
 def secretaria_calendario(request):
-    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+    if not check_secretaria_permission(request.user):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
 
-    eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo') 
-
+    eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo')
     eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
 
     context = {
@@ -506,75 +544,354 @@ def secretaria_calendario(request):
     
     return render(request, 'escola/secre_calendario.html', context)
 
+
 @login_required
 def secretaria_configuracoes(request):
-    if not request.user.is_superuser and not request.user.groups.filter(name='Secretaria').exists():
+    if not check_secretaria_permission(request.user):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
     return render(request, 'escola/secre_configuracoes.html')
 
-# =======================================================
-# ÁREA DA COORDENAÇÃO (Placeholders)
-# =======================================================
+
 @login_required
 def dashboard_coordenacao(request):
-    return render(request, 'escola/dashboard_coordenacao.html')
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    total_alunos = Aluno.objects.count()
+    total_professores = Professor.objects.count()
+    total_turmas = Turma.objects.count()
+    
+    turmas = Turma.objects.annotate(
+        total_alunos=Count('alunos_turma')
+    ).order_by('-total_alunos')[:5]
+    
+    avisos_recentes = Aviso.objects.order_by('-data_criacao')[:5]
+    
+    context = {
+        'total_alunos': total_alunos,
+        'total_professores': total_professores,
+        'total_turmas': total_turmas,
+        'turmas': turmas,
+        'avisos': avisos_recentes
+    }
+    return render(request, 'escola/coor_dashboard.html', context)
+
 
 @login_required
 def coordenacao_turmas(request):
-    return render(request, 'escola/coordenacao_turmas.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma')).order_by('codigo')
+    cursos = Curso.objects.all()
+    
+    context = {
+        'turmas': turmas,
+        'cursos': cursos
+    }
+    return render(request, 'escola/coor_turmas.html', context)
+
 
 @login_required
 def coordenacao_alunos(request):
-    return render(request, 'escola/coordenacao_alunos.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    alunos = Aluno.objects.all().order_by('nome')
+    turmas = Turma.objects.all()
+    
+    busca = request.GET.get('busca', '')
+    turma_filtro = request.GET.get('turma', '')
+    
+    if busca:
+        alunos = alunos.filter(Q(nome__icontains=busca) | Q(matricula__icontains=busca))
+    if turma_filtro:
+        alunos = alunos.filter(turma_atual_id=turma_filtro)
+    
+    context = {
+        'alunos': alunos,
+        'turmas': turmas,
+        'busca': busca,
+        'turma_filtro': turma_filtro
+    }
+    return render(request, 'escola/coor_alunos.html', context)
+
 
 @login_required
 def coordenacao_professores(request):
-    return render(request, 'escola/coordenacao_professores.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    professores = Professor.objects.all().order_by('nome')
+    return render(request, 'escola/coor_professores.html', {'professores': professores})
+
 
 @login_required
 def coordenacao_relatorios(request):
-    return render(request, 'escola/coordenacao_relatorios.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    turmas = Turma.objects.annotate(
+        total_alunos=Count('alunos_turma')
+    )
+    
+    context = {
+        'turmas': turmas
+    }
+    return render(request, 'escola/coor_relatorios.html', context)
+
 
 @login_required
 def coordenacao_calendario(request):
-    return render(request, 'escola/calendario.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo')
+    eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
+    
+    context = {
+        'eventos_json': eventos_json,
+    }
+    return render(request, 'escola/coor_calendario.html', context)
+
 
 @login_required
 def coordenacao_comunicados(request):
-    return render(request, 'escola/comunicados.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    avisos = Aviso.objects.order_by('-data_criacao')
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        conteudo = request.POST.get('conteudo')
+        turma_id = request.POST.get('turma_id')
+        
+        if titulo and conteudo:
+            aviso = Aviso(titulo=titulo, conteudo=conteudo)
+            if turma_id:
+                aviso.turma_id = turma_id
+            aviso.save()
+            messages.success(request, 'Comunicado criado com sucesso!')
+            return redirect('coordenacao_comunicados')
+    
+    context = {
+        'avisos': avisos,
+        'turmas': turmas
+    }
+    return render(request, 'escola/coor_comunicados.html', context)
+
 
 @login_required
 def coordenacao_configuracoes(request):
-    return render(request, 'escola/configuracoes.html')
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    return render(request, 'escola/coor_configuracoes.html')
 
-# =======================================================
-# ÁREA DO PROFESSOR (Placeholders)
-# =======================================================
+
 @login_required
 def dashboard_professor(request):
-    return render(request, 'escola/dashboard_professor.html')
+    if not check_professor_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    professor = None
+    turmas = []
+    
+    if hasattr(request.user, 'perfil_professor'):
+        professor = request.user.perfil_professor
+    
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))[:5]
+    avisos = Aviso.objects.order_by('-data_criacao')[:3]
+    
+    context = {
+        'professor': professor,
+        'turmas': turmas,
+        'avisos': avisos
+    }
+    return render(request, 'escola/dashboard_professor.html', context)
+
 
 @login_required
 def professor_notas(request):
-    return render(request, 'escola/professor_notas.html')
+    if not check_professor_permission(request.user):
+        return redirect('home')
+    
+    turmas = Turma.objects.all()
+    disciplinas = Disciplina.objects.all()
+    
+    turma_id = request.GET.get('turma')
+    disciplina_id = request.GET.get('disciplina')
+    
+    alunos = []
+    turma_selecionada = None
+    disciplina_selecionada = None
+    
+    if turma_id:
+        turma_selecionada = get_object_or_404(Turma, id=turma_id)
+        alunos = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
+        
+        if disciplina_id:
+            disciplina_selecionada = get_object_or_404(Disciplina, id=disciplina_id)
+            
+            for aluno in alunos:
+                matricula = Matricula.objects.filter(aluno=aluno, turma=turma_selecionada).first()
+                if matricula:
+                    notas = Nota.objects.filter(matricula=matricula, disciplina=disciplina_selecionada)
+                    aluno.notas_disciplina = list(notas)
+                    if notas:
+                        aluno.media = sum([float(n.valor) for n in notas]) / len(notas)
+                    else:
+                        aluno.media = 0
+    
+    context = {
+        'turmas': turmas,
+        'disciplinas': disciplinas,
+        'alunos': alunos,
+        'turma_selecionada': turma_selecionada,
+        'disciplina_selecionada': disciplina_selecionada
+    }
+    return render(request, 'escola/professor_notas.html', context)
+
+
+@login_required
+def professor_salvar_notas(request):
+    if not check_professor_permission(request.user):
+        return JsonResponse({'error': 'Não autorizado'}, status=403)
+    
+    if request.method == 'POST':
+        turma_id = request.POST.get('turma_id')
+        disciplina_id = request.POST.get('disciplina_id')
+        tipo_avaliacao = request.POST.get('tipo_avaliacao', 'Prova')
+        
+        turma = get_object_or_404(Turma, id=turma_id)
+        disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+        
+        for key, value in request.POST.items():
+            if key.startswith('nota_'):
+                aluno_id = key.replace('nota_', '')
+                try:
+                    aluno = Aluno.objects.get(id=aluno_id)
+                    matricula = Matricula.objects.filter(aluno=aluno, turma=turma).first()
+                    
+                    if matricula and value:
+                        Nota.objects.create(
+                            matricula=matricula,
+                            disciplina=disciplina,
+                            valor=Decimal(value),
+                            tipo_avaliacao=tipo_avaliacao
+                        )
+                except (Aluno.DoesNotExist, ValueError):
+                    continue
+        
+        messages.success(request, 'Notas salvas com sucesso!')
+        return redirect('professor_notas')
+    
+    return redirect('professor_notas')
+
 
 @login_required
 def professor_frequencia(request):
-    return render(request, 'escola/professor_frequencia.html')
+    if not check_professor_permission(request.user):
+        return redirect('home')
+    
+    turmas = Turma.objects.all()
+    disciplinas = Disciplina.objects.all()
+    
+    turma_id = request.GET.get('turma')
+    disciplina_id = request.GET.get('disciplina')
+    data = request.GET.get('data', timezone.now().strftime('%Y-%m-%d'))
+    
+    alunos = []
+    turma_selecionada = None
+    disciplina_selecionada = None
+    
+    if turma_id:
+        turma_selecionada = get_object_or_404(Turma, id=turma_id)
+        alunos = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
+        
+        if disciplina_id:
+            disciplina_selecionada = get_object_or_404(Disciplina, id=disciplina_id)
+    
+    context = {
+        'turmas': turmas,
+        'disciplinas': disciplinas,
+        'alunos': alunos,
+        'turma_selecionada': turma_selecionada,
+        'disciplina_selecionada': disciplina_selecionada,
+        'data_aula': data
+    }
+    return render(request, 'escola/professor_frequencia.html', context)
+
+
+@login_required
+def professor_salvar_frequencia(request):
+    if not check_professor_permission(request.user):
+        return JsonResponse({'error': 'Não autorizado'}, status=403)
+    
+    if request.method == 'POST':
+        turma_id = request.POST.get('turma_id')
+        disciplina_id = request.POST.get('disciplina_id')
+        data_aula = request.POST.get('data_aula')
+        
+        turma = get_object_or_404(Turma, id=turma_id)
+        disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+        
+        alunos = Aluno.objects.filter(turma_atual=turma)
+        
+        for aluno in alunos:
+            matricula = Matricula.objects.filter(aluno=aluno, turma=turma).first()
+            if matricula:
+                presente = request.POST.get(f'presente_{aluno.id}') == 'on'
+                
+                Frequencia.objects.update_or_create(
+                    matricula=matricula,
+                    disciplina=disciplina,
+                    data_aula=data_aula,
+                    defaults={'presente': presente}
+                )
+        
+        messages.success(request, 'Frequência salva com sucesso!')
+        return redirect('professor_frequencia')
+    
+    return redirect('professor_frequencia')
+
 
 @login_required
 def professor_materiais(request):
+    if not check_professor_permission(request.user):
+        return redirect('home')
     return render(request, 'escola/professor_materiais.html')
+
 
 @login_required
 def professor_calendario(request):
-    return render(request, 'escola/calendario.html') 
+    if not check_professor_permission(request.user):
+        return redirect('home')
+    
+    eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo')
+    eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
+    
+    context = {
+        'eventos_json': eventos_json,
+    }
+    return render(request, 'escola/professor_calendario.html', context)
+
 
 @login_required
 def professor_comunicados(request):
-    return render(request, 'escola/comunicados.html')
+    if not check_professor_permission(request.user):
+        return redirect('home')
+    
+    avisos = Aviso.objects.order_by('-data_criacao')
+    return render(request, 'escola/professor_comunicados.html', {'avisos': avisos})
+
 
 @login_required
 def professor_configuracoes(request):
-    return render(request, 'escola/configuracoes.html')
+    if not check_professor_permission(request.user):
+        return redirect('home')
+    return render(request, 'escola/professor_configuracoes.html')

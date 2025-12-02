@@ -1,333 +1,236 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Frequência</title>
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        .filtros-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #E0E0E0;
-        }
-        .filtros-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .filtro-item label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #092F76;
-        }
-        .filtro-item select, .filtro-item input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #E0E0E0;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-        .frequencia-table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #E0E0E0;
-            overflow-x: auto;
-        }
-        .frequencia-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .frequencia-table th, .frequencia-table td {
-            text-align: left;
-            padding: 15px;
-            border-bottom: 1px solid #E0E0E0;
-        }
-        .frequencia-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #092F76;
-        }
-        .checkbox-container {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .checkbox-container label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-        .checkbox-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-        .presente-checkbox {
-            accent-color: #28a745;
-        }
-        .falta-checkbox {
-            accent-color: #dc3545;
-        }
-        .btn-salvar-frequencia {
-            background-color: #092F76;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background-color 0.2s;
-        }
-        .btn-salvar-frequencia:hover {
-            background-color: #072763;
-        }
-        .percentual-frequencia {
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 12px;
-        }
-        .freq-boa {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .freq-atencao {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-        .freq-critica {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de Alcantara</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
-                <a href="lancamento-notas.html" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
-                <a href="frequencia.html" class="nav-item active"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
-                <a href="materiais.html" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
-                <a href="calendario.html" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
-                <a href="comunicados.html" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
-                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
-                <a href="index.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
-            </nav>
-        </aside>
+{% extends 'escola/base_professor.html' %}
+{% load static %}
 
-        <main class="main-content">
-            <div class="page-title-section">
-                <h1>Registro de Frequência</h1>
-                <p>Registre a presença e falta dos alunos</p>
-            </div>
+{% block title %}Frequência - Professor{% endblock %}
+{% block nav_frequencia %}active{% endblock %}
+{% block page_title %}Registro de Frequência{% endblock %}
 
-            <div class="filtros-container">
-                <h3>Selecione a Aula</h3>
-                <div class="filtros-grid">
-                    <div class="filtro-item">
-                        <label>Turma</label>
-                        <select>
-                            <option>Selecione a turma</option>
-                            <option>1º Ano A - Matemática</option>
-                            <option>2º Ano A - Matemática</option>
-                            <option selected>3º Ano A - Matemática</option>
-                            <option>3º Ano B - Matemática</option>
-                        </select>
-                    </div>
-                    <div class="filtro-item">
-                        <label>Data da Aula</label>
-                        <input type="date" value="2025-10-15">
-                    </div>
-                    <div class="filtro-item">
-                        <label>Horário</label>
-                        <select>
-                            <option>13:30 - 14:20</option>
-                            <option>14:20 - 15:10</option>
-                            <option>15:10 - 16:00</option>
-                            <option>16:00 - 16:50</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+{% block extra_css %}
+<style>
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+    }
+    
+    .filter-item label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #003366;
+    }
+    
+    .filter-item select,
+    .filter-item input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    
+    .frequencia-container {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .frequencia-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .frequencia-table th,
+    .frequencia-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .frequencia-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #003366;
+    }
+    
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .checkbox-wrapper input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #003366;
+    }
+    
+    .btn-salvar {
+        margin-top: 20px;
+        padding: 12px 32px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-salvar:hover {
+        background: #002244;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 48px;
+        color: #666;
+    }
+    
+    .marcar-todos {
+        margin-bottom: 16px;
+        display: flex;
+        gap: 12px;
+    }
+    
+    .marcar-todos button {
+        padding: 8px 16px;
+        border: 1px solid #003366;
+        background: white;
+        color: #003366;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    .marcar-todos button:hover {
+        background: #003366;
+        color: white;
+    }
+</style>
+{% endblock %}
 
-            <div class="frequencia-table-container">
-                <h3>3º Ano A - Matemática - 15/10/2025 - 13:30</h3>
-                <table class="frequencia-table">
-                    <thead>
-                        <tr>
-                            <th>Nº</th>
-                            <th>Nome do Aluno</th>
-                            <th>Presença</th>
-                            <th>% Frequência no Bimestre</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Ana Clara Silva</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-boa">95%</span></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Bruno Santos Costa</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-boa">92%</span></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Carla Fernandes Lima</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox">
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox" checked>
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-atencao">78%</span></td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Daniel Oliveira Souza</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-boa">88%</span></td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Eduarda Pereira Alves</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-critica">65%</span></td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>Felipe Rodrigues Barros</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-boa">97%</span></td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>Gabriela Martins Dias</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-boa">90%</span></td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>Henrique Almeida Rocha</td>
-                            <td>
-                                <div class="checkbox-container">
-                                    <label>
-                                        <input type="checkbox" class="presente-checkbox" checked>
-                                        Presente
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" class="falta-checkbox">
-                                        Falta
-                                    </label>
-                                </div>
-                            </td>
-                            <td><span class="percentual-frequencia freq-atencao">82%</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button class="btn-salvar-frequencia">
-                    <i class="ph ph-check-circle"></i>
-                    Salvar Frequência
-                </button>
-            </div>
-        </main>
+{% block content %}
+<div class="filter-section">
+    <h3>Selecione a Turma e Data</h3>
+    <form method="GET" class="filter-grid">
+        <div class="filter-item">
+            <label for="turma">Turma</label>
+            <select name="turma" id="turma" onchange="this.form.submit()">
+                <option value="">Selecione uma turma</option>
+                {% for turma in turmas %}
+                <option value="{{ turma.id }}" {% if turma_selecionada and turma.id == turma_selecionada.id %}selected{% endif %}>
+                    {{ turma.codigo }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="filter-item">
+            <label for="disciplina">Disciplina</label>
+            <select name="disciplina" id="disciplina" onchange="this.form.submit()">
+                <option value="">Selecione uma disciplina</option>
+                {% for disciplina in disciplinas %}
+                <option value="{{ disciplina.id }}" {% if disciplina_selecionada and disciplina.id == disciplina_selecionada.id %}selected{% endif %}>
+                    {{ disciplina.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="filter-item">
+            <label for="data">Data da Aula</label>
+            <input type="date" name="data" id="data" value="{{ data_aula }}" onchange="this.form.submit()">
+        </div>
+    </form>
+</div>
+
+{% if turma_selecionada and disciplina_selecionada %}
+<div class="frequencia-container">
+    <h3>{{ turma_selecionada.codigo }} - {{ disciplina_selecionada.nome }} - {{ data_aula }}</h3>
+    
+    {% if alunos %}
+    <form method="POST" action="{% url 'professor_salvar_frequencia' %}">
+        {% csrf_token %}
+        <input type="hidden" name="turma_id" value="{{ turma_selecionada.id }}">
+        <input type="hidden" name="disciplina_id" value="{{ disciplina_selecionada.id }}">
+        <input type="hidden" name="data_aula" value="{{ data_aula }}">
+        
+        <div class="marcar-todos">
+            <button type="button" onclick="marcarTodos(true)">Marcar Todos Presentes</button>
+            <button type="button" onclick="marcarTodos(false)">Desmarcar Todos</button>
+        </div>
+        
+        <table class="frequencia-table">
+            <thead>
+                <tr>
+                    <th>Nº</th>
+                    <th>Nome do Aluno</th>
+                    <th>Matrícula</th>
+                    <th>Presente</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ aluno.nome }}</td>
+                    <td>{{ aluno.matricula }}</td>
+                    <td>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" name="presente_{{ aluno.id }}" id="presente_{{ aluno.id }}" class="presenca-checkbox" checked>
+                            <label for="presente_{{ aluno.id }}">Presente</label>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <button type="submit" class="btn-salvar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Salvar Frequência
+        </button>
+    </form>
+    {% else %}
+    <div class="empty-state">
+        <p>Nenhum aluno encontrado nesta turma.</p>
     </div>
-    <script src="sistema.js"></script>
-</body>
-</html>
+    {% endif %}
+</div>
+{% else %}
+<div class="frequencia-container">
+    <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        <p style="margin-top: 16px;">Selecione uma turma, disciplina e data para registrar a frequência.</p>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function marcarTodos(checked) {
+    document.querySelectorAll('.presenca-checkbox').forEach(function(checkbox) {
+        checkbox.checked = checked;
+    });
+}
+</script>
+{% endblock %}
