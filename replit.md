@@ -81,19 +81,25 @@ escola/             # App principal com models, views, templates
 ### Comandos Úteis
 ```bash
 python manage.py migrate              # Aplicar migrações
+python manage.py criar_usuarios       # Criar usuários e grupos de demonstração
 python manage.py criar_dados_teste    # Criar dados de teste
 python manage.py collectstatic        # Coletar arquivos estáticos
 python manage.py createsuperuser      # Criar admin
 ```
 
+## Hierarquia de Permissões
+```
+Admin > Coordenação > Secretaria > Professor > Aluno
+```
+
 ## Credenciais de Teste
-| Usuário | Senha | Função |
-|---------|-------|--------|
-| admin | admin123 | Administrador |
-| secretaria | secre123 | Secretaria |
-| coordenacao | coord123 | Coordenação |
-| professor | prof123 | Professor |
-| lucas.oliveira | aluno123 | Aluno |
+| Usuário | Senha | Função | Grupo |
+|---------|-------|--------|-------|
+| admin | admin123 | Administrador | Admin |
+| coordenacao | coord123 | Coordenação | Coordenacao |
+| secretaria | secre123 | Secretaria | Secretaria |
+| professor | prof123 | Professor | Professor |
+| aluno | aluno123 | Aluno | Aluno |
 
 ## Servidor de Desenvolvimento
 - Porta: 5000
