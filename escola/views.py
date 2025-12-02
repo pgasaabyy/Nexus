@@ -55,7 +55,7 @@ def login_view(request):
                 return redirect('/admin/')
 
             # Aluno
-            if user.groups.filter(name='aluno').exists():
+            if hasattr(user, 'perfil_aluno'):
                 return redirect('dashboard_aluno')
 
             # Secretaria
@@ -63,7 +63,7 @@ def login_view(request):
                 return redirect('dashboard_secretaria')
 
             # Professor
-            if user.groups.filter(name='professor').exists():
+            if hasattr(user, 'perfil_professor'):
                 return redirect('dashboard_professor')
 
             # Coordenador

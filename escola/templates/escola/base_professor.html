@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Área do Professor{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inria+Sans:wght@400;700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">PA</div>
+                <span>Colégio Paulo de Alcantara</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard_professor' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard_professor' %}active{% endif %}">
+                    <i class="ph-bold ph-house"></i> <span>Dashboard</span>
+                </a>
+                
+                <a href="{% url 'professor_notas' %}" class="nav-item {% if request.resolver_match.url_name == 'professor_notas' %}active{% endif %}">
+                    <i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span>
+                </a>
+                
+                <a href="{% url 'professor_frequencia' %}" class="nav-item {% if request.resolver_match.url_name == 'professor_frequencia' %}active{% endif %}">
+                    <i class="ph-bold ph-user-list"></i> <span>Frequência</span>
+                </a>
+                
+                <a href="{% url 'professor_materiais' %}" class="nav-item {% if request.resolver_match.url_name == 'professor_materiais' %}active{% endif %}">
+                    <i class="ph-bold ph-books"></i> <span>Materiais</span>
+                </a>
+                
+                <a href="{% url 'professor_calendario' %}" class="nav-item {% if request.resolver_match.url_name == 'professor_calendario' %}active{% endif %}">
+                    <i class="ph-bold ph-calendar-blank"></i> <span>Calendário</span>
+                </a>
+                
+                <a href="{% url 'professor_comunicados' %}" class="nav-item {% if request.resolver_match.url_name == 'professor_comunicados' %}active{% endif %}">
+                    <i class="ph-bold ph-megaphone"></i> <span>Comunicados</span>
+                </a>
+                
+                <a href="{% url 'professor_configuracoes' %}" class="nav-item {% if request.resolver_match.url_name == 'professor_configuracoes' %}active{% endif %}">
+                    <i class="ph-bold ph-gear"></i> <span>Configurações</span>
+                </a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <span>{{ user.perfil_professor.nome|first }}</span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name">{{ user.perfil_professor.nome }}</p>
+                    <span class="user-role">Professor(a)</span>
+                </div>
+                <a href="/logout/" class="logout-btn" title="Sair">
+                    <i class="ph-bold ph-sign-out"></i>
+                </a>
+            </div>
+        </aside>
+
+        <main class="content">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script src="{% static 'js/sistema.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

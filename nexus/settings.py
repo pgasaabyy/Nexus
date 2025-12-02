@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'nexus',
         'USER': 'root',
-        'PASSWORD': 'admin1234',
+        'PASSWORD': '#ZkillerGamer15',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
@@ -137,7 +137,7 @@ import os
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    os.path.join(BASE_DIR, 'nexus/static')
 ]
 
 

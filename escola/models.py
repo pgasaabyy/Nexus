@@ -35,6 +35,8 @@ class Turma(models.Model):
         return f"{self.codigo} ({self.semestre})"
 
 class Professor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='perfil_professor')
+
     nome = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
