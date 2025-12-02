@@ -1,99 +1,70 @@
-# Nexus - Sistema de Gestão Escolar
+# NEXUS - Sistema de Gestão Escolar
 
-## Project Overview
-Nexus is a comprehensive school management system (Sistema de Gestão Escolar) developed for SENAI Morvan Figueiredo. It provides an integrated platform connecting administrators, secretariat, coordination, teachers, and students in a secure and scalable ecosystem.
+## Visão Geral
+Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação.
 
-## Technology Stack
-- **Framework**: Django 5.2.8
-- **Language**: Python 3.11
-- **Database**: PostgreSQL (Replit managed)
-- **Frontend**: HTML, CSS, JavaScript
-- **Libraries**: 
-  - Django REST Framework (API)
-  - ReportLab (PDF generation)
-  - Pillow (image handling)
-  - Django Import/Export (data management)
-  - psycopg2-binary (PostgreSQL adapter)
+## Alterações Recentes
+- **02/12/2025:** Migração para PostgreSQL, organização de rotas, criação de templates base padronizados
+- Corrigido sistema de autenticação com redirecionamento por função
+- Criado comando `criar_dados_teste` para popular o banco com dados de exemplo
+- Atualizado README com documentação completa
 
-## Project Structure
+## Arquitetura do Projeto
+
+### Estrutura Principal
 ```
-nexus/
-├── escola/                      # Main application
-│   ├── models.py               # Data models (Aluno, Professor, Turma, etc.)
-│   ├── views.py                # View controllers
-│   ├── templates/escola/       # HTML templates with Django inheritance
-│   │   ├── base_coordenacao.html   # Base template for coordination
-│   │   ├── base_professor.html     # Base template for professors
-│   │   ├── coor_*.html             # Coordination pages
-│   │   ├── professor_*.html        # Professor pages
-│   │   └── aluno_*.html            # Student pages
-│   └── static/escola/          # CSS, JS, images
-│       ├── css/aluno.css       # Main styling reference
-│       └── js/                 # JavaScript files
-├── nexus/                      # Project settings
-│   ├── settings.py             # Configuration
-│   └── urls.py                 # URL routing
-├── manage.py                   # Django management script
-└── run.sh                      # Server startup script (migrate + collectstatic + runserver)
+nexus/              # Configurações do projeto Django
+escola/             # App principal com models, views, templates
+  ├── management/   # Comandos de gerenciamento customizados
+  ├── static/       # CSS, JS, imagens
+  ├── templates/    # Templates HTML com herança
+  └── urls.py       # Rotas organizadas por função
 ```
 
-## Recent Changes (December 2, 2025)
-- Migrated from SQLite/MySQL to PostgreSQL (Replit managed database)
-- Applied all database migrations successfully
-- Converted templates to Django format with {% extends %} and {% block %}
-- Created base templates for coordenação and professor roles
-- Standardized CSS using aluno.css as reference
-- Configured Django to run on 0.0.0.0:5000 for Replit's proxy
-- Added CSRF_TRUSTED_ORIGINS for Replit domains
-- Fixed Python 3.11 compatibility with psycopg2-binary
-- run.sh now includes migration step before server start
+### Modelos de Dados
+- Curso, Disciplina, Turma
+- Professor, Aluno, Matrícula
+- Nota, Frequência
+- Aviso, Evento, HorarioAula, Documento
 
-## Key Features
-- **Academic Management**: Student enrollment, class schedules, grades
-- **Role-Based Access Control (RBAC)**: Admin, Secretariat, Coordination, Teachers, Students
-- **Dashboards**: Customized views for each user type
-- **API**: RESTful endpoints for data integration
-- **Reports**: PDF and Excel export capabilities
-- **Calendar & Events**: Academic calendar and event management
+### Templates Base
+- `base_aluno.html` - Layout para alunos
+- `base_professor.html` - Layout para professores
+- `base_secretaria.html` - Layout para secretaria
+- `base_coordenacao.html` - Layout para coordenação
 
-## User Roles
-| Role | Permissions | URL Prefix |
-|------|-------------|------------|
-| Admin/Secretariat | Full access, manage enrollments, generate reports | /secretaria/ |
-| Coordenação | Manage students, teachers, turmas, comunicados | /coordenacao/ |
-| Professor | Manage classes, input grades, track attendance | /professor/ |
-| Aluno (Student) | View grades, attendance, course materials | /aluno/ |
+## Configuração do Ambiente
 
-## Template Hierarchy
-Templates use Django template inheritance for consistency:
-- `base_coordenacao.html` - Base for all coordination pages
-- `base_professor.html` - Base for all professor pages  
-- All pages use `aluno.css` styling patterns
+### Variáveis de Ambiente
+- `DATABASE_URL` - URL de conexão PostgreSQL
+- `SECRET_KEY` - Chave secreta do Django
+- `DEBUG` - Modo de debug (True/False)
 
-## Database Models
-- **Aluno**: Student records
-- **Professor**: Teacher records
-- **Turma**: Class groups
-- **Matricula**: Enrollments
-- **Nota**: Grades
-- **Frequencia**: Attendance
-- **Aviso**: Announcements/Communications
-- **Evento**: Calendar events
+### Comandos Úteis
+```bash
+python manage.py migrate              # Aplicar migrações
+python manage.py criar_dados_teste    # Criar dados de teste
+python manage.py collectstatic        # Coletar arquivos estáticos
+python manage.py createsuperuser      # Criar admin
+```
 
-## Commands
-- Start server: `bash run.sh`
-- Manual start: `python3.11 manage.py runserver 0.0.0.0:5000`
-- Run migrations: `python3.11 manage.py migrate`
-- Create superuser: `python3.11 manage.py createsuperuser`
-- Collect static: `python3.11 manage.py collectstatic`
+## Credenciais de Teste
+| Usuário | Senha | Função |
+|---------|-------|--------|
+| admin | admin123 | Administrador |
+| secretaria | secre123 | Secretaria |
+| coordenacao | coord123 | Coordenação |
+| professor | prof123 | Professor |
+| lucas.oliveira | aluno123 | Aluno |
 
-## Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string (set by Replit)
-- `SECRET_KEY`: Django secret key
+## Servidor de Desenvolvimento
+- Porta: 5000
+- Comando: `bash run.sh`
+- URL: http://0.0.0.0:5000
 
-## Notes
-- Uses Python 3.11 explicitly due to package compatibility
-- Static files collected to /staticfiles/ for production
-- Uses PostgreSQL with SSL in production
-- All templates converted to Django format with proper inheritance
-- CSS styling standardized based on aluno.css patterns
+## Dependências Principais
+- Django 5.2.8
+- djangorestframework
+- psycopg2-binary (PostgreSQL)
+- reportlab (PDF)
+- openpyxl (Excel)

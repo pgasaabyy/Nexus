@@ -52,16 +52,28 @@ def login_view(request):
 
 
 def redirect_user_by_role(user):
+    """Redireciona o usuário para o dashboard apropriado baseado em sua função."""
     if user.is_superuser:
         return redirect('/admin/')
+    
+    # Verifica se é aluno
     if hasattr(user, 'perfil_aluno'):
         return redirect('dashboard_aluno')
-    if user.groups.filter(name__iexact='secretaria').exists():
-        return redirect('dashboard_secretaria')
+    
+    # Verifica se é professor
     if hasattr(user, 'perfil_professor'):
         return redirect('dashboard_professor')
-    if user.groups.filter(name__iexact='coordenacao').exists():
+    
+    # Verifica grupos de permissão
+    user_groups = user.groups.values_list('name', flat=True)
+    
+    if 'secretaria' in [g.lower() for g in user_groups]:
+        return redirect('dashboard_secretaria')
+    
+    if 'coordenacao' in [g.lower() for g in user_groups]:
         return redirect('dashboard_coordenacao')
+    
+    # Fallback para home
     return redirect('home')
 
 

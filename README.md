@@ -1,170 +1,254 @@
 <div align="center">
 
-  <img src="LINK_DA_SUA_LOGO_AQUI.png" alt="Nexus Logo" width="250">
+  <img src="escola/static/escola/img/icon-nexus.png" alt="Nexus Logo" width="100">
 
-  <h1>🏛️ Nexus - Sistema de Gestão Escolar Inteligente</h1>
+  <h1>NEXUS - Sistema de Gestão Escolar</h1>
 
   <p>
     <b>Centralização. Eficiência. Inovação.</b><br>
-    O futuro da gestão acadêmica no SENAI Morvan Figueiredo.
+    Sistema completo de gestão escolar desenvolvido em Django.
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-    <img src="https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django">
-    <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
-    <img src="https://img.shields.io/badge/Status-Em_Desenvolvimento-F7DF1E?style=for-the-badge&logo=insomnia&logoColor=black" alt="Status">
+    <img src="https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/Django-5.2-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django">
+    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
   </p>
 
 </div>
 
 ---
 
-## 🎯 Objetivo do Projeto
+## Funcionalidades
 
-> **O Problema:** Instituições de ensino sofrem com a fragmentação de dados, utilizando sistemas separados para notas, matrículas e frequência, gerando retrabalho e inconsistência.
+### Aluno
+- Dashboard com visão geral de notas e frequência
+- Visualização de boletim escolar
+- Consulta de frequência por disciplina
+- Grade de horários
+- Calendário de eventos
+- Exportação de boletim em PDF
+- Exportação de frequência em PDF e Excel
 
-> **A Solução Nexus:** Uma plataforma integrada que conecta **Direção, Secretaria, Professores e Alunos** em um único ecossistema seguro e escalável.
+### Professor
+- Dashboard com turmas e avisos
+- Lançamento de notas por turma/disciplina
+- Registro de frequência/chamada
+- Visualização de comunicados
+- Calendário de eventos
+
+### Secretaria
+- Dashboard com estatísticas gerais
+- Gestão de alunos (cadastro, busca, filtros)
+- Gestão de professores
+- Gestão acadêmica (cursos, turmas, disciplinas)
+- Emissão de documentos
+- Calendário institucional
+
+### Coordenação
+- Dashboard com indicadores
+- Gestão de turmas
+- Acompanhamento de alunos e professores
+- Relatórios gerenciais
+- Gestão de comunicados
+- Calendário pedagógico
 
 ---
 
-## 🚀 Funcionalidades & Módulos
+## Tecnologias
 
-### 🎓 Gestão Acadêmica
-
-- ✅ **Controle de Turmas:** Alocação inteligente de professores e grades curriculares.
-- ✅ **Matrícula Digital:** Vínculo de alunos com status (Ativo, Trancado, Concluído).
-- ✅ **Diário de Classe:** Lançamento rápido de frequência e conteúdo.
-
-### 📊 Dashboards e Intelligence
-
-- 📈 **API RESTful:** Dados em tempo real para criação de gráficos dinâmicos.
-- 📄 **Boletins PDF:** Geração automática de documentos oficiais.
-- 📑 **Exportação Excel:** Relatórios administrativos completos.
-
-### 👥 Segurança e Acesso (RBAC)
-
-| Perfil             | Permissões Principais                                       |
-|--------------------|-------------------------------------------------------------|
-| **Admin/Secretaria** | Acesso total, cadastros, matrículas e relatórios gerenciais. |
-| **Professor**        | Gestão de suas turmas, lançamento de notas e chamadas.      |
-| **Aluno**            | Visualização de boletim, faltas e materiais de aula.        |
+- **Backend:** Django 5.2
+- **Banco de Dados:** PostgreSQL
+- **Frontend:** HTML5, CSS3, JavaScript
+- **API:** Django REST Framework
+- **Relatórios:** ReportLab (PDF), OpenPyXL (Excel)
 
 ---
 
+## Instalação
 
-## 💻 Guia de Instalação Rápida
+### Requisitos
+- Python 3.11+
+- PostgreSQL
 
-Prepare seu ambiente de desenvolvimento em **3 minutos**.
+### Passos
 
-### 1. Pré-requisitos
-
-- Python 3.10+
-- MySQL Server 8.0+
-- Git
-
-### 2. Clonar e Configurar
-
+1. Clone o repositório:
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/pgasaabyy/Nexus.git
-cd Nexus
+git clone <url-do-repositorio>
+cd nexus
+```
 
-# 2. Crie o Ambiente Virtual
-python -m venv venv
-
-# 3. Ative o Ambiente
-# Windows:
-venv\Scripts\activate
-# Linux/Mac:
-source venv/bin/activate
-
-# 4. Instale as Dependências
+2. Instale as dependências:
+```bash
 pip install -r requirements.txt
-````
-
-### 3. Banco de Dados e Execução
-
-Abra seu MySQL e execute o comando SQL abaixo:
-
-```sql
-CREATE DATABASE nexus CHARACTER SET utf8mb4;
 ```
 
-Em seguida, volte ao terminal:
-
+3. Configure as variáveis de ambiente:
 ```bash
-# Migre a estrutura para o banco
-python manage.py makemigrations
-python manage.py migrate
-
-# Crie o usuário administrador
-python manage.py createsuperuser
-
-# Inicie o servidor
-python manage.py runserver
+export DATABASE_URL="postgresql://usuario:senha@host:porta/banco"
+export SECRET_KEY="sua-chave-secreta"
 ```
 
-🚀 Acesse: `http://127.0.0.1:8000/`
+4. Execute as migrações:
+```bash
+python manage.py migrate
+```
+
+5. Crie dados de teste (opcional):
+```bash
+python manage.py criar_dados_teste
+```
+
+6. Inicie o servidor:
+```bash
+python manage.py runserver 0.0.0.0:5000
+```
 
 ---
 
-## 📡 API Endpoints
+## Credenciais de Teste
 
-O Nexus é **API First**. Integre com PowerBI ou front-ends modernos.
+Após executar `criar_dados_teste`:
+
+| Usuário | Senha | Função |
+|---------|-------|--------|
+| admin | admin123 | Administrador |
+| secretaria | secre123 | Secretaria |
+| coordenacao | coord123 | Coordenação |
+| professor | prof123 | Professor |
+| lucas.oliveira | aluno123 | Aluno |
+| maria.santos | aluno123 | Aluno |
+
+---
+
+## Estrutura do Projeto
+
+```
+nexus/
+├── escola/                 # App principal
+│   ├── management/        # Comandos de gerenciamento
+│   ├── migrations/        # Migrações do banco
+│   ├── static/escola/     # Arquivos estáticos
+│   │   ├── css/          # Estilos
+│   │   ├── js/           # Scripts
+│   │   └── img/          # Imagens
+│   ├── templates/escola/  # Templates HTML
+│   ├── admin.py          # Configuração do admin
+│   ├── models.py         # Modelos de dados
+│   ├── serializers.py    # Serializers da API
+│   ├── urls.py           # Rotas da app
+│   └── views.py          # Views/Controllers
+├── nexus/                 # Configurações do projeto
+│   ├── settings.py       # Configurações
+│   ├── urls.py           # Rotas principais
+│   └── wsgi.py           # Configuração WSGI
+├── manage.py             # CLI do Django
+├── requirements.txt      # Dependências
+└── run.sh               # Script de inicialização
+```
+
+---
+
+## Modelos de Dados
+
+### Principais Entidades
+
+- **Curso:** Cursos oferecidos pela instituição
+- **Disciplina:** Disciplinas de cada curso
+- **Turma:** Turmas com código, semestre e turno
+- **Professor:** Professores com especialidade e vínculo
+- **Aluno:** Alunos com matrícula e dados pessoais
+- **Matrícula:** Vínculo aluno-turma com status
+- **Nota:** Notas por disciplina e tipo de avaliação
+- **Frequência:** Registro de presença por aula
+- **Aviso:** Comunicados para turmas
+- **Evento:** Eventos do calendário escolar
+- **HorarioAula:** Grade de horários por turma
+- **Documento:** Documentos emitidos
+
+---
+
+## API REST
+
+Endpoints disponíveis:
 
 ```http
-GET /api/alunos/  # Listagem completa de discentes
-GET /api/notas/   # Histórico acadêmico
-GET /api/turmas/  # Grades ativas
+GET /api/alunos/      # Listagem de alunos
+POST /api/alunos/     # Criar aluno
+GET /api/notas/       # Listagem de notas
+POST /api/notas/      # Criar nota
 ```
 
 ---
 
-## 🤝 Time de Desenvolvimento
+## Segurança
+
+- Autenticação baseada em sessão do Django
+- Controle de acesso por grupos de permissão
+- Proteção CSRF em todos os formulários
+- Validação de permissões por view
+
+---
+
+## Desenvolvimento
+
+### Executar migrações
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Coletar arquivos estáticos
+```bash
+python manage.py collectstatic
+```
+
+### Criar superusuário
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+## Time de Desenvolvimento
 
 <table align="center">
   <tr>
     <td align="center">
       <a href="https://github.com/pgasaabyy">
-        <img src="https://avatars.githubusercontent.com/u/178240823?v=4" width="100px;" alt="Foto pgasaabyy"/>
-        <br />
-        <sub><b>pgasaabyy</b></sub>
+        <img src="https://avatars.githubusercontent.com/u/178240823?v=4" width="80px;" alt="pgasaabyy"/>
+        <br /><sub><b>pgasaabyy</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/juliamodena15">
-        <img src="https://avatars.githubusercontent.com/u/183606987?v=4" width="100px;" alt="Foto Julia"/>
-        <br />
-        <sub><b>Julia Modena</b></sub>
+        <img src="https://avatars.githubusercontent.com/u/183606987?v=4" width="80px;" alt="Julia"/>
+        <br /><sub><b>Julia Modena</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/larissasalmeida6-hub">
-        <img src="https://avatars.githubusercontent.com/u/235154108?v=4" width="100px;" alt="Foto Larissa"/>
-        <br />
-        <sub><b>Larissa Almeida</b></sub>
+        <img src="https://avatars.githubusercontent.com/u/235154108?v=4" width="80px;" alt="Larissa"/>
+        <br /><sub><b>Larissa Almeida</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/MaviSz01">
-        <img src="https://avatars.githubusercontent.com/u/176519382?v=4" width="100px;" alt="Foto MaviSz01"/>
-        <br />
-        <sub><b>MaviSz01</b></sub>
+        <img src="https://avatars.githubusercontent.com/u/176519382?v=4" width="80px;" alt="MaviSz01"/>
+        <br /><sub><b>MaviSz01</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/Natan-Sant">
-        <img src="https://avatars.githubusercontent.com/u/177337038?v=4" width="100px;" alt="Foto Natan"/>
-        <br />
-        <sub><b>Natan Sant'anna</b></sub>
+        <img src="https://avatars.githubusercontent.com/u/177337038?v=4" width="80px;" alt="Natan"/>
+        <br /><sub><b>Natan Sant'anna</b></sub>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/wellxsz">
-        <img src="https://avatars.githubusercontent.com/u/177960375?v=4" width="100px;" alt="Foto Well"/>
-        <br />
-        <sub><b>wellxsz</b></sub>
+        <img src="https://avatars.githubusercontent.com/u/177960375?v=4" width="80px;" alt="Well"/>
+        <br /><sub><b>wellxsz</b></sub>
       </a>
     </td>
   </tr>
@@ -174,8 +258,7 @@ GET /api/turmas/  # Grades ativas
 
 <div align="center">
   <p>
-    Desenvolvido com 💙 para o <b>Trabalho de Conclusão de Curso - Sistema de Gestão Escolar</b><br>
+    Desenvolvido para o <b>Trabalho de Conclusão de Curso - Sistema de Gestão Escolar</b><br>
     SENAI Morvan Figueiredo - 2025
   </p>
 </div>
-
