@@ -1,0 +1,184 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | NEXUS Admin{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'escola/img/logo-nexus.png' %}" alt="NEXUS" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        <span style="color: white; font-weight: 700; font-size: 1.4rem;">NEXUS</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    :root {
+        --nexus-primary: #092f76;
+        --nexus-secondary: #8ed6d7;
+        --nexus-accent: #003D96;
+        --nexus-light: #EDEED9;
+        --nexus-dark: #1a1a1a;
+    }
+    
+    #header {
+        background: linear-gradient(90deg, var(--nexus-primary) 0%, var(--nexus-accent) 100%) !important;
+        padding: 15px 20px;
+    }
+    
+    #site-name a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+    
+    #branding h1, #branding h1 a {
+        color: white !important;
+    }
+    
+    .module h2, .module caption {
+        background: var(--nexus-primary) !important;
+        color: white !important;
+    }
+    
+    div.breadcrumbs {
+        background: var(--nexus-secondary) !important;
+        color: var(--nexus-primary) !important;
+    }
+    
+    div.breadcrumbs a {
+        color: var(--nexus-primary) !important;
+    }
+    
+    a:link, a:visited {
+        color: var(--nexus-primary);
+    }
+    
+    input[type="submit"], button[type="submit"], .submit-row input {
+        background: var(--nexus-primary) !important;
+        border-color: var(--nexus-primary) !important;
+    }
+    
+    input[type="submit"]:hover, button[type="submit"]:hover {
+        background: var(--nexus-accent) !important;
+    }
+    
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: var(--nexus-primary) !important;
+    }
+    
+    .button.default, input[type=submit].default, .submit-row input.default {
+        background: var(--nexus-secondary) !important;
+        color: var(--nexus-primary) !important;
+    }
+    
+    #changelist-filter h2, #changelist-filter h3 {
+        background: var(--nexus-primary) !important;
+    }
+    
+    .selector-chosen h2 {
+        background: var(--nexus-primary) !important;
+    }
+    
+    tr.row-even, tr.row-odd {
+        background: var(--nexus-light) !important;
+    }
+    
+    tr.row-even:hover, tr.row-odd:hover {
+        background: #d0e8e9 !important;
+    }
+    
+    #user-tools {
+        background: transparent;
+    }
+    
+    #user-tools a {
+        color: white !important;
+        border-color: rgba(255,255,255,0.3);
+    }
+    
+    #user-tools a:hover {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    body {
+        font-family: 'Poppins', 'Roboto', sans-serif;
+    }
+    
+    #container {
+        background: #f4f6f9;
+    }
+    
+    #content {
+        padding: 20px 40px;
+    }
+    
+    .module {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    .module h2 {
+        padding: 12px 15px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    #changelist table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    th {
+        background: var(--nexus-primary) !important;
+        color: white !important;
+    }
+    
+    th a {
+        color: white !important;
+    }
+    
+    .object-tools a {
+        background: var(--nexus-secondary) !important;
+        color: var(--nexus-primary) !important;
+    }
+    
+    .object-tools a:hover {
+        background: var(--nexus-primary) !important;
+        color: white !important;
+    }
+    
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        text-align: center;
+        border-left: 4px solid var(--nexus-primary);
+    }
+    
+    .stat-card h3 {
+        font-size: 2.5rem;
+        color: var(--nexus-primary);
+        margin: 0;
+    }
+    
+    .stat-card p {
+        color: #666;
+        margin: 5px 0 0;
+        font-size: 0.9rem;
+    }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}

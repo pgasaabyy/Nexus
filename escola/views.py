@@ -681,10 +681,12 @@ def coordenacao_calendario(request):
     if not check_coordenacao_permission(request.user):
         return redirect('home')
     
+    eventos = Evento.objects.select_related('turma').order_by('-data')
     eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo')
     eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
     
     context = {
+        'eventos': eventos,
         'eventos_json': eventos_json,
     }
     return render(request, 'escola/coor_calendario.html', context)
@@ -928,3 +930,192 @@ def professor_configuracoes(request):
     if not check_professor_permission(request.user):
         return redirect('home')
     return render(request, 'escola/professor_configuracoes.html')
+
+
+@login_required
+def secretaria_aluno_adicionar(request):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        cpf = request.POST.get('cpf')
+        matricula = request.POST.get('matricula')
+        data_nascimento = request.POST.get('data_nascimento')
+        telefone = request.POST.get('telefone')
+        turma_id = request.POST.get('turma_id')
+        
+        if nome and email and cpf and matricula and data_nascimento:
+            try:
+                aluno = Aluno(
+                    nome=nome,
+                    email=email,
+                    cpf=cpf,
+                    matricula=matricula,
+                    data_nascimento=data_nascimento,
+                    telefone=telefone
+                )
+                if turma_id:
+                    aluno.turma_atual_id = turma_id
+                aluno.save()
+                
+                if turma_id:
+                    Matricula.objects.create(
+                        aluno=aluno,
+                        turma_id=turma_id,
+                        status='Ativo'
+                    )
+                
+                messages.success(request, f'Aluno {nome} cadastrado com sucesso!')
+                return redirect('secretaria_alunos')
+            except Exception as e:
+                messages.error(request, f'Erro ao cadastrar aluno: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return render(request, 'escola/secre_aluno_form.html', {'turmas': turmas, 'acao': 'Adicionar'})
+
+
+@login_required
+def secretaria_aluno_editar(request, aluno_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    aluno = get_object_or_404(Aluno, id=aluno_id)
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        aluno.nome = request.POST.get('nome')
+        aluno.email = request.POST.get('email')
+        aluno.cpf = request.POST.get('cpf')
+        aluno.matricula = request.POST.get('matricula')
+        aluno.data_nascimento = request.POST.get('data_nascimento')
+        aluno.telefone = request.POST.get('telefone')
+        turma_id = request.POST.get('turma_id')
+        
+        if turma_id:
+            aluno.turma_atual_id = turma_id
+        else:
+            aluno.turma_atual = None
+        
+        try:
+            aluno.save()
+            messages.success(request, f'Aluno {aluno.nome} atualizado com sucesso!')
+            return redirect('secretaria_alunos')
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar aluno: {str(e)}')
+    
+    return render(request, 'escola/secre_aluno_form.html', {
+        'turmas': turmas, 
+        'aluno': aluno, 
+        'acao': 'Editar'
+    })
+
+
+@login_required
+def secretaria_aluno_excluir(request, aluno_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    aluno = get_object_or_404(Aluno, id=aluno_id)
+    
+    if request.method == 'POST':
+        nome = aluno.nome
+        aluno.delete()
+        messages.success(request, f'Aluno {nome} excluído com sucesso!')
+        return redirect('secretaria_alunos')
+    
+    return render(request, 'escola/secre_aluno_excluir.html', {'aluno': aluno})
+
+
+@login_required
+def coordenacao_evento_adicionar(request):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        data = request.POST.get('data')
+        tipo = request.POST.get('tipo')
+        descricao = request.POST.get('descricao')
+        turma_id = request.POST.get('turma_id')
+        
+        if titulo and data and tipo:
+            evento = Evento(
+                titulo=titulo,
+                data=data,
+                tipo=tipo,
+                descricao=descricao
+            )
+            if turma_id:
+                evento.turma_id = turma_id
+            evento.save()
+            messages.success(request, f'Evento "{titulo}" criado com sucesso!')
+            return redirect('coordenacao_calendario')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return render(request, 'escola/coor_evento_form.html', {
+        'turmas': turmas,
+        'tipos': Evento.TIPO_CHOICES,
+        'acao': 'Adicionar'
+    })
+
+
+@login_required
+def coordenacao_evento_editar(request, evento_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    evento = get_object_or_404(Evento, id=evento_id)
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        evento.titulo = request.POST.get('titulo')
+        evento.data = request.POST.get('data')
+        evento.tipo = request.POST.get('tipo')
+        evento.descricao = request.POST.get('descricao')
+        turma_id = request.POST.get('turma_id')
+        
+        if turma_id:
+            evento.turma_id = turma_id
+        else:
+            evento.turma = None
+        
+        evento.save()
+        messages.success(request, f'Evento "{evento.titulo}" atualizado com sucesso!')
+        return redirect('coordenacao_calendario')
+    
+    return render(request, 'escola/coor_evento_form.html', {
+        'turmas': turmas,
+        'evento': evento,
+        'tipos': Evento.TIPO_CHOICES,
+        'acao': 'Editar'
+    })
+
+
+@login_required
+def coordenacao_evento_excluir(request, evento_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    evento = get_object_or_404(Evento, id=evento_id)
+    
+    if request.method == 'POST':
+        titulo = evento.titulo
+        evento.delete()
+        messages.success(request, f'Evento "{titulo}" excluído com sucesso!')
+        return redirect('coordenacao_calendario')
+    
+    return render(request, 'escola/coor_evento_excluir.html', {'evento': evento})

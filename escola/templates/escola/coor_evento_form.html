@@ -1,0 +1,152 @@
+{% extends 'escola/base_coordenacao.html' %}
+
+{% block title %}{{ acao }} Evento - Coordenação{% endblock %}
+{% block nav_calendario %}active{% endblock %}
+{% block page_title %}{{ acao }} Evento{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        max-width: 600px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #092f76;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #8ed6d7;
+        outline: none;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .btn-submit {
+        background: #092f76;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .btn-submit:hover {
+        background: #003D96;
+    }
+    
+    .btn-cancel {
+        background: #f0f0f0;
+        color: #333;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.3s;
+    }
+    
+    .btn-cancel:hover {
+        background: #e0e0e0;
+    }
+    
+    .required-field::after {
+        content: " *";
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="titulo" class="required-field">Título do Evento</label>
+            <input type="text" name="titulo" id="titulo" required value="{{ evento.titulo|default:'' }}" placeholder="Digite o título do evento">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="data" class="required-field">Data</label>
+                <input type="date" name="data" id="data" required value="{{ evento.data|date:'Y-m-d' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="tipo" class="required-field">Tipo</label>
+                <select name="tipo" id="tipo" required>
+                    <option value="">Selecione o tipo</option>
+                    {% for value, label in tipos %}
+                    <option value="{{ value }}" {% if evento.tipo == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="turma_id">Turma (opcional)</label>
+            <select name="turma_id" id="turma_id">
+                <option value="">Todas as turmas</option>
+                {% for turma in turmas %}
+                <option value="{{ turma.id }}" {% if evento.turma.id == turma.id %}selected{% endif %}>
+                    {{ turma.codigo }} - {{ turma.curso.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea name="descricao" id="descricao" placeholder="Digite uma descrição para o evento (opcional)">{{ evento.descricao|default:'' }}</textarea>
+        </div>
+        
+        <div class="btn-group">
+            <button type="submit" class="btn-submit">{{ acao }} Evento</button>
+            <a href="{% url 'coordenacao_calendario' %}" class="btn-cancel">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

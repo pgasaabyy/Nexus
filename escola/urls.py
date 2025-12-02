@@ -34,6 +34,9 @@ urlpatterns = [
     # Dashboard Secretaria
     path('dashboard/secretaria/', views.dashboard_secretaria, name='dashboard_secretaria'),
     path('dashboard/secretaria/alunos/', views.secretaria_alunos, name='secretaria_alunos'),
+    path('dashboard/secretaria/alunos/adicionar/', views.secretaria_aluno_adicionar, name='secretaria_aluno_adicionar'),
+    path('dashboard/secretaria/alunos/<int:aluno_id>/editar/', views.secretaria_aluno_editar, name='secretaria_aluno_editar'),
+    path('dashboard/secretaria/alunos/<int:aluno_id>/excluir/', views.secretaria_aluno_excluir, name='secretaria_aluno_excluir'),
     path('dashboard/secretaria/professores/', views.secretaria_professores, name='secretaria_professores'),
     path('dashboard/secretaria/academico/', views.secretaria_academico, name='secretaria_academico'),
     path('dashboard/secretaria/documentos/', views.secretaria_documentos, name='secretaria_documentos'),
@@ -47,6 +50,9 @@ urlpatterns = [
     path('dashboard/coordenacao/professores/', views.coordenacao_professores, name='coordenacao_professores'),
     path('dashboard/coordenacao/relatorios/', views.coordenacao_relatorios, name='coordenacao_relatorios'),
     path('dashboard/coordenacao/calendario/', views.coordenacao_calendario, name='coordenacao_calendario'),
+    path('dashboard/coordenacao/calendario/evento/adicionar/', views.coordenacao_evento_adicionar, name='coordenacao_evento_adicionar'),
+    path('dashboard/coordenacao/calendario/evento/<int:evento_id>/editar/', views.coordenacao_evento_editar, name='coordenacao_evento_editar'),
+    path('dashboard/coordenacao/calendario/evento/<int:evento_id>/excluir/', views.coordenacao_evento_excluir, name='coordenacao_evento_excluir'),
     path('dashboard/coordenacao/comunicados/', views.coordenacao_comunicados, name='coordenacao_comunicados'),
     path('dashboard/coordenacao/configuracoes/', views.coordenacao_configuracoes, name='coordenacao_configuracoes'),
 ]

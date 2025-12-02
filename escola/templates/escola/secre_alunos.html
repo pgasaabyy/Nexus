@@ -26,7 +26,7 @@
         <main class="main-content">
             <header class="main-header">
                 <h1>Gestão de Alunos</h1>
-                <a href="/admin/escola/aluno/add/" target="_blank" class="btn-action primary">+ Novo Aluno</a>
+                <a href="{% url 'secretaria_aluno_adicionar' %}" class="btn-action primary">+ Novo Aluno</a>
             </header>
 
             <div class="search-box">
@@ -45,7 +45,10 @@
                             <td>{{ aluno.turma_atual.codigo|default:"-" }}</td>
                             <td>{{ aluno.email }}</td>
                             <td><span class="status-tag ativo">Ativo</span></td>
-                            <td><a href="/admin/escola/aluno/{{ aluno.id }}/change/" target="_blank" style="color:#092F76;"><i class="ph ph-pencil-simple"></i></a></td>
+                            <td>
+                                <a href="{% url 'secretaria_aluno_editar' aluno.id %}" style="color:#092F76; margin-right: 10px;" title="Editar"><i class="ph ph-pencil-simple"></i></a>
+                                <a href="{% url 'secretaria_aluno_excluir' aluno.id %}" style="color:#dc3545;" title="Excluir"><i class="ph ph-trash"></i></a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr><td colspan="6" style="text-align:center;">Nenhum aluno encontrado.</td></tr>

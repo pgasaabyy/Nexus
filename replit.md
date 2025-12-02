@@ -4,10 +4,15 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação.
 
 ## Alterações Recentes
-- **02/12/2025:** Migração para PostgreSQL, organização de rotas, criação de templates base padronizados
+- **02/12/2025:** Implementação de CRUD completo para alunos (secretaria) e eventos (coordenação)
+- Novo branding NEXUS com logo atualizado em todas as páginas
+- Formulários de adicionar/editar/excluir alunos na secretaria
+- Gerenciamento de eventos do calendário escolar com filtros por tipo
+- Sistema de comunicados para envio de avisos às turmas
+- Correções de permissões de acesso por função
+- Migração para PostgreSQL, organização de rotas, criação de templates base padronizados
 - Corrigido sistema de autenticação com redirecionamento por função
 - Criado comando `criar_dados_teste` para popular o banco com dados de exemplo
-- Atualizado README com documentação completa
 
 ## Arquitetura do Projeto
 
@@ -32,6 +37,39 @@ escola/             # App principal com models, views, templates
 - `base_professor.html` - Layout para professores
 - `base_secretaria.html` - Layout para secretaria
 - `base_coordenacao.html` - Layout para coordenação
+
+### Funcionalidades por Perfil
+
+**Aluno:**
+- Visualizar boletim e frequência
+- Exportar boletim em PDF
+- Ver calendário e horários
+- Justificar faltas
+
+**Professor:**
+- Lançar notas e frequência
+- Gerenciar materiais didáticos
+- Enviar comunicados
+- Ver calendário
+
+**Secretaria:**
+- CRUD completo de alunos (adicionar/editar/excluir)
+- Gerenciar professores e turmas
+- Emitir documentos
+- Visualizar calendário acadêmico
+
+**Coordenação:**
+- Gerenciar eventos do calendário (adicionar/editar/excluir)
+- Enviar comunicados às turmas
+- Gerar relatórios
+- Supervisionar turmas e alunos
+
+### URLs Importantes
+- `/` - Página inicial
+- `/login/` - Login
+- `/dashboard/secretaria/alunos/adicionar/` - Adicionar aluno
+- `/dashboard/coordenacao/calendario/evento/adicionar/` - Adicionar evento
+- `/dashboard/coordenacao/comunicados/` - Enviar comunicados
 
 ## Configuração do Ambiente
 

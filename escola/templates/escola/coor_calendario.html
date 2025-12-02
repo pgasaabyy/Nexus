@@ -4,17 +4,223 @@
 {% block nav_calendario %}active{% endblock %}
 {% block page_title %}Calendário Escolar{% endblock %}
 
+{% block extra_css %}
+<style>
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .btn-add-event {
+        background: #092f76;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.3s;
+    }
+    
+    .btn-add-event:hover {
+        background: #003D96;
+        color: white;
+    }
+    
+    .events-container {
+        display: grid;
+        gap: 16px;
+    }
+    
+    .event-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid #8ed6d7;
+    }
+    
+    .event-card.feriado { border-left-color: #FF6B9D; }
+    .event-card.prova { border-left-color: #FF9800; }
+    .event-card.trabalho { border-left-color: #4CAF50; }
+    .event-card.reuniao { border-left-color: #2196F3; }
+    .event-card.evento { border-left-color: #9C27B0; }
+    
+    .event-info h4 {
+        color: #092f76;
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+    }
+    
+    .event-meta {
+        display: flex;
+        gap: 16px;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .event-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .event-type {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .event-type.feriado { background: #FFE0EB; color: #FF6B9D; }
+    .event-type.prova { background: #FFF3E0; color: #FF9800; }
+    .event-type.trabalho { background: #E8F5E9; color: #4CAF50; }
+    .event-type.reuniao { background: #E3F2FD; color: #2196F3; }
+    .event-type.evento { background: #F3E5F5; color: #9C27B0; }
+    
+    .event-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .event-actions a {
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background 0.3s;
+    }
+    
+    .btn-edit {
+        background: #f0f0f0;
+        color: #333;
+    }
+    
+    .btn-edit:hover {
+        background: #e0e0e0;
+    }
+    
+    .btn-delete {
+        background: #ffe0e0;
+        color: #dc3545;
+    }
+    
+    .btn-delete:hover {
+        background: #ffd0d0;
+    }
+    
+    .empty-events {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+    
+    .empty-events i {
+        font-size: 48px;
+        color: #ddd;
+        margin-bottom: 16px;
+    }
+    
+    .filter-section {
+        margin-bottom: 24px;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: #092f76;
+        color: white;
+        border-color: #092f76;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="content-card">
-    <div class="card-header">
-        <h3>Eventos do Calendário</h3>
+<div class="calendar-header">
+    <div class="filter-section">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="feriado">Feriados</button>
+        <button class="filter-btn" data-filter="prova">Provas</button>
+        <button class="filter-btn" data-filter="trabalho">Trabalhos</button>
+        <button class="filter-btn" data-filter="reuniao">Reuniões</button>
+        <button class="filter-btn" data-filter="evento">Eventos</button>
     </div>
-    <div class="card-body">
-        <p>Calendário em construção. Os eventos serão exibidos aqui.</p>
-    </div>
+    <a href="{% url 'coordenacao_evento_adicionar' %}" class="btn-add-event">
+        <i class="ph ph-plus"></i> Novo Evento
+    </a>
+</div>
+
+<div class="events-container">
+    {% if eventos %}
+        {% for evento in eventos %}
+        <div class="event-card {{ evento.tipo|lower }}" data-type="{{ evento.tipo|lower }}">
+            <div class="event-info">
+                <h4>{{ evento.titulo }}</h4>
+                <div class="event-meta">
+                    <span><i class="ph ph-calendar"></i> {{ evento.data|date:"d/m/Y" }}</span>
+                    {% if evento.turma %}
+                    <span><i class="ph ph-users"></i> {{ evento.turma.codigo }}</span>
+                    {% else %}
+                    <span><i class="ph ph-users"></i> Todas as turmas</span>
+                    {% endif %}
+                </div>
+                {% if evento.descricao %}
+                <p style="color: #666; margin-top: 8px; font-size: 0.9rem;">{{ evento.descricao|truncatewords:20 }}</p>
+                {% endif %}
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span class="event-type {{ evento.tipo|lower }}">{{ evento.get_tipo_display }}</span>
+                <div class="event-actions">
+                    <a href="{% url 'coordenacao_evento_editar' evento.id %}" class="btn-edit"><i class="ph ph-pencil-simple"></i> Editar</a>
+                    <a href="{% url 'coordenacao_evento_excluir' evento.id %}" class="btn-delete"><i class="ph ph-trash"></i> Excluir</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-events">
+            <i class="ph ph-calendar-x"></i>
+            <h3>Nenhum evento cadastrado</h3>
+            <p>Clique em "Novo Evento" para adicionar o primeiro evento ao calendário.</p>
+        </div>
+    {% endif %}
 </div>
 
 <script>
-const ALL_EVENTS = JSON.parse('{{ eventos_json|safe|default:"[]" }}');
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        document.querySelectorAll('.event-card').forEach(card => {
+            if (filter === 'all' || card.dataset.type === filter) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
 </script>
 {% endblock %}

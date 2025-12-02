@@ -1,0 +1,94 @@
+{% extends 'escola/base_coordenacao.html' %}
+
+{% block title %}Excluir Evento - Coordenação{% endblock %}
+{% block nav_calendario %}active{% endblock %}
+{% block page_title %}Excluir Evento{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirm-container {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        max-width: 500px;
+        text-align: center;
+    }
+    
+    .warning-icon {
+        font-size: 64px;
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+    
+    .confirm-title {
+        color: #092f76;
+        margin-bottom: 15px;
+    }
+    
+    .confirm-text {
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .evento-name {
+        font-weight: 700;
+        color: #333;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .btn-delete:hover {
+        background: #c82333;
+    }
+    
+    .btn-cancel {
+        background: #f0f0f0;
+        color: #333;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .btn-cancel:hover {
+        background: #e0e0e0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirm-container">
+    <div class="warning-icon">⚠️</div>
+    <h2 class="confirm-title">Confirmar Exclusão</h2>
+    <p class="confirm-text">
+        Tem certeza que deseja excluir o evento<br>
+        <span class="evento-name">"{{ evento.titulo }}"</span>?<br>
+        <small>Data: {{ evento.data|date:"d/m/Y" }}</small><br><br>
+        Esta ação não pode ser desfeita.
+    </p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit" class="btn-delete">Sim, Excluir</button>
+            <a href="{% url 'coordenacao_calendario' %}" class="btn-cancel">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
