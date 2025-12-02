@@ -30,3 +30,6 @@ reportlab
 sqlparse
 tablib
 tzdata
+dj-database-url
+gunicorn
+whitenoise
