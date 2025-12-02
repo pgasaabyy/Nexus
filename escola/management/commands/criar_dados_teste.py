@@ -82,20 +82,27 @@ class Command(BaseCommand):
             user_prof.first_name = 'Carlos'
             user_prof.last_name = 'Professor'
             user_prof.save()
-            
-            professor, _ = Professor.objects.get_or_create(
-                email='professor@nexus.com',
-                defaults={
-                    'user': user_prof,
-                    'nome': 'Prof. Carlos Silva',
-                    'telefone': '(11) 99999-1234',
-                    'especialidade': 'Matemática',
-                    'data_admissao': date(2020, 3, 1)
-                }
-            )
-            self.stdout.write(self.style.SUCCESS('Usuário professor criado (senha: prof123)'))
         else:
-            professor = Professor.objects.filter(email='professor@nexus.com').first()
+            user_prof = User.objects.get(username='professor')
+        
+        professor, created = Professor.objects.get_or_create(
+            email='professor@nexus.com',
+            defaults={
+                'user': user_prof,
+                'nome': 'Prof. Carlos Silva',
+                'telefone': '(11) 99999-1234',
+                'especialidade': 'Matemática',
+                'data_admissao': date(2020, 3, 1)
+            }
+        )
+        
+        # Garantir vínculo do professor com o usuário
+        if professor.user != user_prof:
+            professor.user = user_prof
+            professor.save()
+        
+        if created:
+            self.stdout.write(self.style.SUCCESS('Usuário professor criado (senha: prof123)'))
         
         # Criar mais professores
         for i, nome in enumerate(['Ana Professora', 'Pedro Professor', 'Julia Professora']):
@@ -142,6 +149,12 @@ class Command(BaseCommand):
                     'turma_atual': turma
                 }
             )
+            
+            # Garantir vínculo do aluno com o usuário mesmo se já existia
+            if aluno.user != user_aluno:
+                aluno.user = user_aluno
+                aluno.save()
+            
             alunos.append(aluno)
             
             # Criar matrícula

@@ -56,12 +56,33 @@ def redirect_user_by_role(user):
     if user.is_superuser:
         return redirect('/admin/')
     
-    # Verifica se é aluno
-    if hasattr(user, 'perfil_aluno'):
+    # Verifica se é aluno (via OneToOne relationship)
+    try:
+        if hasattr(user, 'perfil_aluno') and user.perfil_aluno:
+            return redirect('dashboard_aluno')
+    except Aluno.DoesNotExist:
+        pass
+    
+    # Verifica se é professor (via OneToOne relationship)
+    try:
+        if hasattr(user, 'perfil_professor') and user.perfil_professor:
+            return redirect('dashboard_professor')
+    except Professor.DoesNotExist:
+        pass
+    
+    # Fallback: tenta encontrar por email
+    if Aluno.objects.filter(email=user.email).exists():
+        aluno = Aluno.objects.get(email=user.email)
+        if not aluno.user:
+            aluno.user = user
+            aluno.save()
         return redirect('dashboard_aluno')
     
-    # Verifica se é professor
-    if hasattr(user, 'perfil_professor'):
+    if Professor.objects.filter(email=user.email).exists():
+        professor = Professor.objects.get(email=user.email)
+        if not professor.user:
+            professor.user = user
+            professor.save()
         return redirect('dashboard_professor')
     
     # Verifica grupos de permissão
