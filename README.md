@@ -1,7 +1,6 @@
 <div align="center">
 
-  <img src="LINK_DA_SUA_LOGO_AQUI.png" alt="Nexus Logo" width="250">
-
+  <img src="escola/static/escola/img/icon-nexus.png" alt="Nexus Logo" width="100">
   <h1>🏛️ Nexus - Sistema de Gestão Escolar Inteligente</h1>
 
   <p>
