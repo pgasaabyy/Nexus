@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="escola/static/escola/img/icon-nexus.png" alt="Nexus Logo" width="100">
+<img src="Nexus/escola/static/escola/img/icon-nexus.png" alt="Nexus Logo" width="100">
 
   <h1>NEXUS - Sistema de Gestão Escolar</h1>
 
