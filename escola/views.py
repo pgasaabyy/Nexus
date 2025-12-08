@@ -900,16 +900,25 @@ def secretaria_academico(request):
             semestre = request.POST.get('semestre')
             turno = request.POST.get('turno')
             curso_id = request.POST.get('curso_id')
+            professores_ids = request.POST.getlist('professores')
             if codigo and semestre and turno and curso_id:
                 try:
-                    curso = Curso.objects.get(id=curso_id)
-                    Turma.objects.create(
-                        codigo=codigo,
-                        semestre=semestre,
-                        turno=turno,
-                        curso=curso
-                    )
-                    messages.success(request, f'Turma "{codigo}" criada com sucesso!')
+                    from django.db import transaction
+                    with transaction.atomic():
+                        curso = Curso.objects.get(id=curso_id)
+                        turma = Turma.objects.create(
+                            codigo=codigo,
+                            semestre=semestre,
+                            turno=turno,
+                            curso=curso
+                        )
+                        
+                        if professores_ids:
+                            professors_to_assign = Professor.objects.filter(id__in=professores_ids)
+                            for professor in professors_to_assign:
+                                professor.turmas.add(turma)
+                        
+                        messages.success(request, f'Turma "{codigo}" criada com sucesso!')
                 except Curso.DoesNotExist:
                     messages.error(request, 'Curso não encontrado.')
                 except Exception as e:
@@ -923,15 +932,30 @@ def secretaria_academico(request):
             semestre = request.POST.get('semestre')
             turno = request.POST.get('turno')
             curso_id = request.POST.get('curso_id')
+            professores_ids = request.POST.getlist('professores')
             try:
-                turma = Turma.objects.get(id=turma_id)
-                curso = Curso.objects.get(id=curso_id)
-                turma.codigo = codigo
-                turma.semestre = semestre
-                turma.turno = turno
-                turma.curso = curso
-                turma.save()
-                messages.success(request, f'Turma "{codigo}" atualizada com sucesso!')
+                from django.db import transaction
+                with transaction.atomic():
+                    turma = Turma.objects.get(id=turma_id)
+                    curso = Curso.objects.get(id=curso_id)
+                    turma.codigo = codigo
+                    turma.semestre = semestre
+                    turma.turno = turno
+                    turma.curso = curso
+                    turma.save()
+                    
+                    current_professors = set(turma.professores.values_list('id', flat=True))
+                    new_professors = set(int(pid) for pid in professores_ids if pid)
+                    
+                    to_remove = current_professors - new_professors
+                    to_add = new_professors - current_professors
+                    
+                    for professor in Professor.objects.filter(id__in=to_remove):
+                        professor.turmas.remove(turma)
+                    for professor in Professor.objects.filter(id__in=to_add):
+                        professor.turmas.add(turma)
+                    
+                    messages.success(request, f'Turma "{codigo}" atualizada com sucesso!')
             except (Turma.DoesNotExist, Curso.DoesNotExist):
                 messages.error(request, 'Turma ou curso não encontrado.')
             except Exception as e:
@@ -1002,13 +1026,15 @@ def secretaria_academico(request):
         return redirect('secretaria_academico')
     
     cursos = Curso.objects.annotate(total_turmas=Count('turma'))
-    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma')).select_related('curso')
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma')).select_related('curso').prefetch_related('professores')
     disciplinas = Disciplina.objects.select_related('curso')
+    professores = Professor.objects.all()
     
     context = {
         'cursos': cursos,
         'turmas': turmas,
-        'disciplinas': disciplinas
+        'disciplinas': disciplinas,
+        'professores': professores
     }
     return render(request, 'escola/secre_academico.html', context)
 
@@ -2641,24 +2667,34 @@ def coordenacao_turma_adicionar(request):
         return redirect('home')
     
     cursos = Curso.objects.all()
+    professores = Professor.objects.all()
     
     if request.method == 'POST':
         codigo = request.POST.get('codigo')
         curso_id = request.POST.get('curso_id')
         semestre = request.POST.get('semestre')
         turno = request.POST.get('turno')
+        professores_ids = request.POST.getlist('professores')
         
         if codigo and curso_id:
             try:
-                turma = Turma(
-                    codigo=codigo,
-                    curso_id=curso_id,
-                    semestre=semestre,
-                    turno=turno
-                )
-                turma.save()
-                messages.success(request, f'Turma {codigo} criada com sucesso!')
-                return redirect('coordenacao_turmas')
+                from django.db import transaction
+                with transaction.atomic():
+                    turma = Turma(
+                        codigo=codigo,
+                        curso_id=curso_id,
+                        semestre=semestre,
+                        turno=turno
+                    )
+                    turma.save()
+                    
+                    if professores_ids:
+                        professors_to_assign = Professor.objects.filter(id__in=professores_ids)
+                        for professor in professors_to_assign:
+                            professor.turmas.add(turma)
+                    
+                    messages.success(request, f'Turma {codigo} criada com sucesso!')
+                    return redirect('coordenacao_turmas')
             except Exception as e:
                 messages.error(request, f'Erro ao criar turma: {str(e)}')
         else:
@@ -2666,6 +2702,7 @@ def coordenacao_turma_adicionar(request):
     
     return render(request, 'escola/coor_turma_form.html', {
         'cursos': cursos,
+        'professores': professores,
         'turnos': ['Manhã', 'Tarde', 'Noite', 'Integral'],
         'acao': 'Adicionar'
     })
@@ -2679,23 +2716,40 @@ def coordenacao_turma_editar(request, turma_id):
     
     turma = get_object_or_404(Turma, id=turma_id)
     cursos = Curso.objects.all()
+    professores = Professor.objects.all()
     
     if request.method == 'POST':
         turma.codigo = request.POST.get('codigo')
         turma.curso_id = request.POST.get('curso_id')
         turma.semestre = request.POST.get('semestre')
         turma.turno = request.POST.get('turno')
+        professores_ids = request.POST.getlist('professores')
         
         try:
-            turma.save()
-            messages.success(request, f'Turma {turma.codigo} atualizada com sucesso!')
-            return redirect('coordenacao_turmas')
+            from django.db import transaction
+            with transaction.atomic():
+                turma.save()
+                
+                current_professors = set(turma.professores.values_list('id', flat=True))
+                new_professors = set(int(pid) for pid in professores_ids if pid)
+                
+                to_remove = current_professors - new_professors
+                to_add = new_professors - current_professors
+                
+                for professor in Professor.objects.filter(id__in=to_remove):
+                    professor.turmas.remove(turma)
+                for professor in Professor.objects.filter(id__in=to_add):
+                    professor.turmas.add(turma)
+                
+                messages.success(request, f'Turma {turma.codigo} atualizada com sucesso!')
+                return redirect('coordenacao_turmas')
         except Exception as e:
             messages.error(request, f'Erro ao atualizar turma: {str(e)}')
     
     return render(request, 'escola/coor_turma_form.html', {
         'turma': turma,
         'cursos': cursos,
+        'professores': professores,
         'turnos': ['Manhã', 'Tarde', 'Noite', 'Integral'],
         'acao': 'Editar'
     })

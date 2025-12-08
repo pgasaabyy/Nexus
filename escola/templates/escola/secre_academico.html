@@ -113,6 +113,7 @@
                         <th>Curso</th>
                         <th>Semestre</th>
                         <th>Turno</th>
+                        <th>Professores</th>
                         <th>Alunos</th>
                         <th>Ações</th>
                     </tr>
@@ -124,9 +125,16 @@
                         <td>{{ turma.curso.nome }}</td>
                         <td>{{ turma.semestre }}</td>
                         <td>{{ turma.turno|default:"-" }}</td>
+                        <td>
+                            {% for prof in turma.professores.all %}
+                                {{ prof.nome }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </td>
                         <td><span class="badge">{{ turma.total_alunos }} Alunos</span></td>
                         <td class="actions-cell">
-                            <button class="btn-action btn-edit" onclick="editTurma({{ turma.id }}, '{{ turma.codigo|escapejs }}', '{{ turma.semestre|escapejs }}', '{{ turma.turno|escapejs }}', {{ turma.curso.id }})">Editar</button>
+                            <button class="btn-action btn-edit" onclick="editTurma({{ turma.id }}, '{{ turma.codigo|escapejs }}', '{{ turma.semestre|escapejs }}', '{{ turma.turno|escapejs }}', {{ turma.curso.id }}, {% if turma.professores.exists %}[{% for prof in turma.professores.all %}{{ prof.id }}{% if not forloop.last %},{% endif %}{% endfor %}]{% else %}[]{% endif %})">Editar</button>
                             <form method="POST" style="display:inline" onsubmit="return confirm('Excluir turma {{ turma.codigo }}?')">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="excluir_turma">
@@ -250,6 +258,15 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="form-group">
+                <label>Professores</label>
+                <select name="professores" id="turmaProfessores" multiple style="height: 100px;">
+                    {% for professor in professores %}
+                    <option value="{{ professor.id }}">{{ professor.nome }} {% if professor.especialidade %}({{ professor.especialidade }}){% endif %}</option>
+                    {% endfor %}
+                </select>
+                <small style="color: #666; font-size: 12px;">Segure Ctrl para selecionar múltiplos professores</small>
+            </div>
             <button type="submit" class="btn-submit">Salvar Turma</button>
         </form>
     </div>
@@ -324,6 +341,10 @@ function openAddModal() {
         document.getElementById('turmaCodigo').value = '';
         document.getElementById('turmaSemestre').value = '';
         document.getElementById('turmaTurno').value = 'Manhã';
+        var profSelect = document.getElementById('turmaProfessores');
+        for (var i = 0; i < profSelect.options.length; i++) {
+            profSelect.options[i].selected = false;
+        }
         document.getElementById('turmaModal').classList.add('active');
     } else if (currentTab === 'disciplinas') {
         document.getElementById('disciplinaModalTitle').textContent = 'Nova Disciplina';
@@ -346,7 +367,7 @@ function editCurso(id, nome, codigo, descricao, carga) {
     document.getElementById('cursoModal').classList.add('active');
 }
 
-function editTurma(id, codigo, semestre, turno, cursoId) {
+function editTurma(id, codigo, semestre, turno, cursoId, professoresIds) {
     document.getElementById('turmaModalTitle').textContent = 'Editar Turma';
     document.getElementById('turmaAction').value = 'editar_turma';
     document.getElementById('turmaId').value = id;
@@ -354,6 +375,13 @@ function editTurma(id, codigo, semestre, turno, cursoId) {
     document.getElementById('turmaSemestre').value = semestre;
     document.getElementById('turmaTurno').value = turno;
     document.getElementById('turmaCurso').value = cursoId;
+    
+    var profSelect = document.getElementById('turmaProfessores');
+    var profIds = professoresIds || [];
+    for (var i = 0; i < profSelect.options.length; i++) {
+        profSelect.options[i].selected = profIds.indexOf(parseInt(profSelect.options[i].value)) !== -1;
+    }
+    
     document.getElementById('turmaModal').classList.add('active');
 }
 

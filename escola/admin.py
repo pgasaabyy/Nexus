@@ -55,10 +55,11 @@ class AlunoAdmin(admin.ModelAdmin):
 @admin.register(Professor)
 class ProfessorAdmin(admin.ModelAdmin):
     list_display = ['nome', 'email', 'especialidade', 'data_admissao', 'telefone']
-    list_filter = ['especialidade', 'data_admissao']
+    list_filter = ['especialidade', 'data_admissao', 'turmas', 'disciplinas']
     search_fields = ['nome', 'email', 'especialidade']
     list_per_page = 25
     ordering = ['nome']
+    filter_horizontal = ('disciplinas', 'turmas')
     
     fieldsets = (
         ('Dados Pessoais', {
@@ -66,6 +67,10 @@ class ProfessorAdmin(admin.ModelAdmin):
         }),
         ('Dados Profissionais', {
             'fields': ('especialidade', 'data_admissao')
+        }),
+        ('Turmas e Disciplinas', {
+            'fields': ('disciplinas', 'turmas'),
+            'description': 'Selecione as disciplinas e turmas que este professor leciona.'
         }),
         ('Acesso ao Sistema', {
             'fields': ('user',),
