@@ -3,7 +3,7 @@ import io
 from decimal import Decimal, InvalidOperation
 from django.db.models import Q, Count, Avg
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -1070,6 +1070,98 @@ def secretaria_documentos(request):
 
 
 @login_required
+def secretaria_documento_visualizar(request, doc_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+    
+    try:
+        documento = Documento.objects.select_related('aluno').get(id=doc_id)
+        return JsonResponse({
+            'success': True,
+            'documento': {
+                'id': documento.id,
+                'tipo': documento.get_tipo_display(),
+                'aluno': documento.aluno.nome,
+                'matricula': documento.aluno.matricula,
+                'turma': documento.aluno.turma_atual.codigo if documento.aluno.turma_atual else '-',
+                'data_solicitacao': documento.data_solicitacao.strftime('%d/%m/%Y %H:%i') if documento.data_solicitacao else '-',
+                'data_emissao': documento.data_emissao.strftime('%d/%m/%Y %H:%i') if documento.data_emissao else '-',
+                'status': documento.get_status_display(),
+                'descricao': documento.descricao or '',
+                'arquivo_url': documento.arquivo.url if documento.arquivo else None,
+            }
+        })
+    except Documento.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Documento não encontrado.'})
+
+
+@login_required
+def secretaria_documento_emitir(request, doc_id):
+    if not check_secretaria_permission(request.user):
+        return JsonResponse({'success': False, 'error': 'Acesso não autorizado.'})
+    
+    if request.method == 'POST':
+        try:
+            documento = Documento.objects.get(id=doc_id)
+            if documento.status == 'PENDENTE':
+                documento.status = 'EMITIDO'
+                documento.data_emissao = timezone.now()
+                if request.FILES.get('arquivo'):
+                    documento.arquivo = request.FILES.get('arquivo')
+                documento.save()
+                return JsonResponse({'success': True, 'message': 'Documento emitido com sucesso!'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Documento já foi emitido.'})
+        except Documento.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Documento não encontrado.'})
+    
+    return JsonResponse({'success': False, 'error': 'Método não permitido.'})
+
+
+@login_required
+def secretaria_documento_confirmar(request, doc_id):
+    if not check_secretaria_permission(request.user):
+        return JsonResponse({'success': False, 'error': 'Acesso não autorizado.'})
+    
+    if request.method == 'POST':
+        try:
+            documento = Documento.objects.get(id=doc_id)
+            if documento.status == 'EMITIDO':
+                documento.status = 'ENTREGUE'
+                documento.save()
+                return JsonResponse({'success': True, 'message': 'Entrega confirmada com sucesso!'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Documento precisa estar emitido para confirmar entrega.'})
+        except Documento.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Documento não encontrado.'})
+    
+    return JsonResponse({'success': False, 'error': 'Método não permitido.'})
+
+
+@login_required
+def aluno_documento_download(request, doc_id):
+    if not hasattr(request.user, 'perfil_aluno'):
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+    
+    try:
+        aluno = request.user.perfil_aluno
+        documento = Documento.objects.get(id=doc_id, aluno=aluno)
+        
+        if documento.arquivo and documento.status in ['EMITIDO', 'ENTREGUE']:
+            response = FileResponse(documento.arquivo.open('rb'), as_attachment=True)
+            response['Content-Disposition'] = f'attachment; filename="{documento.get_tipo_display()}_{aluno.matricula}.pdf"'
+            return response
+        else:
+            messages.error(request, "Documento ainda não está disponível para download.")
+            return redirect('aluno_documentos')
+    except Documento.DoesNotExist:
+        messages.error(request, "Documento não encontrado.")
+        return redirect('aluno_documentos')
+
+
+@login_required
 def secretaria_calendario(request):
     if not check_secretaria_permission(request.user):
         messages.error(request, "Acesso não autorizado.")
@@ -1129,6 +1221,89 @@ def secretaria_configuracoes(request):
         'user': user,
     }
     return render(request, 'escola/secre_configuracoes.html', context)
+
+
+@login_required
+def secretaria_evento_adicionar(request):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        data = request.POST.get('data')
+        tipo = request.POST.get('tipo')
+        descricao = request.POST.get('descricao')
+        turma_id = request.POST.get('turma_id')
+        
+        if titulo and data and tipo:
+            evento = Evento(
+                titulo=titulo,
+                data=data,
+                tipo=tipo,
+                descricao=descricao
+            )
+            if turma_id:
+                evento.turma_id = turma_id
+            evento.save()
+            messages.success(request, f'Evento "{titulo}" criado com sucesso!')
+            return redirect('secretaria_calendario')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return render(request, 'escola/secre_evento_form.html', {
+        'turmas': turmas,
+        'tipos': Evento.TIPO_CHOICES,
+        'acao': 'Adicionar'
+    })
+
+
+@login_required
+def secretaria_evento_editar(request, evento_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    evento = get_object_or_404(Evento, id=evento_id)
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        evento.titulo = request.POST.get('titulo')
+        evento.data = request.POST.get('data')
+        evento.tipo = request.POST.get('tipo')
+        evento.descricao = request.POST.get('descricao')
+        turma_id = request.POST.get('turma_id')
+        
+        if turma_id:
+            evento.turma_id = turma_id
+        else:
+            evento.turma = None
+            
+        evento.save()
+        messages.success(request, f'Evento "{evento.titulo}" atualizado!')
+        return redirect('secretaria_calendario')
+    
+    return render(request, 'escola/secre_evento_form.html', {
+        'turmas': turmas,
+        'tipos': Evento.TIPO_CHOICES,
+        'evento': evento,
+        'acao': 'Editar'
+    })
+
+
+@login_required
+def secretaria_evento_excluir(request, evento_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    evento = get_object_or_404(Evento, id=evento_id)
+    titulo = evento.titulo
+    evento.delete()
+    messages.success(request, f'Evento "{titulo}" excluído com sucesso!')
+    return redirect('secretaria_calendario')
 
 
 @login_required
@@ -1431,6 +1606,92 @@ def coordenacao_horarios(request):
         'horarios_padrao': horarios_padrao,
     }
     return render(request, 'escola/coor_horarios.html', context)
+
+
+@login_required
+def coordenacao_cursos(request):
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    cursos = Curso.objects.annotate(
+        total_turmas=Count('turma'),
+        total_disciplinas=Count('disciplinas')
+    ).order_by('nome')
+    
+    context = {
+        'cursos': cursos,
+    }
+    return render(request, 'escola/coor_cursos.html', context)
+
+
+@login_required
+def coordenacao_curso_adicionar(request):
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        codigo = request.POST.get('codigo')
+        descricao = request.POST.get('descricao')
+        carga_horaria = request.POST.get('carga_horaria')
+        
+        if nome and codigo and carga_horaria:
+            try:
+                Curso.objects.create(
+                    nome=nome,
+                    codigo=codigo,
+                    descricao=descricao,
+                    carga_horaria=int(carga_horaria)
+                )
+                messages.success(request, f'Curso "{nome}" criado com sucesso!')
+            except Exception as e:
+                messages.error(request, f'Erro ao criar curso: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return redirect('coordenacao_cursos')
+
+
+@login_required
+def coordenacao_curso_editar(request, curso_id):
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    curso = get_object_or_404(Curso, id=curso_id)
+    
+    if request.method == 'POST':
+        curso.nome = request.POST.get('nome')
+        curso.codigo = request.POST.get('codigo')
+        curso.descricao = request.POST.get('descricao')
+        carga_horaria = request.POST.get('carga_horaria')
+        if carga_horaria:
+            curso.carga_horaria = int(carga_horaria)
+        
+        try:
+            curso.save()
+            messages.success(request, f'Curso "{curso.nome}" atualizado!')
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar: {str(e)}')
+    
+    return redirect('coordenacao_cursos')
+
+
+@login_required
+def coordenacao_curso_excluir(request, curso_id):
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    curso = get_object_or_404(Curso, id=curso_id)
+    
+    if request.method == 'POST':
+        nome = curso.nome
+        try:
+            curso.delete()
+            messages.success(request, f'Curso "{nome}" excluído!')
+        except Exception as e:
+            messages.error(request, f'Não foi possível excluir: curso possui turmas vinculadas.')
+    
+    return redirect('coordenacao_cursos')
 
 
 @login_required

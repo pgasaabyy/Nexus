@@ -273,6 +273,7 @@ class Documento(models.Model):
     data_emissao = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDENTE')
     criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    arquivo = models.FileField(upload_to='documentos/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.aluno.nome}"
@@ -280,6 +281,7 @@ class Documento(models.Model):
     class Meta:
         verbose_name = "Documento"
         verbose_name_plural = "Documentos"
+        ordering = ['-data_solicitacao']
 
 
 class Material(models.Model):

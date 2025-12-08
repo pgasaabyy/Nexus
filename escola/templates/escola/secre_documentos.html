@@ -270,16 +270,23 @@
                     </td>
                     <td>
                         <div class="actions-cell">
-                            <button class="action-btn view" title="Visualizar">
+                            <button class="action-btn view" title="Visualizar" onclick="visualizarDocumento({{ doc.id }})">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
                             </button>
                             {% if doc.status == 'PENDENTE' %}
-                            <button class="action-btn approve" title="Emitir">
+                            <button class="action-btn approve" title="Emitir" onclick="abrirModalEmitir({{ doc.id }}, '{{ doc.get_tipo_display }}', '{{ doc.aluno.nome }}')">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                            {% elif doc.status == 'EMITIDO' %}
+                            <button class="action-btn" style="background:#fff3cd;color:#856404;" title="Confirmar Entrega" onclick="confirmarEntrega({{ doc.id }})">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                 </svg>
                             </button>
                             {% endif %}
@@ -349,4 +356,208 @@
         </div>
     </div>
 </div>
+
+<div id="modalVisualizar" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width:500px;">
+        <div class="modal-header">
+            <h3>Detalhes do Documento</h3>
+            <button class="modal-close" onclick="fecharModal('modalVisualizar')">&times;</button>
+        </div>
+        <div class="modal-body" id="modalVisualizarBody">
+            <div class="loading">Carregando...</div>
+        </div>
+    </div>
+</div>
+
+<div id="modalEmitir" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width:450px;">
+        <div class="modal-header">
+            <h3>Emitir Documento</h3>
+            <button class="modal-close" onclick="fecharModal('modalEmitir')">&times;</button>
+        </div>
+        <form id="formEmitir" enctype="multipart/form-data">
+            <div class="modal-body">
+                <p id="emitirInfo" style="margin-bottom:16px;"></p>
+                <div class="form-group">
+                    <label for="arquivoDoc">Anexar Documento (PDF)</label>
+                    <input type="file" name="arquivo" id="arquivoDoc" accept=".pdf,.doc,.docx">
+                    <small style="color:#666;font-size:12px;display:block;margin-top:4px;">Opcional: anexe o documento digital para download do aluno</small>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:16px 20px;border-top:1px solid #eee;display:flex;gap:12px;justify-content:flex-end;">
+                <button type="button" class="btn-cancel" onclick="fecharModal('modalEmitir')">Cancelar</button>
+                <button type="submit" class="btn-submit" style="width:auto;">Emitir Documento</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-height: 90vh;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+        background: #003366;
+        color: white;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-header h3 { margin: 0; }
+    .modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .modal-body {
+        padding: 20px;
+    }
+    .detail-row {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .detail-label {
+        font-weight: 600;
+        width: 140px;
+        color: #666;
+    }
+    .detail-value {
+        flex: 1;
+        color: #333;
+    }
+    .btn-cancel {
+        padding: 10px 20px;
+        background: #f5f5f5;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .btn-cancel:hover { background: #e0e0e0; }
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+</style>
+
+<script>
+let docIdAtual = null;
+
+function visualizarDocumento(docId) {
+    document.getElementById('modalVisualizar').style.display = 'flex';
+    document.getElementById('modalVisualizarBody').innerHTML = '<div class="loading">Carregando...</div>';
+    
+    fetch(`/dashboard/secretaria/documentos/${docId}/visualizar/`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const doc = data.documento;
+                let html = `
+                    <div class="detail-row"><span class="detail-label">Aluno:</span><span class="detail-value">${doc.aluno}</span></div>
+                    <div class="detail-row"><span class="detail-label">Matricula:</span><span class="detail-value">${doc.matricula}</span></div>
+                    <div class="detail-row"><span class="detail-label">Turma:</span><span class="detail-value">${doc.turma}</span></div>
+                    <div class="detail-row"><span class="detail-label">Tipo:</span><span class="detail-value">${doc.tipo}</span></div>
+                    <div class="detail-row"><span class="detail-label">Solicitado em:</span><span class="detail-value">${doc.data_solicitacao}</span></div>
+                    <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${doc.status}</span></div>
+                `;
+                if (doc.data_emissao && doc.data_emissao != '-') {
+                    html += `<div class="detail-row"><span class="detail-label">Emitido em:</span><span class="detail-value">${doc.data_emissao}</span></div>`;
+                }
+                if (doc.descricao) {
+                    html += `<div class="detail-row"><span class="detail-label">Observacoes:</span><span class="detail-value">${doc.descricao}</span></div>`;
+                }
+                if (doc.arquivo_url) {
+                    html += `<div class="detail-row"><span class="detail-label">Arquivo:</span><span class="detail-value"><a href="${doc.arquivo_url}" target="_blank" style="color:#003366;">Baixar Documento</a></span></div>`;
+                }
+                document.getElementById('modalVisualizarBody').innerHTML = html;
+            } else {
+                document.getElementById('modalVisualizarBody').innerHTML = '<p style="color:red;">Erro ao carregar documento.</p>';
+            }
+        });
+}
+
+function abrirModalEmitir(docId, tipo, aluno) {
+    docIdAtual = docId;
+    document.getElementById('emitirInfo').innerHTML = `<strong>Tipo:</strong> ${tipo}<br><strong>Aluno:</strong> ${aluno}`;
+    document.getElementById('modalEmitir').style.display = 'flex';
+}
+
+function fecharModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function confirmarEntrega(docId) {
+    if (!confirm('Confirmar que o documento foi entregue ao aluno?')) return;
+    
+    fetch(`/dashboard/secretaria/documentos/${docId}/confirmar/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.error || 'Erro ao confirmar entrega.');
+        }
+    });
+}
+
+document.getElementById('formEmitir').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(`/dashboard/secretaria/documentos/${docIdAtual}/emitir/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.error || 'Erro ao emitir documento.');
+        }
+    });
+});
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+});
+</script>
 {% endblock %}

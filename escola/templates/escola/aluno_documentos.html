@@ -202,6 +202,29 @@
         margin: 0;
         font-size: 14px;
     }
+    .btn-download {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #003366;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .btn-download:hover {
+        background: #002244;
+    }
+    .disponivel-tag {
+        font-size: 11px;
+        color: #388e3c;
+        background: #e8f5e9;
+        padding: 4px 10px;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
     .info-box {
         background: #e3f2fd;
         border-radius: 8px;
@@ -290,7 +313,22 @@
                         <h4 class="history-tipo">{{ doc.get_tipo_display }}</h4>
                         <span class="history-date">Solicitado em {{ doc.data_solicitacao|date:"d/m/Y H:i" }}</span>
                     </div>
-                    <span class="history-status status-{{ doc.status|lower }}">{{ doc.get_status_display }}</span>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span class="history-status status-{{ doc.status|lower }}">{{ doc.get_status_display }}</span>
+                        {% if doc.status == 'EMITIDO' or doc.status == 'ENTREGUE' %}
+                            {% if doc.arquivo %}
+                            <a href="{% url 'aluno_documento_download' doc.id %}" class="btn-download" title="Baixar Documento">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                            </a>
+                            {% else %}
+                            <span class="disponivel-tag">Disponivel para retirada</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
                 {% empty %}
                 <div class="empty-history">

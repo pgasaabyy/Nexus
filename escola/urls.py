@@ -46,8 +46,15 @@ urlpatterns = [
     path('dashboard/secretaria/professores/<int:professor_id>/excluir/', views.secretaria_professor_excluir, name='secretaria_professor_excluir'),
     path('dashboard/secretaria/academico/', views.secretaria_academico, name='secretaria_academico'),
     path('dashboard/secretaria/documentos/', views.secretaria_documentos, name='secretaria_documentos'),
+    path('dashboard/secretaria/documentos/<int:doc_id>/visualizar/', views.secretaria_documento_visualizar, name='secretaria_documento_visualizar'),
+    path('dashboard/secretaria/documentos/<int:doc_id>/emitir/', views.secretaria_documento_emitir, name='secretaria_documento_emitir'),
+    path('dashboard/secretaria/documentos/<int:doc_id>/confirmar/', views.secretaria_documento_confirmar, name='secretaria_documento_confirmar'),
+    path('dashboard/aluno/documentos/<int:doc_id>/download/', views.aluno_documento_download, name='aluno_documento_download'),
     path('dashboard/secretaria/justificativas/', views.secretaria_justificativas, name='secretaria_justificativas'),
     path('dashboard/secretaria/calendario/', views.secretaria_calendario, name='secretaria_calendario'),
+    path('dashboard/secretaria/calendario/evento/adicionar/', views.secretaria_evento_adicionar, name='secretaria_evento_adicionar'),
+    path('dashboard/secretaria/calendario/evento/<int:evento_id>/editar/', views.secretaria_evento_editar, name='secretaria_evento_editar'),
+    path('dashboard/secretaria/calendario/evento/<int:evento_id>/excluir/', views.secretaria_evento_excluir, name='secretaria_evento_excluir'),
     path('dashboard/secretaria/configuracoes/', views.secretaria_configuracoes, name='secretaria_configuracoes'),
 
     # Dashboard Coordenação
@@ -79,6 +86,12 @@ urlpatterns = [
     
     # Coordenação - Horários
     path('dashboard/coordenacao/horarios/', views.coordenacao_horarios, name='coordenacao_horarios'),
+    
+    # Coordenação - Cursos
+    path('dashboard/coordenacao/cursos/', views.coordenacao_cursos, name='coordenacao_cursos'),
+    path('dashboard/coordenacao/cursos/adicionar/', views.coordenacao_curso_adicionar, name='coordenacao_curso_adicionar'),
+    path('dashboard/coordenacao/cursos/<int:curso_id>/editar/', views.coordenacao_curso_editar, name='coordenacao_curso_editar'),
+    path('dashboard/coordenacao/cursos/<int:curso_id>/excluir/', views.coordenacao_curso_excluir, name='coordenacao_curso_excluir'),
     
     # Dashboard Admin (Custom)
     path('dashboard/admin/', views.dashboard_admin, name='dashboard_admin'),

@@ -172,11 +172,22 @@
                 </div>
             </div>
             <div class="form-group">
-                <label>Criar usuário de acesso</label>
-                <select name="criar_usuario">
-                    <option value="sim">Sim, criar usuário com senha padrão (senha123)</option>
-                    <option value="nao">Não criar usuário agora</option>
-                </select>
+                <label>
+                    <input type="checkbox" id="criar_usuario_check" onchange="toggleUserFields()"> Criar usuario de acesso ao sistema
+                </label>
+            </div>
+            <div id="userFields" style="display: none;">
+                <div class="info-text">O usuario tera acesso ao painel do professor.</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome de Usuario *</label>
+                        <input type="text" name="username" id="add_username" placeholder="Ex: prof.maria">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha *</label>
+                        <input type="password" name="password" id="add_password" placeholder="Minimo 6 caracteres" minlength="6">
+                    </div>
+                </div>
             </div>
             <button type="submit" class="btn-submit">Adicionar Professor</button>
         </form>
@@ -256,6 +267,23 @@
 </div>
 
 <script>
+function toggleUserFields() {
+    const checkbox = document.getElementById('criar_usuario_check');
+    const fields = document.getElementById('userFields');
+    const usernameField = document.getElementById('add_username');
+    const passwordField = document.getElementById('add_password');
+    
+    if (checkbox.checked) {
+        fields.style.display = 'block';
+        usernameField.required = true;
+        passwordField.required = true;
+    } else {
+        fields.style.display = 'none';
+        usernameField.required = false;
+        passwordField.required = false;
+    }
+}
+
 function openModal(id) {
     document.getElementById(id).classList.add('active');
 }
