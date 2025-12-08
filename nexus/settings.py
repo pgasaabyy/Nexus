@@ -158,11 +158,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# CSRF Settings for Replit proxy environment
+# CSRF Settings for proxy environments
 CSRF_TRUSTED_ORIGINS = [
     'https://*.replit.dev',
     'https://*.repl.co',
+    'https://*.up.railway.app',
+    'https://web-production-f76a9.up.railway.app',
 ]
+
+# Get additional trusted origins from environment
+EXTRA_CSRF_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if EXTRA_CSRF_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.extend([origin.strip() for origin in EXTRA_CSRF_ORIGINS.split(',') if origin.strip()])
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

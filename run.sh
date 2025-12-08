@@ -8,6 +8,9 @@ python3.11 manage.py migrate --no-input
 # Create groups and permissions if they don't exist
 python3.11 manage.py criar_grupos || true
 
+# Create demo users if they don't exist
+python3.11 manage.py criar_usuarios || true
+
 # Collect static files
 python3.11 manage.py collectstatic --noinput --clear
 

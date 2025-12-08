@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn nexus.wsgi --bind 0.0.0.0:$PORT"
+startCommand = "python manage.py migrate && python manage.py criar_grupos || true && python manage.py criar_usuarios || true && python manage.py collectstatic --noinput && gunicorn nexus.wsgi --bind 0.0.0.0:$PORT"
 healthcheckPath = "/health/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
