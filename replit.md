@@ -4,6 +4,11 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** Admin User Creation and Styling Fixes
+  - **Auto-Matricula Creation**: AlunoAdmin.save_model now automatically creates a Matricula when a student is saved with turma_atual, enabling grade assignment for students created via Django admin
+  - **Group Assignment**: AlunoAdmin and ProfessorAdmin now automatically add users to appropriate groups (Aluno/Professor) when linked to a User account
+  - **Comunicados Styling**: Fixed title color in coor_comunicados.html from #333 to #003366 for better visibility and consistency with project design
+
 - **08/12/2025:** Professor Assignment Bug Fix
   - **Root Cause**: Professors couldn't submit grades for students in turmas created via secretaria/admin because the ManyToMany relationship wasn't being set
   - **ProfessorAdmin Enhancement**: Added `filter_horizontal = ('disciplinas', 'turmas')` and new fieldset "Turmas e Disciplinas" for proper ManyToMany management in Django admin
