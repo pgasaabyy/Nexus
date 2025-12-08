@@ -72,3 +72,16 @@ sqlparse
 tablib
 tzdata
 whitenoise
+dj-database-url
+Django==5.2.8
+django-crispy-forms==2.5
+django-filter==25.2
+django-import-export==4.3.14
+djangorestframework==3.16.1
+gunicorn
+openpyxl==3.1.5
+pillow==12.0.0
+psycopg2-binary
+reportlab==4.4.5
+whitenoise
+django-environ

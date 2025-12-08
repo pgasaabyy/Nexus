@@ -1,0 +1,33 @@
+#admin
+pagina de admin precisa ser feita, com html e css fieis ao resto do projeto, não pode ficar com apenas a pagina normal do django
+
+#secretaria
+calendario secretaria ficou gigante e impossivel de ver, arrumar css
+secretaria não consegue registrar professor direto, vai para a pagina de admin, dar o poder de secretaria registrar professor
+ao tentar criar aluno, não aparece para colocar usuario e senha, tem que ter para que seja possivel o login do aluno
+na aba gestão academica aparece gerenciar no admin, eu preciso que nessa pagina seja possivel ela criar as turmas, cursos e gerenciar as disciplicas
+
+#coordenação
+crie uma aba para que seja possivel editar o painel de aulas da semana, podendo editar, adicionar e excluir aulas de acordo com a turma
+na pagina de criação de professor, deveria aparecer para colocar uma senha para cada professor que fosse criado, assim como na area de editar, para que todos os professores não fiquem com a mesma senha
+card avisos recentes na dashboard aparece bugado, dificil visualização, deixar no padrão do resto do projeto
+pagina comunicados deve ter o css refeito com o padrão do resto do projeto
+aba relatorios não aparece a média geral e nem a frequencia média
+deve ser possivel que ao visualizar ou editar professores, a senha e o usuario possam ser alterados para não aver conflito de usuario ou senha
+deve ser possivel que ao visualizar ou editar alunos, a senha e o usuario possam ser alterados para não aver conflito de usuario ou senha
+
+#professor
+na dashboard, o card avisos recentes está com o mesmo problema de estilização
+sistema de lançamento de notas não envia a nota para o aluno, aluno continua sem media de notas e com o status de nota como "sem notas" em alunos da sala que criei para teste, ou seja, as notas não são enviadas para alunos de salas criadas, corrija
+o professor deve ter acesso apenas a materia que é assignada para ele, podendo ser mais de uma se administrada pela secretaria ou pela coordenação
+
+#aluno
+problema apresentado com notas na parte do professor não ocorre no aluno, a nota aparece
+avisos, recados e marcas no calendarios de outras salas aparecem para alunos de outras salas
+deve aver um jeito de enviar documentos solicitados pela secretaria, assim como uma aba que apareça as atividades enviadas pelos professores postadas na aba "materiais", a side bar não tem nenhuma pagina assim, adicione ela e crie-a para que a funcionalidade esteja disponivel
+dashboard com os cards se sobrepondo, arrume o grid
+sistema de justificativa de faltas está de enfeite, coloque uma aba na secretaria para que seja possivel visualizar os atestados enviados e junto com as justificativas, faça com que todas as justificativas enviadas junto com o documento fiquem guardada no banco de dados
+grafico de desempenho por bimestre na aba boletim escolar está sem aparecer nada, faça aparecer de acordo com as notas do aluno
+
+
+verifique o que mais pode ser criado no projeto para que todos os sistemas se conectem e que estejam funcionando corretamente entre si de forma coesa e funcional
