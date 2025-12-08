@@ -254,6 +254,7 @@
                     <th>Tipo</th>
                     <th>Data Solicitação</th>
                     <th>Status</th>
+                    <th>Arquivo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -267,6 +268,18 @@
                         <span class="status-tag {% if doc.status == 'PENDENTE' %}pendente{% elif doc.status == 'EMITIDO' %}emitido{% else %}entregue{% endif %}">
                             {{ doc.get_status_display }}
                         </span>
+                    </td>
+                    <td>
+                        {% if doc.arquivo %}
+                        <span style="color:#2e7d32;font-size:12px;display:flex;align-items:center;gap:4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Enviado
+                        </span>
+                        {% else %}
+                        <span style="color:#999;font-size:12px;">-</span>
+                        {% endif %}
                     </td>
                     <td>
                         <div class="actions-cell">
@@ -283,19 +296,36 @@
                                 </svg>
                             </button>
                             {% elif doc.status == 'EMITIDO' %}
+                            <button class="action-btn upload" style="background:#e3f2fd;color:#1565c0;" title="Enviar/Atualizar Documento" onclick="abrirModalEnviar({{ doc.id }}, '{{ doc.get_tipo_display }}', '{{ doc.aluno.nome }}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </button>
                             <button class="action-btn" style="background:#fff3cd;color:#856404;" title="Confirmar Entrega" onclick="confirmarEntrega({{ doc.id }})">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                 </svg>
                             </button>
+                            {% elif doc.status == 'ENTREGUE' %}
+                            {% if not doc.arquivo %}
+                            <button class="action-btn upload" style="background:#e3f2fd;color:#1565c0;" title="Enviar Documento" onclick="abrirModalEnviar({{ doc.id }}, '{{ doc.get_tipo_display }}', '{{ doc.aluno.nome }}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </button>
+                            {% endif %}
                             {% endif %}
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="empty-state">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -392,6 +422,29 @@
     </div>
 </div>
 
+<div id="modalEnviar" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width:450px;">
+        <div class="modal-header">
+            <h3>Enviar Documento ao Aluno</h3>
+            <button class="modal-close" onclick="fecharModal('modalEnviar')">&times;</button>
+        </div>
+        <form id="formEnviar" enctype="multipart/form-data">
+            <div class="modal-body">
+                <p id="enviarInfo" style="margin-bottom:16px;"></p>
+                <div class="form-group">
+                    <label for="arquivoEnviar">Selecionar Documento (PDF)</label>
+                    <input type="file" name="arquivo" id="arquivoEnviar" accept=".pdf,.doc,.docx" required>
+                    <small style="color:#666;font-size:12px;display:block;margin-top:4px;">Selecione o documento para disponibilizar ao aluno para download</small>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:16px 20px;border-top:1px solid #eee;display:flex;gap:12px;justify-content:flex-end;">
+                <button type="button" class="btn-cancel" onclick="fecharModal('modalEnviar')">Cancelar</button>
+                <button type="submit" class="btn-submit" style="width:auto;">Enviar Documento</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
     .modal-overlay {
         position: fixed;
@@ -464,6 +517,7 @@
 
 <script>
 let docIdAtual = null;
+let docIdEnviar = null;
 
 function visualizarDocumento(docId) {
     document.getElementById('modalVisualizar').style.display = 'flex';
@@ -502,6 +556,13 @@ function abrirModalEmitir(docId, tipo, aluno) {
     docIdAtual = docId;
     document.getElementById('emitirInfo').innerHTML = `<strong>Tipo:</strong> ${tipo}<br><strong>Aluno:</strong> ${aluno}`;
     document.getElementById('modalEmitir').style.display = 'flex';
+}
+
+function abrirModalEnviar(docId, tipo, aluno) {
+    docIdEnviar = docId;
+    document.getElementById('enviarInfo').innerHTML = `<strong>Tipo:</strong> ${tipo}<br><strong>Aluno:</strong> ${aluno}`;
+    document.getElementById('arquivoEnviar').value = '';
+    document.getElementById('modalEnviar').style.display = 'flex';
 }
 
 function fecharModal(modalId) {
@@ -548,6 +609,29 @@ document.getElementById('formEmitir').addEventListener('submit', function(e) {
             location.reload();
         } else {
             alert(data.error || 'Erro ao emitir documento.');
+        }
+    });
+});
+
+document.getElementById('formEnviar').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(`/dashboard/secretaria/documentos/${docIdEnviar}/enviar/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.error || 'Erro ao enviar documento.');
         }
     });
 });

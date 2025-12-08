@@ -4,6 +4,15 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** Document Management Workflow Enhancement
+  - **Enviar Documento Feature**: Secretaria can now upload/update document files separately for requests with EMITIDO or ENTREGUE status
+  - **New View**: `secretaria_documento_enviar` for handling separate file uploads
+  - **New URL**: `dashboard/secretaria/documentos/<int:doc_id>/enviar/`
+  - **New Modal**: "modalEnviar" in secre_documentos.html for file upload form
+  - **Arquivo Column**: Added file status column in secretaria documents table showing "Enviado" or "-"
+  - **Aluno Documents**: Enhanced aluno_documentos.html with "Documento disponivel" label and download button when files are available
+  - **Workflow**: PENDENTE → (Emitir) → EMITIDO → (Enviar Documento) → File Available → (Confirmar Entrega) → ENTREGUE
+
 - **08/12/2025:** Template Fixes and Migration Updates
   - **coor_horarios.html Fix**: Used `{% with %}` template tag to prevent VariableDoesNotExist errors when accessing disciplina objects that might be None
   - **coor_dashboard.html Avisos Styling**: Enhanced avisos recentes card with date badge, improved layout with flex display, better hover effects

@@ -1140,6 +1140,29 @@ def secretaria_documento_confirmar(request, doc_id):
 
 
 @login_required
+def secretaria_documento_enviar(request, doc_id):
+    if not check_secretaria_permission(request.user):
+        return JsonResponse({'success': False, 'error': 'Acesso não autorizado.'})
+    
+    if request.method == 'POST':
+        try:
+            documento = Documento.objects.get(id=doc_id)
+            if documento.status in ['EMITIDO', 'ENTREGUE']:
+                if request.FILES.get('arquivo'):
+                    documento.arquivo = request.FILES.get('arquivo')
+                    documento.save()
+                    return JsonResponse({'success': True, 'message': 'Documento enviado com sucesso! O aluno ja pode fazer o download.'})
+                else:
+                    return JsonResponse({'success': False, 'error': 'Nenhum arquivo selecionado.'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Documento precisa estar emitido ou entregue para enviar arquivo.'})
+        except Documento.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Documento não encontrado.'})
+    
+    return JsonResponse({'success': False, 'error': 'Método não permitido.'})
+
+
+@login_required
 def aluno_documento_download(request, doc_id):
     if not hasattr(request.user, 'perfil_aluno'):
         messages.error(request, "Acesso não autorizado.")

@@ -49,6 +49,7 @@ urlpatterns = [
     path('dashboard/secretaria/documentos/<int:doc_id>/visualizar/', views.secretaria_documento_visualizar, name='secretaria_documento_visualizar'),
     path('dashboard/secretaria/documentos/<int:doc_id>/emitir/', views.secretaria_documento_emitir, name='secretaria_documento_emitir'),
     path('dashboard/secretaria/documentos/<int:doc_id>/confirmar/', views.secretaria_documento_confirmar, name='secretaria_documento_confirmar'),
+    path('dashboard/secretaria/documentos/<int:doc_id>/enviar/', views.secretaria_documento_enviar, name='secretaria_documento_enviar'),
     path('dashboard/aluno/documentos/<int:doc_id>/download/', views.aluno_documento_download, name='aluno_documento_download'),
     path('dashboard/secretaria/justificativas/', views.secretaria_justificativas, name='secretaria_justificativas'),
     path('dashboard/secretaria/calendario/', views.secretaria_calendario, name='secretaria_calendario'),

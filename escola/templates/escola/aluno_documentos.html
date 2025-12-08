@@ -313,7 +313,7 @@
                         <h4 class="history-tipo">{{ doc.get_tipo_display }}</h4>
                         <span class="history-date">Solicitado em {{ doc.data_solicitacao|date:"d/m/Y H:i" }}</span>
                     </div>
-                    <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                         <span class="history-status status-{{ doc.status|lower }}">{{ doc.get_status_display }}</span>
                         {% if doc.status == 'EMITIDO' or doc.status == 'ENTREGUE' %}
                             {% if doc.arquivo %}
@@ -324,6 +324,7 @@
                                     <line x1="12" y1="15" x2="12" y2="3"></line>
                                 </svg>
                             </a>
+                            <span class="disponivel-tag" style="background:#e3f2fd;color:#1565c0;">Documento disponivel</span>
                             {% else %}
                             <span class="disponivel-tag">Disponivel para retirada</span>
                             {% endif %}
