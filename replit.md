@@ -4,6 +4,14 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** Professor Assignment Bug Fix
+  - **Root Cause**: Professors couldn't submit grades for students in turmas created via secretaria/admin because the ManyToMany relationship wasn't being set
+  - **ProfessorAdmin Enhancement**: Added `filter_horizontal = ('disciplinas', 'turmas')` and new fieldset "Turmas e Disciplinas" for proper ManyToMany management in Django admin
+  - **Coordenação Turma Forms**: Added professor multi-select to `coor_turma_form.html` with proper backend handling using atomic transactions
+  - **Secretaria Academic**: Enhanced `secre_academico.html` turma modal with professor assignment feature and proper JS handling for empty arrays
+  - **Transaction Safety**: All professor assignment operations now use atomic transactions with differential updates (only add/remove changed professors)
+  - **JavaScript Fixes**: Fixed empty array handling in editTurma() function to prevent syntax errors
+
 - **08/12/2025:** Document Management Workflow Enhancement
   - **Enviar Documento Feature**: Secretaria can now upload/update document files separately for requests with EMITIDO or ENTREGUE status
   - **New View**: `secretaria_documento_enviar` for handling separate file uploads
