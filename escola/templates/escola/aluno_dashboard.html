@@ -171,6 +171,13 @@
     .avisos-widget {
         grid-column: span 2;
     }
+    .desempenho-widget {
+        grid-column: span 2;
+    }
+    .chart-wrapper {
+        height: 250px;
+        position: relative;
+    }
     .avisos-header {
         display: flex;
         align-items: center;
@@ -242,7 +249,7 @@
         display: block;
     }
     @media (max-width: 768px) {
-        .avisos-widget {
+        .avisos-widget, .desempenho-widget {
             grid-column: span 1;
         }
         .dashboard-grid {
@@ -452,9 +459,94 @@
             {% endfor %}
         </div>
     </div>
+
+    <div class="widget desempenho-widget">
+        <h3 class="widget-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            Desempenho por Disciplina
+        </h3>
+        <div class="chart-wrapper">
+            <canvas id="desempenhoChart"></canvas>
+        </div>
+        {% if not desempenho_json or desempenho_json == '[]' %}
+        <div style="padding: 20px; color: #666; text-align: center;">
+            Nenhuma nota registrada ainda.
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'escola/js/aluno.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const desempenhoData = {{ desempenho_json|safe }};
+    
+    if (desempenhoData && desempenhoData.length > 0) {
+        const ctx = document.getElementById('desempenhoChart').getContext('2d');
+        
+        const labels = desempenhoData.map(item => item.disciplina);
+        const data = desempenhoData.map(item => item.media);
+        
+        const backgroundColors = data.map(value => {
+            if (value >= 7) return 'rgba(40, 167, 69, 0.7)';
+            if (value >= 5) return 'rgba(255, 193, 7, 0.7)';
+            return 'rgba(220, 53, 69, 0.7)';
+        });
+        
+        const borderColors = data.map(value => {
+            if (value >= 7) return 'rgba(40, 167, 69, 1)';
+            if (value >= 5) return 'rgba(255, 193, 7, 1)';
+            return 'rgba(220, 53, 69, 1)';
+        });
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Média',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                            stepSize: 2
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

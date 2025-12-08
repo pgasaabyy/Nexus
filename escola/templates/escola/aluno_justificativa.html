@@ -8,13 +8,14 @@
 {% block extra_css %}
 <style>
     .justificativa-page {
-        max-width: 800px;
+        max-width: 1000px;
     }
     .justificativa-card {
         background: white;
         border-radius: 12px;
         padding: 32px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
     }
     .justificativa-title {
         font-size: 24px;
@@ -47,6 +48,7 @@
         font-size: 14px;
         font-family: inherit;
         transition: border-color 0.2s;
+        box-sizing: border-box;
     }
     .form-group textarea:focus,
     .form-group input:focus,
@@ -136,6 +138,63 @@
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
+    .historico-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #003366;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .historico-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .historico-table th,
+    .historico-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    .historico-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+        font-size: 13px;
+    }
+    .historico-table td {
+        font-size: 14px;
+        color: #555;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-pendente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .status-aprovada {
+        background: #d4edda;
+        color: #155724;
+    }
+    .status-rejeitada {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+    .empty-state svg {
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
 </style>
 {% endblock %}
 
@@ -145,11 +204,11 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Voltar para Frequência
+        Voltar para Frequencia
     </a>
     
     <div class="justificativa-card">
-        <h1 class="justificativa-title">Justificativa de Faltas</h1>
+        <h1 class="justificativa-title">Nova Justificativa de Faltas</h1>
         
         {% if messages %}
         {% for message in messages %}
@@ -174,7 +233,7 @@
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="data_inicio">Data da Falta (Início)</label>
+                    <label for="data_inicio">Data da Falta (Inicio)</label>
                     <input type="date" id="data_inicio" name="data_inicio" required>
                 </div>
                 <div class="form-group">
@@ -189,7 +248,7 @@
             </div>
             
             <div class="form-group">
-                <label for="documento">Documento Comprobatório (PDF, JPG, PNG)</label>
+                <label for="documento">Documento Comprobatorio (PDF, JPG, PNG)</label>
                 <div class="file-upload-container">
                     <input type="file" id="documento" name="documento" accept=".pdf,.jpg,.jpeg,.png" hidden>
                     <button type="button" class="file-upload-btn" onclick="document.getElementById('documento').click()">
@@ -206,6 +265,55 @@
             
             <button type="submit" class="btn-submit">Enviar Justificativa</button>
         </form>
+    </div>
+    
+    <div class="justificativa-card">
+        <h2 class="historico-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 8v4l3 3"></path>
+                <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            Historico de Justificativas
+        </h2>
+        
+        {% if justificativas %}
+        <div style="overflow-x: auto;">
+            <table class="historico-table">
+                <thead>
+                    <tr>
+                        <th>Data Solicitacao</th>
+                        <th>Disciplina</th>
+                        <th>Periodo</th>
+                        <th>Status</th>
+                        <th>Observacao</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in justificativas %}
+                    <tr>
+                        <td>{{ j.data_solicitacao|date:"d/m/Y H:i" }}</td>
+                        <td>{{ j.disciplina.nome }}</td>
+                        <td>{{ j.data_inicio|date:"d/m/Y" }} - {{ j.data_fim|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="status-badge status-{{ j.status|lower }}">
+                                {{ j.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ j.observacao|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <p>Voce ainda nao enviou nenhuma justificativa.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 

@@ -18,7 +18,8 @@ from django.utils import timezone
 
 from .models import (
     Aluno, Nota, Turma, Professor, Disciplina, 
-    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso, Documento, Material
+    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso, Documento, Material,
+    JustificativaFalta
 )
 from .serializers import AlunoSerializer, NotaSerializer
 
@@ -125,11 +126,25 @@ def dashboard_aluno(request):
     
     avisos = Aviso.objects.filter(avisos_query, ativo=True).order_by('-data_criacao')[:5]
 
+    desempenho_data = []
+    if aluno.turma_atual:
+        for disciplina in aluno.turma_atual.curso.disciplinas.all():
+            notas = Nota.objects.filter(matricula__aluno=aluno, disciplina=disciplina)
+            lista_notas = [float(n.valor) for n in notas]
+            media = round(sum(lista_notas) / len(lista_notas), 1) if lista_notas else 0
+            desempenho_data.append({
+                'disciplina': disciplina.nome[:15],
+                'media': media
+            })
+    
+    desempenho_json = json.dumps(desempenho_data)
+
     context = {
         'aluno': aluno,
         'media': media_geral,
         'faltas': faltas_totais,
-        'avisos': avisos
+        'avisos': avisos,
+        'desempenho_json': desempenho_json,
     }
     return render(request, 'escola/aluno_dashboard.html', context)
 
@@ -274,8 +289,44 @@ def aluno_justificativa(request):
     try:
         aluno = request.user.perfil_aluno
     except AttributeError:
-        aluno = None
-    return render(request, 'escola/aluno_justificativa.html', {'aluno': aluno})
+        messages.error(request, 'Perfil de aluno não encontrado.')
+        return redirect('home')
+    
+    if request.method == 'POST':
+        disciplina_id = request.POST.get('disciplina')
+        data_inicio = request.POST.get('data_inicio')
+        data_fim = request.POST.get('data_fim')
+        justificativa_texto = request.POST.get('justificativa')
+        documento = request.FILES.get('documento')
+        
+        if disciplina_id and data_inicio and data_fim and justificativa_texto:
+            try:
+                disciplina = Disciplina.objects.get(id=disciplina_id)
+                justificativa = JustificativaFalta.objects.create(
+                    aluno=aluno,
+                    disciplina=disciplina,
+                    data_inicio=data_inicio,
+                    data_fim=data_fim,
+                    justificativa=justificativa_texto,
+                    documento=documento
+                )
+                messages.success(request, 'Justificativa enviada com sucesso! Aguarde a análise da secretaria.')
+            except Disciplina.DoesNotExist:
+                messages.error(request, 'Disciplina não encontrada.')
+            except Exception as e:
+                messages.error(request, f'Erro ao enviar justificativa: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+        
+        return redirect('aluno_justificativa')
+    
+    justificativas = JustificativaFalta.objects.filter(aluno=aluno).order_by('-data_solicitacao')
+    
+    context = {
+        'aluno': aluno,
+        'justificativas': justificativas,
+    }
+    return render(request, 'escola/aluno_justificativa.html', context)
 
 
 @login_required
@@ -563,6 +614,7 @@ def dashboard_secretaria(request):
     
     ultimos_alunos = Aluno.objects.order_by('-id')[:5]
     documentos_pendentes = Documento.objects.filter(status='PENDENTE').count()
+    justificativas_pendentes = JustificativaFalta.objects.filter(status='PENDENTE').count()
 
     context = {
         'total_alunos': total_alunos,
@@ -570,7 +622,8 @@ def dashboard_secretaria(request):
         'total_turmas': total_turmas,
         'total_cursos': total_cursos,
         'ultimos_alunos': ultimos_alunos,
-        'documentos_pendentes': documentos_pendentes
+        'documentos_pendentes': documentos_pendentes,
+        'justificativas_pendentes': justificativas_pendentes,
     }
     
     return render(request, 'escola/secre_dashboard.html', context)
@@ -908,6 +961,55 @@ def secretaria_configuracoes(request):
         'user': user,
     }
     return render(request, 'escola/secre_configuracoes.html', context)
+
+
+@login_required
+def secretaria_justificativas(request):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+
+    status_filtro = request.GET.get('status', '')
+    busca_aluno = request.GET.get('aluno', '')
+
+    justificativas = JustificativaFalta.objects.select_related('aluno', 'disciplina').order_by('-data_solicitacao')
+
+    if status_filtro:
+        justificativas = justificativas.filter(status=status_filtro)
+
+    if busca_aluno:
+        justificativas = justificativas.filter(aluno__nome__icontains=busca_aluno)
+
+    if request.method == 'POST':
+        justificativa_id = request.POST.get('justificativa_id')
+        acao = request.POST.get('acao')
+        observacao = request.POST.get('observacao', '')
+
+        if justificativa_id and acao:
+            try:
+                justificativa = JustificativaFalta.objects.get(id=justificativa_id)
+                if acao == 'aprovar':
+                    justificativa.status = 'APROVADA'
+                elif acao == 'rejeitar':
+                    justificativa.status = 'REJEITADA'
+                justificativa.observacao = observacao
+                justificativa.data_analise = timezone.now()
+                justificativa.analisado_por = request.user
+                justificativa.save()
+                messages.success(request, f'Justificativa {acao}da com sucesso!')
+            except JustificativaFalta.DoesNotExist:
+                messages.error(request, 'Justificativa não encontrada.')
+        return redirect('secretaria_justificativas')
+
+    pendentes = justificativas.filter(status='PENDENTE').count()
+
+    context = {
+        'justificativas': justificativas,
+        'status_filtro': status_filtro,
+        'busca_aluno': busca_aluno,
+        'pendentes': pendentes,
+    }
+    return render(request, 'escola/secre_justificativas.html', context)
 
 
 @login_required

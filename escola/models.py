@@ -323,3 +323,31 @@ class Sala(models.Model):
     class Meta:
         verbose_name = "Sala"
         verbose_name_plural = "Salas"
+
+
+class JustificativaFalta(models.Model):
+    STATUS_CHOICES = [
+        ('PENDENTE', 'Pendente'),
+        ('APROVADA', 'Aprovada'),
+        ('REJEITADA', 'Rejeitada'),
+    ]
+    
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='justificativas')
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
+    data_inicio = models.DateField()
+    data_fim = models.DateField()
+    justificativa = models.TextField()
+    documento = models.FileField(upload_to='justificativas/', blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDENTE')
+    data_solicitacao = models.DateTimeField(auto_now_add=True)
+    data_analise = models.DateTimeField(blank=True, null=True)
+    analisado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='justificativas_analisadas')
+    observacao = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Justificativa - {self.aluno.nome} ({self.data_inicio} a {self.data_fim})"
+
+    class Meta:
+        verbose_name = "Justificativa de Falta"
+        verbose_name_plural = "Justificativas de Faltas"
+        ordering = ['-data_solicitacao']

@@ -46,6 +46,7 @@ urlpatterns = [
     path('dashboard/secretaria/professores/<int:professor_id>/excluir/', views.secretaria_professor_excluir, name='secretaria_professor_excluir'),
     path('dashboard/secretaria/academico/', views.secretaria_academico, name='secretaria_academico'),
     path('dashboard/secretaria/documentos/', views.secretaria_documentos, name='secretaria_documentos'),
+    path('dashboard/secretaria/justificativas/', views.secretaria_justificativas, name='secretaria_justificativas'),
     path('dashboard/secretaria/calendario/', views.secretaria_calendario, name='secretaria_calendario'),
     path('dashboard/secretaria/configuracoes/', views.secretaria_configuracoes, name='secretaria_configuracoes'),
 

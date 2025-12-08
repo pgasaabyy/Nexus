@@ -128,6 +128,25 @@
         </div>
         <div class="kpi-value">{{ total_cursos }}</div>
     </div>
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span>Doc. Pendentes</span>
+            <i class="ph ph-file-text"></i>
+        </div>
+        <div class="kpi-value">{{ documentos_pendentes }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span>Justificativas Pendentes</span>
+            <i class="ph ph-calendar-x"></i>
+        </div>
+        <div class="kpi-value">{{ justificativas_pendentes }}</div>
+        {% if justificativas_pendentes > 0 %}
+        <div class="kpi-footer">
+            <a href="{% url 'secretaria_justificativas' %}" style="color: #003366;">Ver todas</a>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 <div class="table-widget">
