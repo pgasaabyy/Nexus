@@ -27,6 +27,7 @@ urlpatterns = [
     path('dashboard/professor/frequencia/', views.professor_frequencia, name='professor_frequencia'),
     path('dashboard/professor/frequencia/salvar/', views.professor_salvar_frequencia, name='professor_salvar_frequencia'),
     path('dashboard/professor/materiais/', views.professor_materiais, name='professor_materiais'),
+    path('dashboard/professor/materiais/download/<int:material_id>/', views.download_material, name='download_material'),
     path('dashboard/professor/calendario/', views.professor_calendario, name='professor_calendario'),
     path('dashboard/professor/comunicados/', views.professor_comunicados, name='professor_comunicados'),
     path('dashboard/professor/configuracoes/', views.professor_configuracoes, name='professor_configuracoes'),

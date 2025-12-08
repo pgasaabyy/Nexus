@@ -1,196 +1,433 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Acadêmico</title>
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de Alcantara</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
-                <a href="lancamento-notas.html" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
-                <a href="frequencia.html" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
-                <a href="materiais.html" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
-                <a href="calendario.html" class="nav-item active"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
-                <a href="comunicados.html" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
-                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
-                <a href="index.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
-            </nav>
-        </aside>
+{% extends 'escola/base_professor.html' %}
+{% load static %}
 
-        <main class="main-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <div class="page-title-section">
-                    <h1>Calendário Acadêmico</h1>
-                    <p>Visualize provas, reuniões e eventos importantes</p>
-                </div>
-                <button onclick="adicionarEvento()" style="background-color: #092F76; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <i class="ph ph-plus"></i>
-                    Novo Evento
-                </button>
-            </div>
+{% block title %}Calendário - Professor{% endblock %}
+{% block page_title %}Calendário Acadêmico{% endblock %}
+{% block nav_calendario %}active{% endblock %}
 
-            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; margin-bottom: 25px;">
-                <!-- Calendário -->
-                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
-                    <div id="calendar" style="text-align: center;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <button onclick="mesAnterior()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">‹</button>
-                            <h3 id="mesAno" style="margin: 0; color: #092F76; font-weight: 700;"></h3>
-                            <button onclick="proximoMes()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">›</button>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Su</div>
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Mo</div>
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Tu</div>
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">We</div>
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Th</div>
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Fr</div>
-                            <div style="font-weight: 600; color: #092F76; padding: 8px;">Sa</div>
-                        </div>
-                        <div id="diasCalendario" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;"></div>
-                    </div>
-                </div>
+{% block extra_css %}
+<style>
+.calendario-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+.calendario-card, .eventos-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E0E0E0;
+}
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.calendar-nav h3 {
+    margin: 0;
+    color: #092F76;
+    font-weight: 700;
+}
+.calendar-nav button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #092F76;
+    padding: 5px 10px;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+.calendar-header {
+    font-weight: 600;
+    color: #092F76;
+    padding: 8px;
+    text-align: center;
+}
+.calendar-day {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #f0f4f8;
+    transition: all 0.2s;
+}
+.calendar-day:hover {
+    background-color: #e0e8f2;
+}
+.calendar-day.today {
+    background-color: #092F76;
+    color: white;
+    font-weight: 700;
+}
+.calendar-day.has-event {
+    border: 2px solid #8ED6D7;
+}
+.eventos-card h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #092F76;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.eventos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.evento-item {
+    padding: 15px;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 15px;
+}
+.evento-item h4 {
+    margin: 0 0 8px;
+    color: #092F76;
+}
+.evento-item p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+.evento-badge {
+    background-color: #8ED6D7;
+    color: #092F76;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.evento-badge.prova { background-color: #ffc107; color: #333; }
+.evento-badge.reuniao { background-color: #6f42c1; color: white; }
+.evento-badge.feriado { background-color: #dc3545; color: white; }
+.evento-badge.trabalho { background-color: #28a745; color: white; }
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E0E0E0;
+    text-align: center;
+}
+.stat-card p:first-child {
+    color: #6c757d;
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+}
+.stat-card .stat-number {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #092F76;
+    margin: 0;
+}
+.stat-card p:last-child {
+    color: #6c757d;
+    margin: 10px 0 0;
+    font-size: 0.9rem;
+}
+.btn-novo-evento {
+    background-color: #092F76;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-novo-evento:hover {
+    background-color: #072763;
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+.modal.active {
+    display: flex;
+}
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+}
+.modal-content h2 {
+    margin-top: 0;
+    color: #092F76;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #092F76;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+.btn-excluir {
+    background: #f8d7da;
+    color: #721c24;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.btn-excluir:hover {
+    background: #f1aeb5;
+}
+@media (max-width: 900px) {
+    .calendario-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
 
-                <!-- Próximos Eventos -->
-                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
-                    <h2 style="margin-top: 0; margin-bottom: 8px; color: #092F76; display: flex; align-items: center; gap: 10px;">
-                        <i class="ph ph-calendar-dots"></i>
-                        Próximos Eventos
-                    </h2>
-                    <p style="color: #6c757d; margin: 0 0 20px;">Eventos e compromissos agendados</p>
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+    <p style="color: #6c757d; margin: 0;">Visualize provas, reuniões e eventos importantes</p>
+    <button class="btn-novo-evento" onclick="document.getElementById('modalEvento').classList.add('active')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Novo Evento
+    </button>
+</div>
 
-                    <div id="listaEventos" style="display: flex; flex-direction: column; gap: 15px;">
-                        <!-- Items adicionados dinamicamente -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cards de Estatísticas -->
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px;">
-                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; text-align: center;">
-                    <p style="color: #6c757d; margin: 0 0 10px; font-size: 0.9rem;">Provas Agendadas</p>
-                    <p style="font-size: 2.2rem; font-weight: 700; color: #092F76; margin: 0;">2</p>
-                    <p style="color: #6c757d; margin: 10px 0 0; font-size: 0.9rem;">Próximos 15 dias</p>
-                </div>
-                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; text-align: center;">
-                    <p style="color: #6c757d; margin: 0 0 10px; font-size: 0.9rem;">Reuniões</p>
-                    <p style="font-size: 2.2rem; font-weight: 700; color: #092F76; margin: 0;">2</p>
-                    <p style="color: #6c757d; margin: 10px 0 0; font-size: 0.9rem;">Este mês</p>
-                </div>
-                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0; text-align: center;">
-                    <p style="color: #6c757d; margin: 0 0 10px; font-size: 0.9rem;">Prazos</p>
-                    <p style="font-size: 2.2rem; font-weight: 700; color: #092F76; margin: 0;">1</p>
-                    <p style="color: #6c757d; margin: 10px 0 0; font-size: 0.9rem;">Esta semana</p>
-                </div>
-            </div>
-        </main>
+<div class="calendario-container">
+    <div class="calendario-card">
+        <div class="calendar-nav">
+            <button onclick="mesAnterior()">&#8249;</button>
+            <h3 id="mesAno"></h3>
+            <button onclick="proximoMes()">&#8250;</button>
+        </div>
+        <div class="calendar-grid">
+            <div class="calendar-header">Dom</div>
+            <div class="calendar-header">Seg</div>
+            <div class="calendar-header">Ter</div>
+            <div class="calendar-header">Qua</div>
+            <div class="calendar-header">Qui</div>
+            <div class="calendar-header">Sex</div>
+            <div class="calendar-header">Sáb</div>
+        </div>
+        <div id="diasCalendario" class="calendar-grid"></div>
     </div>
 
-    <script src="sistema.js"></script>
-    <script>
-        let mesAtual = new Date().getMonth();
-        let anoAtual = new Date().getFullYear();
+    <div class="eventos-card">
+        <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Próximos Eventos
+        </h2>
+        <p style="color: #6c757d; margin: 0 0 20px;">Eventos e compromissos agendados</p>
 
-        const meses = ['January', 'February', 'March', 'April', 'May', 'June', 
-                       'July', 'August', 'September', 'October', 'November', 'December'];
-
-        const eventos = [
-            { titulo: 'Prova de Matemática- 1º ano', data: '5', tipo: 'Prova', hora: '' },
-            { titulo: 'Conselho de Classe', data: '15', tipo: 'Evento', hora: '15:00' },
-            { titulo: 'Entrega de Trabalho- Física', data: '18', tipo: 'Trabalho', hora: '23:59' },
-            { titulo: 'Prova de Recuperação', data: '20', tipo: 'Acadêmico', hora: '10:00' }
-        ];
-
-        function renderCalendario() {
-            const mesAnoEl = document.getElementById('mesAno');
-            mesAnoEl.textContent = `${meses[mesAtual]} ${anoAtual}`;
-
-            const diasContainer = document.getElementById('diasCalendario');
-            diasContainer.innerHTML = '';
-
-            const primeiro = new Date(anoAtual, mesAtual, 1).getDay();
-            const diasNoMes = new Date(anoAtual, mesAtual + 1, 0).getDate();
-
-            for (let i = 0; i < primeiro; i++) {
-                const vazio = document.createElement('div');
-                vazio.style.cssText = 'padding: 10px; color: #ddd;';
-                vazio.textContent = '';
-                diasContainer.appendChild(vazio);
-            }
-
-            const hoje = new Date();
-            for (let dia = 1; dia <= diasNoMes; dia++) {
-                const diaEl = document.createElement('div');
-                const ehHoje = dia === hoje.getDate() && mesAtual === hoje.getMonth() && anoAtual === hoje.getFullYear();
-                diaEl.style.cssText = `padding: 12px; border-radius: 8px; cursor: pointer; font-weight: ${ehHoje ? 700 : 400}; color: ${ehHoje ? 'white' : '#092F76'}; background-color: ${ehHoje ? '#092F76' : '#f0f4f8'}; transition: all 0.2s;`;
-                diaEl.textContent = dia;
-                diaEl.onmouseover = () => { if (!ehHoje) diaEl.style.backgroundColor = '#e0e8f2'; };
-                diaEl.onmouseout = () => { if (!ehHoje) diaEl.style.backgroundColor = '#f0f4f8'; };
-                diasContainer.appendChild(diaEl);
-            }
-
-            renderEventos();
-        }
-
-        function renderEventos() {
-            const listaEventos = document.getElementById('listaEventos');
-            listaEventos.innerHTML = '';
-
-            eventos.forEach(evt => {
-                const item = document.createElement('div');
-                item.style.cssText = 'padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: start;';
-                
-                let badge = '#8ED6D7';
-                if (evt.tipo === 'Prova') badge = '#8ED6D7';
-                else if (evt.tipo === 'Evento') badge = '#92c8e0';
-                else if (evt.tipo === 'Acadêmico') badge = '#ff6b6b';
-                
-                item.innerHTML = `
+        <div class="eventos-list">
+            {% if eventos %}
+                {% for evento in eventos %}
+                <div class="evento-item">
                     <div>
-                        <h4 style="margin: 0 0 8px; color: #092F76;">${evt.titulo}</h4>
-                        <p style="margin: 0 0 5px; color: #6c757d; font-size: 0.9rem;"><i class="ph ph-calendar-blank"></i> ${evt.data}/${mesAtual + 1}/${anoAtual} ${evt.hora ? 'às ' + evt.hora : ''}</p>
+                        <h4>{{ evento.titulo }}</h4>
+                        <p>{{ evento.data|date:"d/m/Y" }}{% if evento.descricao %} - {{ evento.descricao|truncatewords:10 }}{% endif %}</p>
                     </div>
-                    <span style="background-color: ${badge}; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">${evt.tipo}</span>
-                `;
-                listaEventos.appendChild(item);
-            });
-        }
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <span class="evento-badge {{ evento.tipo }}">{{ evento.get_tipo_display }}</span>
+                        <form method="post" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="excluir">
+                            <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                            <button type="submit" class="btn-excluir" onclick="return confirm('Excluir este evento?')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: #6c757d; padding: 20px;">Nenhum evento cadastrado.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-        function mesAnterior() {
-            mesAtual--;
-            if (mesAtual < 0) {
-                mesAtual = 11;
-                anoAtual--;
-            }
-            renderCalendario();
-        }
+<div class="stats-grid">
+    <div class="stat-card">
+        <p>Provas Agendadas</p>
+        <p class="stat-number">{{ total_provas|default:0 }}</p>
+        <p>Próximos 15 dias</p>
+    </div>
+    <div class="stat-card">
+        <p>Reuniões</p>
+        <p class="stat-number">{{ total_reunioes|default:0 }}</p>
+        <p>Este mês</p>
+    </div>
+    <div class="stat-card">
+        <p>Total de Eventos</p>
+        <p class="stat-number">{{ eventos|length }}</p>
+        <p>Cadastrados</p>
+    </div>
+</div>
 
-        function proximoMes() {
-            mesAtual++;
-            if (mesAtual > 11) {
-                mesAtual = 0;
-                anoAtual++;
-            }
-            renderCalendario();
-        }
+<div id="modalEvento" class="modal">
+    <div class="modal-content">
+        <h2>Novo Evento</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="adicionar">
+            
+            <div class="form-group">
+                <label>Título *</label>
+                <input type="text" name="titulo" required placeholder="Nome do evento">
+            </div>
+            
+            <div class="form-group">
+                <label>Data *</label>
+                <input type="date" name="data" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo *</label>
+                <select name="tipo" required>
+                    {% for value, label in tipos %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Turma (opcional)</label>
+                <select name="turma_id">
+                    <option value="">Todas as turmas</option>
+                    {% for turma in turmas %}
+                    <option value="{{ turma.id }}">{{ turma.codigo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea name="descricao" placeholder="Detalhes do evento..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="document.getElementById('modalEvento').classList.remove('active')" style="flex: 1; padding: 12px; border: 1px solid #ccc; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                <button type="submit" class="btn-novo-evento" style="flex: 1; justify-content: center;">Adicionar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        function adicionarEvento() {
-            alert('Funcionalidade de adicionar evento será implementada em breve!');
-        }
+<script>
+const eventosData = {{ eventos_json|safe }};
+let mesAtual = new Date().getMonth();
+let anoAtual = new Date().getFullYear();
 
-        renderCalendario();
-    </script>
-</body>
-</html>
+const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+               'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+function renderCalendario() {
+    const mesAnoEl = document.getElementById('mesAno');
+    mesAnoEl.textContent = `${meses[mesAtual]} ${anoAtual}`;
+
+    const diasContainer = document.getElementById('diasCalendario');
+    diasContainer.innerHTML = '';
+
+    const primeiro = new Date(anoAtual, mesAtual, 1).getDay();
+    const diasNoMes = new Date(anoAtual, mesAtual + 1, 0).getDate();
+
+    for (let i = 0; i < primeiro; i++) {
+        const vazio = document.createElement('div');
+        vazio.className = 'calendar-day';
+        vazio.style.visibility = 'hidden';
+        diasContainer.appendChild(vazio);
+    }
+
+    const hoje = new Date();
+    for (let dia = 1; dia <= diasNoMes; dia++) {
+        const diaEl = document.createElement('div');
+        const ehHoje = dia === hoje.getDate() && mesAtual === hoje.getMonth() && anoAtual === hoje.getFullYear();
+        
+        const dataStr = `${anoAtual}-${String(mesAtual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const temEvento = eventosData.some(e => e.data === dataStr);
+        
+        diaEl.className = 'calendar-day';
+        if (ehHoje) diaEl.classList.add('today');
+        if (temEvento) diaEl.classList.add('has-event');
+        
+        diaEl.textContent = dia;
+        diasContainer.appendChild(diaEl);
+    }
+}
+
+function mesAnterior() {
+    mesAtual--;
+    if (mesAtual < 0) {
+        mesAtual = 11;
+        anoAtual--;
+    }
+    renderCalendario();
+}
+
+function proximoMes() {
+    mesAtual++;
+    if (mesAtual > 11) {
+        mesAtual = 0;
+        anoAtual++;
+    }
+    renderCalendario();
+}
+
+document.getElementById('modalEvento').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.classList.remove('active');
+    }
+});
+
+renderCalendario();
+</script>
+{% endblock %}

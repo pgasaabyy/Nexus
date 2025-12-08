@@ -3,7 +3,8 @@ from django.contrib.admin import AdminSite
 from django.utils import timezone
 from .models import (
     Aluno, Turma, Disciplina, Professor, Aviso, 
-    Nota, Frequencia, Matricula, Curso, Evento, HorarioAula, Documento
+    Nota, Frequencia, Matricula, Curso, Evento, HorarioAula, Documento,
+    Material, Sala
 )
 
 
@@ -106,19 +107,23 @@ class DisciplinaAdmin(admin.ModelAdmin):
 
 @admin.register(Aviso)
 class AvisoAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'turma', 'data_criacao']
-    list_filter = ['turma', 'data_criacao']
+    list_display = ['titulo', 'autor', 'destinatario', 'turma', 'ativo', 'data_criacao']
+    list_filter = ['destinatario', 'ativo', 'turma', 'data_criacao']
     search_fields = ['titulo', 'conteudo']
     list_per_page = 25
     ordering = ['-data_criacao']
     
     fieldsets = (
         (None, {
-            'fields': ('titulo', 'conteudo')
+            'fields': ('titulo', 'conteudo', 'ativo')
         }),
         ('Destinatário', {
-            'fields': ('turma',),
-            'description': 'Deixe em branco para enviar para todos.'
+            'fields': ('destinatario', 'turma'),
+            'description': 'Selecione o tipo de destinatário. Turma específica só funciona se selecionar "Turma Específica".'
+        }),
+        ('Autor', {
+            'fields': ('autor',),
+            'classes': ('collapse',)
         }),
     )
 
@@ -198,3 +203,30 @@ class DocumentoAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    list_display = ['titulo', 'tipo', 'disciplina', 'professor', 'turma', 'ativo', 'data_upload']
+    list_filter = ['tipo', 'disciplina', 'professor', 'ativo', 'data_upload']
+    search_fields = ['titulo', 'descricao', 'professor__nome', 'disciplina__nome']
+    list_per_page = 25
+    ordering = ['-data_upload']
+    
+    fieldsets = (
+        ('Material', {
+            'fields': ('titulo', 'descricao', 'arquivo', 'tipo', 'ativo')
+        }),
+        ('Vinculação', {
+            'fields': ('disciplina', 'turma', 'professor')
+        }),
+    )
+
+
+@admin.register(Sala)
+class SalaAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'tipo', 'capacidade', 'bloco']
+    list_filter = ['tipo', 'bloco']
+    search_fields = ['nome', 'bloco']
+    list_per_page = 25
+    ordering = ['nome']

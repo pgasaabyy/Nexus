@@ -52,3 +52,4 @@ sqlparse
 tablib
 tzdata
 whitenoise
+psycopg2-binary

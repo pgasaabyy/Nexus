@@ -17,7 +17,7 @@ from django.utils import timezone
 
 from .models import (
     Aluno, Nota, Turma, Professor, Disciplina, 
-    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso, Documento
+    Aviso, Frequencia, Matricula, Evento, HorarioAula, Curso, Documento, Material
 )
 from .serializers import AlunoSerializer, NotaSerializer
 
@@ -100,7 +100,8 @@ def redirect_user_by_role(user):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    messages.success(request, 'Você saiu do sistema com sucesso.')
+    return redirect('home')
 
 
 def home(request):
@@ -287,7 +288,47 @@ def aluno_configuracoes(request):
         aluno = request.user.perfil_aluno
     except AttributeError:
         aluno = None
-    return render(request, 'escola/aluno_configuracoes.html', {'aluno': aluno})
+        return redirect('home')
+    
+    user = request.user
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'atualizar_perfil':
+            user.email = request.POST.get('email', user.email)
+            user.save()
+            
+            if aluno:
+                aluno.telefone = request.POST.get('telefone', aluno.telefone)
+                aluno.save()
+            
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('aluno_configuracoes')
+        
+        elif action == 'alterar_senha':
+            senha_atual = request.POST.get('senha_atual')
+            nova_senha = request.POST.get('nova_senha')
+            confirmar_senha = request.POST.get('confirmar_senha')
+            
+            if not user.check_password(senha_atual):
+                messages.error(request, 'Senha atual incorreta.')
+            elif nova_senha != confirmar_senha:
+                messages.error(request, 'As senhas não coincidem.')
+            elif len(nova_senha) < 6:
+                messages.error(request, 'A senha deve ter pelo menos 6 caracteres.')
+            else:
+                user.set_password(nova_senha)
+                user.save()
+                messages.success(request, 'Senha alterada com sucesso! Faça login novamente.')
+                return redirect('login')
+            return redirect('aluno_configuracoes')
+    
+    context = {
+        'aluno': aluno,
+        'user': user,
+    }
+    return render(request, 'escola/aluno_configuracoes.html', context)
 
 
 @login_required
@@ -583,7 +624,43 @@ def secretaria_configuracoes(request):
     if not check_secretaria_permission(request.user):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
-    return render(request, 'escola/secre_configuracoes.html')
+    
+    user = request.user
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'atualizar_perfil':
+            user.first_name = request.POST.get('first_name', user.first_name)
+            user.last_name = request.POST.get('last_name', user.last_name)
+            user.email = request.POST.get('email', user.email)
+            user.save()
+            
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('secretaria_configuracoes')
+        
+        elif action == 'alterar_senha':
+            senha_atual = request.POST.get('senha_atual')
+            nova_senha = request.POST.get('nova_senha')
+            confirmar_senha = request.POST.get('confirmar_senha')
+            
+            if not user.check_password(senha_atual):
+                messages.error(request, 'Senha atual incorreta.')
+            elif nova_senha != confirmar_senha:
+                messages.error(request, 'As senhas não coincidem.')
+            elif len(nova_senha) < 6:
+                messages.error(request, 'A senha deve ter pelo menos 6 caracteres.')
+            else:
+                user.set_password(nova_senha)
+                user.save()
+                messages.success(request, 'Senha alterada com sucesso! Faça login novamente.')
+                return redirect('login')
+            return redirect('secretaria_configuracoes')
+    
+    context = {
+        'user': user,
+    }
+    return render(request, 'escola/secre_configuracoes.html', context)
 
 
 @login_required
@@ -697,25 +774,62 @@ def coordenacao_comunicados(request):
     if not check_coordenacao_permission(request.user):
         return redirect('home')
     
-    avisos = Aviso.objects.order_by('-data_criacao')
+    avisos = Aviso.objects.filter(ativo=True).order_by('-data_criacao')
     turmas = Turma.objects.all()
     
     if request.method == 'POST':
-        titulo = request.POST.get('titulo')
-        conteudo = request.POST.get('conteudo')
-        turma_id = request.POST.get('turma_id')
+        action = request.POST.get('action', 'adicionar')
         
-        if titulo and conteudo:
-            aviso = Aviso(titulo=titulo, conteudo=conteudo)
-            if turma_id:
-                aviso.turma_id = turma_id
-            aviso.save()
-            messages.success(request, 'Comunicado criado com sucesso!')
+        if action == 'adicionar':
+            titulo = request.POST.get('titulo')
+            conteudo = request.POST.get('conteudo')
+            turma_id = request.POST.get('turma_id')
+            destinatario = request.POST.get('destinatario', 'todos')
+            
+            if titulo and conteudo:
+                aviso = Aviso(
+                    titulo=titulo, 
+                    conteudo=conteudo,
+                    autor=request.user,
+                    destinatario=destinatario
+                )
+                if turma_id:
+                    aviso.turma_id = turma_id
+                aviso.save()
+                messages.success(request, 'Comunicado criado com sucesso!')
+            else:
+                messages.error(request, 'Preencha título e conteúdo.')
+            return redirect('coordenacao_comunicados')
+        
+        elif action == 'excluir':
+            aviso_id = request.POST.get('aviso_id')
+            try:
+                aviso = Aviso.objects.get(id=aviso_id)
+                aviso.ativo = False
+                aviso.save()
+                messages.success(request, 'Comunicado removido com sucesso!')
+            except Aviso.DoesNotExist:
+                messages.error(request, 'Comunicado não encontrado.')
+            return redirect('coordenacao_comunicados')
+        
+        elif action == 'editar':
+            aviso_id = request.POST.get('aviso_id')
+            titulo = request.POST.get('titulo')
+            conteudo = request.POST.get('conteudo')
+            try:
+                aviso = Aviso.objects.get(id=aviso_id)
+                aviso.titulo = titulo
+                aviso.conteudo = conteudo
+                aviso.save()
+                messages.success(request, 'Comunicado atualizado com sucesso!')
+            except Aviso.DoesNotExist:
+                messages.error(request, 'Comunicado não encontrado.')
             return redirect('coordenacao_comunicados')
     
     context = {
         'avisos': avisos,
-        'turmas': turmas
+        'turmas': turmas,
+        'destinatarios': Aviso.DESTINATARIO_CHOICES,
     }
     return render(request, 'escola/coor_comunicados.html', context)
 
@@ -724,7 +838,43 @@ def coordenacao_comunicados(request):
 def coordenacao_configuracoes(request):
     if not check_coordenacao_permission(request.user):
         return redirect('home')
-    return render(request, 'escola/coor_configuracoes.html')
+    
+    user = request.user
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'atualizar_perfil':
+            user.first_name = request.POST.get('first_name', user.first_name)
+            user.last_name = request.POST.get('last_name', user.last_name)
+            user.email = request.POST.get('email', user.email)
+            user.save()
+            
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('coordenacao_configuracoes')
+        
+        elif action == 'alterar_senha':
+            senha_atual = request.POST.get('senha_atual')
+            nova_senha = request.POST.get('nova_senha')
+            confirmar_senha = request.POST.get('confirmar_senha')
+            
+            if not user.check_password(senha_atual):
+                messages.error(request, 'Senha atual incorreta.')
+            elif nova_senha != confirmar_senha:
+                messages.error(request, 'As senhas não coincidem.')
+            elif len(nova_senha) < 6:
+                messages.error(request, 'A senha deve ter pelo menos 6 caracteres.')
+            else:
+                user.set_password(nova_senha)
+                user.save()
+                messages.success(request, 'Senha alterada com sucesso! Faça login novamente.')
+                return redirect('login')
+            return redirect('coordenacao_configuracoes')
+    
+    context = {
+        'user': user,
+    }
+    return render(request, 'escola/coor_configuracoes.html', context)
 
 
 @login_required
@@ -899,7 +1049,62 @@ def professor_salvar_frequencia(request):
 def professor_materiais(request):
     if not check_professor_permission(request.user):
         return redirect('home')
-    return render(request, 'escola/professor_materiais.html')
+    
+    professor = getattr(request.user, 'perfil_professor', None)
+    disciplinas = Disciplina.objects.all()
+    turmas = Turma.objects.all()
+    
+    materiais = Material.objects.filter(ativo=True).order_by('-data_upload')
+    if professor:
+        materiais = materiais.filter(professor=professor)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'adicionar' and professor:
+            titulo = request.POST.get('titulo')
+            descricao = request.POST.get('descricao')
+            tipo = request.POST.get('tipo')
+            disciplina_id = request.POST.get('disciplina_id')
+            turma_id = request.POST.get('turma_id')
+            arquivo = request.FILES.get('arquivo')
+            
+            if titulo and disciplina_id and arquivo:
+                material = Material(
+                    titulo=titulo,
+                    descricao=descricao,
+                    tipo=tipo,
+                    disciplina_id=disciplina_id,
+                    professor=professor,
+                    arquivo=arquivo
+                )
+                if turma_id:
+                    material.turma_id = turma_id
+                material.save()
+                messages.success(request, f'Material "{titulo}" adicionado com sucesso!')
+            else:
+                messages.error(request, 'Preencha todos os campos obrigatórios.')
+            return redirect('professor_materiais')
+        
+        elif action == 'excluir':
+            material_id = request.POST.get('material_id')
+            try:
+                material = Material.objects.get(id=material_id, professor=professor)
+                material.ativo = False
+                material.save()
+                messages.success(request, 'Material removido com sucesso!')
+            except Material.DoesNotExist:
+                messages.error(request, 'Material não encontrado.')
+            return redirect('professor_materiais')
+    
+    context = {
+        'professor': professor,
+        'materiais': materiais,
+        'disciplinas': disciplinas,
+        'turmas': turmas,
+        'tipos': Material.TIPO_CHOICES,
+    }
+    return render(request, 'escola/professor_materiais.html', context)
 
 
 @login_required
@@ -907,11 +1112,54 @@ def professor_calendario(request):
     if not check_professor_permission(request.user):
         return redirect('home')
     
-    eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo')
+    professor = getattr(request.user, 'perfil_professor', None)
+    turmas = Turma.objects.all()
+    eventos = Evento.objects.all().order_by('-data')
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'adicionar':
+            titulo = request.POST.get('titulo')
+            data = request.POST.get('data')
+            tipo = request.POST.get('tipo')
+            descricao = request.POST.get('descricao')
+            turma_id = request.POST.get('turma_id')
+            
+            if titulo and data and tipo:
+                evento = Evento(
+                    titulo=titulo,
+                    data=data,
+                    tipo=tipo,
+                    descricao=descricao
+                )
+                if turma_id:
+                    evento.turma_id = turma_id
+                evento.save()
+                messages.success(request, f'Evento "{titulo}" criado com sucesso!')
+            else:
+                messages.error(request, 'Preencha todos os campos obrigatórios.')
+            return redirect('professor_calendario')
+        
+        elif action == 'excluir':
+            evento_id = request.POST.get('evento_id')
+            try:
+                evento = Evento.objects.get(id=evento_id)
+                evento.delete()
+                messages.success(request, 'Evento removido com sucesso!')
+            except Evento.DoesNotExist:
+                messages.error(request, 'Evento não encontrado.')
+            return redirect('professor_calendario')
+    
+    eventos_query = Evento.objects.all().values('id', 'titulo', 'data', 'tipo', 'turma__codigo', 'descricao')
     eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
     
     context = {
+        'professor': professor,
+        'eventos': eventos,
         'eventos_json': eventos_json,
+        'turmas': turmas,
+        'tipos': Evento.TIPO_CHOICES,
     }
     return render(request, 'escola/professor_calendario.html', context)
 
@@ -921,15 +1169,103 @@ def professor_comunicados(request):
     if not check_professor_permission(request.user):
         return redirect('home')
     
-    avisos = Aviso.objects.order_by('-data_criacao')
-    return render(request, 'escola/professor_comunicados.html', {'avisos': avisos})
+    professor = getattr(request.user, 'perfil_professor', None)
+    turmas = Turma.objects.all()
+    
+    avisos = Aviso.objects.filter(ativo=True).order_by('-data_criacao')
+    meus_avisos = Aviso.objects.filter(autor=request.user, ativo=True).order_by('-data_criacao')
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'adicionar':
+            titulo = request.POST.get('titulo')
+            conteudo = request.POST.get('conteudo')
+            turma_id = request.POST.get('turma_id')
+            
+            if titulo and conteudo:
+                aviso = Aviso(
+                    titulo=titulo,
+                    conteudo=conteudo,
+                    autor=request.user,
+                    destinatario='turma' if turma_id else 'alunos'
+                )
+                if turma_id:
+                    aviso.turma_id = turma_id
+                aviso.save()
+                messages.success(request, 'Comunicado enviado com sucesso!')
+            else:
+                messages.error(request, 'Preencha título e conteúdo.')
+            return redirect('professor_comunicados')
+        
+        elif action == 'excluir':
+            aviso_id = request.POST.get('aviso_id')
+            try:
+                aviso = Aviso.objects.get(id=aviso_id, autor=request.user)
+                aviso.ativo = False
+                aviso.save()
+                messages.success(request, 'Comunicado removido com sucesso!')
+            except Aviso.DoesNotExist:
+                messages.error(request, 'Comunicado não encontrado ou sem permissão.')
+            return redirect('professor_comunicados')
+    
+    context = {
+        'professor': professor,
+        'avisos': avisos,
+        'meus_avisos': meus_avisos,
+        'turmas': turmas,
+    }
+    return render(request, 'escola/professor_comunicados.html', context)
 
 
 @login_required
 def professor_configuracoes(request):
     if not check_professor_permission(request.user):
         return redirect('home')
-    return render(request, 'escola/professor_configuracoes.html')
+    
+    professor = getattr(request.user, 'perfil_professor', None)
+    user = request.user
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'atualizar_perfil':
+            user.first_name = request.POST.get('first_name', user.first_name)
+            user.last_name = request.POST.get('last_name', user.last_name)
+            user.email = request.POST.get('email', user.email)
+            user.save()
+            
+            if professor:
+                professor.telefone = request.POST.get('telefone', professor.telefone)
+                professor.especialidade = request.POST.get('especialidade', professor.especialidade)
+                professor.save()
+            
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('professor_configuracoes')
+        
+        elif action == 'alterar_senha':
+            senha_atual = request.POST.get('senha_atual')
+            nova_senha = request.POST.get('nova_senha')
+            confirmar_senha = request.POST.get('confirmar_senha')
+            
+            if not user.check_password(senha_atual):
+                messages.error(request, 'Senha atual incorreta.')
+            elif nova_senha != confirmar_senha:
+                messages.error(request, 'As senhas não coincidem.')
+            elif len(nova_senha) < 6:
+                messages.error(request, 'A senha deve ter pelo menos 6 caracteres.')
+            else:
+                user.set_password(nova_senha)
+                user.save()
+                messages.success(request, 'Senha alterada com sucesso! Faça login novamente.')
+                return redirect('login')
+            return redirect('professor_configuracoes')
+    
+    context = {
+        'professor': professor,
+        'user': user,
+    }
+    return render(request, 'escola/professor_configuracoes.html', context)
 
 
 @login_required
@@ -1119,3 +1455,33 @@ def coordenacao_evento_excluir(request, evento_id):
         return redirect('coordenacao_calendario')
     
     return render(request, 'escola/coor_evento_excluir.html', {'evento': evento})
+
+
+@login_required
+def download_material(request, material_id):
+    material = get_object_or_404(Material, id=material_id, ativo=True)
+    
+    user = request.user
+    is_professor = check_professor_permission(user)
+    is_secretaria = check_secretaria_permission(user)
+    is_coordenacao = check_coordenacao_permission(user)
+    
+    is_professor_owner = False
+    if is_professor and hasattr(user, 'perfil_professor'):
+        is_professor_owner = material.professor == user.perfil_professor
+    
+    is_aluno_turma = False
+    if hasattr(user, 'perfil_aluno') and material.turma:
+        is_aluno_turma = user.perfil_aluno.turma_atual == material.turma
+    
+    if not (is_professor_owner or is_secretaria or is_coordenacao or is_aluno_turma or user.is_superuser):
+        messages.error(request, 'Você não tem permissão para acessar este material.')
+        return redirect('home')
+    
+    if material.arquivo:
+        response = HttpResponse(material.arquivo, content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{material.arquivo.name.split("/")[-1]}"'
+        return response
+    
+    messages.error(request, 'Arquivo não encontrado.')
+    return redirect('professor_materiais')

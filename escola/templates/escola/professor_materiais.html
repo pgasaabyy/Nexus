@@ -1,301 +1,334 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materiais Didáticos</title>
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        .materiais-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .btn-novo-material {
-            background-color: #092F76;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-        }
-        .btn-novo-material:hover {
-            background-color: #072763;
-        }
-        .materiais-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .material-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #E0E0E0;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .material-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        .material-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #092F76, #1a4d7a);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        .material-icon i {
-            font-size: 2rem;
-            color: white;
-        }
-        .material-card h3 {
-            margin: 0 0 8px;
-            font-size: 1.2rem;
-            color: #092F76;
-        }
-        .material-meta {
-            display: flex;
-            gap: 12px;
-            font-size: 0.85rem;
-            color: #6c757d;
-            margin-bottom: 15px;
-        }
-        .material-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .material-description {
-            color: #495057;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-        .material-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .btn-download, .btn-delete {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-        .btn-download {
-            background-color: #8ED6D7;
-            color: #092F76;
-        }
-        .btn-download:hover {
-            background-color: #7bc5c6;
-        }
-        .btn-delete {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .btn-delete:hover {
-            background-color: #f1aeb5;
-        }
-        .tag-turma {
-            display: inline-block;
-            background-color: #f0f4f8;
-            color: #092F76;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de Alcantara</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
-                <a href="lancamento-notas.html" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
-                <a href="frequencia.html" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
-                <a href="materiais.html" class="nav-item active"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
-                <a href="calendario.html" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
-                <a href="comunicados.html" class="nav-item"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
-                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
-                <a href="login.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
-            </nav>
-        </aside>
+{% extends 'escola/base_professor.html' %}
+{% load static %}
 
-        <main class="main-content">
-            <div class="materiais-header">
-                <div class="page-title-section">
-                    <h1>Materiais Didáticos</h1>
-                    <p>Gerencie e compartilhe materiais com os alunos</p>
-                </div>
-                <button class="btn-novo-material btn-upload-material">
-                    <i class="ph ph-upload-simple"></i>
-                    Enviar Material
-                </button>
-            </div>
+{% block title %}Materiais - Professor{% endblock %}
+{% block page_title %}Materiais Didáticos{% endblock %}
+{% block nav_materiais %}active{% endblock %}
 
-            <div class="materiais-grid">
-                <div class="material-card">
-                    <div class="material-icon">
-                        <i class="ph ph-file-pdf"></i>
-                    </div>
-                    <span class="tag-turma">3º Ano A</span>
-                    <h3>Lista de Exercícios - Funções</h3>
-                    <div class="material-meta">
-                        <span><i class="ph ph-calendar-blank"></i> 10/10/2025</span>
-                        <span><i class="ph ph-download-simple"></i> 45 downloads</span>
-                    </div>
-                    <p class="material-description">Exercícios sobre funções do 1º e 2º grau com gabarito detalhado.</p>
-                    <div class="material-actions">
-                        <button class="btn-download">
-                            <i class="ph ph-download-simple"></i>
-                            Baixar
-                        </button>
-                        <button class="btn-delete">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-                </div>
+{% block extra_css %}
+<style>
+.materiais-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.btn-novo-material {
+    background-color: #092F76;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+.btn-novo-material:hover {
+    background-color: #072763;
+}
+.materiais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+.material-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E0E0E0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.material-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+.material-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #092F76, #1a4d7a);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+.material-icon svg {
+    width: 30px;
+    height: 30px;
+    stroke: white;
+}
+.material-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: #092F76;
+}
+.material-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.material-description {
+    color: #495057;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+.material-actions {
+    display: flex;
+    gap: 10px;
+}
+.btn-download, .btn-delete {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.btn-download {
+    background-color: #8ED6D7;
+    color: #092F76;
+}
+.btn-download:hover {
+    background-color: #7bc5c6;
+}
+.btn-delete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.btn-delete:hover {
+    background-color: #f1aeb5;
+}
+.tag-tipo {
+    display: inline-block;
+    background-color: #f0f4f8;
+    color: #092F76;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+.modal.active {
+    display: flex;
+}
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal-content h2 {
+    margin-top: 0;
+    color: #092F76;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #092F76;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+.empty-state svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    stroke: #ccc;
+}
+@media (max-width: 768px) {
+    .materiais-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .material-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
 
-                <div class="material-card">
-                    <div class="material-icon">
-                        <i class="ph ph-file-ppt"></i>
-                    </div>
-                    <span class="tag-turma">3º Ano A</span>
-                    <h3>Slides - Geometria Analítica</h3>
-                    <div class="material-meta">
-                        <span><i class="ph ph-calendar-blank"></i> 08/10/2025</span>
-                        <span><i class="ph ph-download-simple"></i> 38 downloads</span>
-                    </div>
-                    <p class="material-description">Apresentação completa sobre geometria analítica com exemplos práticos.</p>
-                    <div class="material-actions">
-                        <button class="btn-download">
-                            <i class="ph ph-download-simple"></i>
-                            Baixar
-                        </button>
-                        <button class="btn-delete">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-icon">
-                        <i class="ph ph-file-doc"></i>
-                    </div>
-                    <span class="tag-turma">2º Ano A</span>
-                    <h3>Trabalho - Análise de Gráficos</h3>
-                    <div class="material-meta">
-                        <span><i class="ph ph-calendar-blank"></i> 05/10/2025</span>
-                        <span><i class="ph ph-download-simple"></i> 52 downloads</span>
-                    </div>
-                    <p class="material-description">Instruções e rubrica para o trabalho de análise de gráficos.</p>
-                    <div class="material-actions">
-                        <button class="btn-download">
-                            <i class="ph ph-download-simple"></i>
-                            Baixar
-                        </button>
-                        <button class="btn-delete">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-icon">
-                        <i class="ph ph-file-pdf"></i>
-                    </div>
-                    <span class="tag-turma">1º Ano A</span>
-                    <h3>Apostila - Trigonometria Básica</h3>
-                    <div class="material-meta">
-                        <span><i class="ph ph-calendar-blank"></i> 01/10/2025</span>
-                        <span><i class="ph ph-download-simple"></i> 67 downloads</span>
-                    </div>
-                    <p class="material-description">Material completo sobre trigonometria básica para iniciantes.</p>
-                    <div class="material-actions">
-                        <button class="btn-download">
-                            <i class="ph ph-download-simple"></i>
-                            Baixar
-                        </button>
-                        <button class="btn-delete">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-icon">
-                        <i class="ph ph-video"></i>
-                    </div>
-                    <span class="tag-turma">3º Ano B</span>
-                    <h3>Videoaula - Matrizes e Determinantes</h3>
-                    <div class="material-meta">
-                        <span><i class="ph ph-calendar-blank"></i> 28/09/2025</span>
-                        <span><i class="ph ph-eye"></i> 89 visualizações</span>
-                    </div>
-                    <p class="material-description">Aula gravada sobre matrizes e cálculo de determinantes.</p>
-                    <div class="material-actions">
-                        <button class="btn-download">
-                            <i class="ph ph-play"></i>
-                            Assistir
-                        </button>
-                        <button class="btn-delete">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-icon">
-                        <i class="ph ph-file-pdf"></i>
-                    </div>
-                    <span class="tag-turma">3º Ano A</span>
-                    <h3>Simulado ENEM - Matemática</h3>
-                    <div class="material-meta">
-                        <span><i class="ph ph-calendar-blank"></i> 25/09/2025</span>
-                        <span><i class="ph ph-download-simple"></i> 112 downloads</span>
-                    </div>
-                    <p class="material-description">Simulado completo com questões estilo ENEM e gabarito.</p>
-                    <div class="material-actions">
-                        <button class="btn-download">
-                            <i class="ph ph-download-simple"></i>
-                            Baixar
-                        </button>
-                        <button class="btn-delete">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
+{% block content %}
+<div class="materiais-header">
+    <div>
+        <p style="color: #6c757d; margin: 0;">Gerencie e compartilhe materiais com os alunos</p>
     </div>
-    <!-- Added sistema.js for interactive functionality -->
-    <script src="sistema.js"></script>
-</body>
-</html>
+    <button class="btn-novo-material" onclick="document.getElementById('modalMaterial').classList.add('active')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Enviar Material
+    </button>
+</div>
+
+{% if materiais %}
+<div class="materiais-grid">
+    {% for material in materiais %}
+    <div class="material-card">
+        <div class="material-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+        </div>
+        <span class="tag-tipo">{{ material.get_tipo_display }}</span>
+        <h3>{{ material.titulo }}</h3>
+        <div class="material-meta">
+            <span>{{ material.disciplina.nome }}</span>
+            <span>{{ material.data_upload|date:"d/m/Y" }}</span>
+        </div>
+        {% if material.descricao %}
+        <p class="material-description">{{ material.descricao|truncatewords:20 }}</p>
+        {% endif %}
+        <div class="material-actions">
+            <a href="{% url 'download_material' material.id %}" class="btn-download">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Baixar
+            </a>
+            <form method="post" style="flex: 1; display: flex;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="excluir">
+                <input type="hidden" name="material_id" value="{{ material.id }}">
+                <button type="submit" class="btn-delete" onclick="return confirm('Tem certeza que deseja excluir este material?')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <h3>Nenhum material cadastrado</h3>
+    <p>Clique em "Enviar Material" para adicionar seu primeiro material didático.</p>
+</div>
+{% endif %}
+
+<div id="modalMaterial" class="modal">
+    <div class="modal-content">
+        <h2>Novo Material</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="adicionar">
+            
+            <div class="form-group">
+                <label>Título *</label>
+                <input type="text" name="titulo" required placeholder="Nome do material">
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo</label>
+                <select name="tipo">
+                    {% for value, label in tipos %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Disciplina *</label>
+                <select name="disciplina_id" required>
+                    <option value="">Selecione...</option>
+                    {% for disciplina in disciplinas %}
+                    <option value="{{ disciplina.id }}">{{ disciplina.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Turma (opcional)</label>
+                <select name="turma_id">
+                    <option value="">Todas as turmas</option>
+                    {% for turma in turmas %}
+                    <option value="{{ turma.id }}">{{ turma.codigo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea name="descricao" placeholder="Descrição do material..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Arquivo *</label>
+                <input type="file" name="arquivo" required>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="document.getElementById('modalMaterial').classList.remove('active')" style="flex: 1; padding: 12px; border: 1px solid #ccc; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                <button type="submit" class="btn-novo-material" style="flex: 1;">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('modalMaterial').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.classList.remove('active');
+    }
+});
+</script>
+{% endblock %}

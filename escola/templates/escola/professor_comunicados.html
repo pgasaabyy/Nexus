@@ -1,164 +1,262 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunicados</title>
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-circle">PA</div>
-                <span>Colégio Paulo de Alcantara</span>
+{% extends 'escola/base_professor.html' %}
+{% load static %}
+
+{% block title %}Comunicados - Professor{% endblock %}
+{% block page_title %}Comunicados{% endblock %}
+{% block nav_comunicados %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.comunicados-container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 25px;
+}
+.form-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 2px solid #8ED6D7;
+}
+.stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E0E0E0;
+    height: fit-content;
+}
+.form-card h2, .stats-card h3 {
+    margin-top: 0;
+    color: #092F76;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #092F76;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+.form-group textarea {
+    min-height: 150px;
+    font-family: inherit;
+    resize: vertical;
+}
+.btn-enviar {
+    width: 100%;
+    background-color: #092F76;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.2s;
+}
+.btn-enviar:hover {
+    background-color: #072763;
+}
+.stat-item {
+    margin-bottom: 20px;
+}
+.stat-item p:first-child {
+    color: #6c757d;
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+}
+.stat-item p:last-child {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #092F76;
+    margin: 0;
+}
+.comunicados-list {
+    margin-top: 25px;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E0E0E0;
+}
+.comunicados-list h2 {
+    margin-top: 0;
+    color: #092F76;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.comunicado-item {
+    padding: 15px;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    background: #f8f9fa;
+    margin-bottom: 15px;
+}
+.comunicado-item:last-child {
+    margin-bottom: 0;
+}
+.comunicado-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 15px;
+}
+.comunicado-item h4 {
+    margin: 0 0 5px;
+    color: #092F76;
+}
+.comunicado-meta {
+    margin: 0 0 8px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+.comunicado-content {
+    margin: 0;
+    color: #495057;
+    font-size: 0.95rem;
+}
+.tag-status {
+    background-color: #8ED6D7;
+    color: #092F76;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.btn-excluir {
+    background: #f8d7da;
+    color: #721c24;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.btn-excluir:hover {
+    background: #f1aeb5;
+}
+@media (max-width: 900px) {
+    .comunicados-container {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 600px) {
+    .comunicado-header {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<p style="color: #6c757d; margin-bottom: 25px;">Envie mensagens e comunicados para alunos e turmas</p>
+
+<div class="comunicados-container">
+    <div class="form-card">
+        <h2>Novo Comunicado</h2>
+        <p style="color: #6c757d; margin-bottom: 20px;">Envie uma mensagem para alunos ou turmas</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="adicionar">
+            
+            <div class="form-group">
+                <label>Turma (opcional)</label>
+                <select name="turma_id">
+                    <option value="">Todas as turmas</option>
+                    {% for turma in turmas %}
+                    <option value="{{ turma.id }}">{{ turma.codigo }} - {{ turma.curso.nome }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard-professor.html" class="nav-item"><i class="ph-bold ph-house"></i> <span>Dashboard</span></a>
-                <a href="lancamento-notas.html" class="nav-item"><i class="ph-bold ph-file-text"></i> <span>Lançar Notas</span></a>
-                <a href="frequencia.html" class="nav-item"><i class="ph-bold ph-user-list"></i> <span>Frequência</span></a>
-                <a href="materiais.html" class="nav-item"><i class="ph-bold ph-book-open"></i> <span>Materiais</span></a>
-                <a href="calendario.html" class="nav-item"><i class="ph-bold ph-calendar"></i> <span>Calendário</span></a>
-                <a href="comunicados.html" class="nav-item active"><i class="ph-bold ph-chat-dots"></i> <span>Comunicados</span></a>
-                <a href="configuracoes.html" class="nav-item"><i class="ph-bold ph-gear"></i> <span>Configurações</span></a>
-                <a href="index.html" class="nav-item logout"><i class="ph-bold ph-sign-out"></i> <span>Logout</span></a>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <div class="page-title-section">
-                <h1>Comunicados</h1>
-                <p>Envie mensagens e comunicados para alunos e turmas</p>
+            <div class="form-group">
+                <label>Título *</label>
+                <input type="text" name="titulo" placeholder="Digite o título do comunicado" required>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 300px; gap: 25px; margin-bottom: 25px;">
-                <!-- Formulário de Novo Comunicado -->
-                <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 2px solid #8ED6D7;">
-                    <h2 style="margin-top: 0; color: #092F76;">Novo Comunicado</h2>
-                    <p style="color: #6c757d; margin-bottom: 20px;">Envie uma mensagem para alunos ou turmas</p>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Destinatário</label>
-                        <input type="text" id="destinatario" placeholder="Ex: Todos os pais, 9º Ano A, etc." style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Assunto</label>
-                        <input type="text" id="assunto" placeholder="Digite o assunto do comunicado" style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
-                    </div>
-
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #092F76;">Mensagem</label>
-                        <textarea id="mensagem" placeholder="Digite sua mensagem aqui..." style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 1rem; min-height: 150px; box-sizing: border-box; font-family: inherit;"></textarea>
-                    </div>
-
-                    <button onclick="enviarComunicado()" style="width: 100%; background-color: #092F76; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background-color 0.2s;">
-                        <i class="ph ph-paper-plane-tilt"></i>
-                        Enviar Comunicado
-                    </button>
-                </div>
-
-                <!-- Card Estatísticas -->
-                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
-                    <h3 style="margin: 0 0 20px; color: #092F76;">Estatísticas</h3>
-                    <div style="margin-bottom: 20px;">
-                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Enviados hoje</p>
-                        <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">2</p>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Esta semana</p>
-                        <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">8</p>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Este mês</p>
-                        <p style="font-size: 1.8rem; font-weight: 700; color: #092F76; margin: 0;">24</p>
-                    </div>
-                    <div style="padding-top: 20px; border-top: 1px solid #E0E0E0;">
-                        <p style="color: #6c757d; margin: 0 0 8px; font-size: 0.9rem;">Alcance total</p>
-                        <p style="font-size: 1.5rem; font-weight: 700; color: #092F76; margin: 0;">180 alunos</p>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label>Mensagem *</label>
+                <textarea name="conteudo" placeholder="Digite sua mensagem aqui..." required></textarea>
             </div>
 
-            <!-- Comunicados Enviados -->
-            <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); border: 1px solid #E0E0E0;">
-                <h2 style="margin-top: 0; margin-bottom: 8px; color: #092F76; display: flex; align-items: center; gap: 10px;">
-                    <i class="ph ph-chat-dots"></i>
-                    Comunicados Enviados
-                </h2>
-                <p style="color: #6c757d; margin-top: 0; margin-bottom: 20px;">Histórico de mensagens enviadas</p>
-
-                <div id="listaComunicados" style="display: flex; flex-direction: column; gap: 15px;">
-                    <!-- Items adicionados dinamicamente -->
-                </div>
-            </div>
-        </main>
+            <button type="submit" class="btn-enviar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Enviar Comunicado
+            </button>
+        </form>
     </div>
 
-    <script src="sistema.js"></script>
-    <script>
-        function enviarComunicado() {
-            const destinatario = document.getElementById('destinatario').value;
-            const assunto = document.getElementById('assunto').value;
-            const mensagem = document.getElementById('mensagem').value;
+    <div class="stats-card">
+        <h3>Estatísticas</h3>
+        <div class="stat-item">
+            <p>Meus comunicados</p>
+            <p>{{ meus_avisos.count }}</p>
+        </div>
+        <div class="stat-item">
+            <p>Total de comunicados</p>
+            <p>{{ avisos.count }}</p>
+        </div>
+    </div>
+</div>
 
-            if (!destinatario || !assunto || !mensagem) {
-                alert('Preencha todos os campos!');
-                return;
-            }
+<div class="comunicados-list">
+    <h2>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Comunicados Enviados
+    </h2>
+    <p style="color: #6c757d; margin-top: 0; margin-bottom: 20px;">Histórico de mensagens enviadas</p>
 
-            const lista = document.getElementById('listaComunicados');
-            const data = new Date();
-            const dataFormatada = data.toLocaleDateString('pt-BR');
-
-            const item = document.createElement('div');
-            item.style.cssText = 'padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa;';
-            item.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                    <div>
-                        <h4 style="margin: 0 0 5px; color: #092F76;">${assunto}</h4>
-                        <p style="margin: 0 0 8px; color: #6c757d; font-size: 0.9rem;"><strong>${destinatario}</strong> • ${dataFormatada}</p>
-                        <p style="margin: 0; color: #495057; font-size: 0.95rem;">${mensagem}</p>
-                    </div>
-                    <span style="background-color: #8ED6D7; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">Enviado</span>
+    {% if avisos %}
+        {% for aviso in avisos %}
+        <div class="comunicado-item">
+            <div class="comunicado-header">
+                <div>
+                    <h4>{{ aviso.titulo }}</h4>
+                    <p class="comunicado-meta">
+                        {% if aviso.turma %}{{ aviso.turma.codigo }}{% else %}Todos{% endif %}
+                        &bull; {{ aviso.data_criacao|date:"d/m/Y H:i" }}
+                        {% if aviso.autor %}&bull; {{ aviso.autor.get_full_name|default:aviso.autor.username }}{% endif %}
+                    </p>
+                    <p class="comunicado-content">{{ aviso.conteudo|truncatewords:30 }}</p>
                 </div>
-            `;
-            
-            lista.insertBefore(item, lista.firstChild);
-
-            document.getElementById('destinatario').value = '';
-            document.getElementById('assunto').value = '';
-            document.getElementById('mensagem').value = '';
-        }
-
-        // Carregar comunicados iniciais
-        window.addEventListener('load', function() {
-            const lista = document.getElementById('listaComunicados');
-            const comunicados = [
-                { assunto: 'Reunião de pais - 1º Bimestre', destinatario: 'Pais e responsáveis', data: '01/10/2025', status: 'Enviado' },
-                { assunto: 'Material para próxima aula', destinatario: 'Alunos: Física', data: '30/09/2025', status: 'Enviado' },
-                { assunto: 'A prova de recuperação será na próxima semana', destinatario: 'A prova de recuperação será', data: '01/10/2025', status: 'Enviado' }
-            ];
-
-            comunicados.forEach(com => {
-                const item = document.createElement('div');
-                item.style.cssText = 'padding: 15px; border: 1px solid #E0E0E0; border-radius: 10px; background: #f8f9fa;';
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                        <div>
-                            <h4 style="margin: 0 0 5px; color: #092F76;">${com.assunto}</h4>
-                            <p style="margin: 0 0 8px; color: #6c757d; font-size: 0.9rem;"><strong>${com.destinatario}</strong> • ${com.data}</p>
-                        </div>
-                        <span style="background-color: #8ED6D7; color: #092F76; padding: 6px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">${com.status}</span>
-                    </div>
-                `;
-                lista.appendChild(item);
-            });
-        });
-    </script>
-</body>
-</html>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span class="tag-status">Enviado</span>
+                    {% if aviso.autor == request.user %}
+                    <form method="post" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="excluir">
+                        <input type="hidden" name="aviso_id" value="{{ aviso.id }}">
+                        <button type="submit" class="btn-excluir" onclick="return confirm('Excluir este comunicado?')">Excluir</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center; color: #6c757d; padding: 40px;">Nenhum comunicado enviado ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

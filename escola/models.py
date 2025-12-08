@@ -74,10 +74,20 @@ class Professor(models.Model):
 
 
 class Aviso(models.Model):
+    DESTINATARIO_CHOICES = [
+        ('todos', 'Todos'),
+        ('alunos', 'Alunos'),
+        ('professores', 'Professores'),
+        ('turma', 'Turma Específica'),
+    ]
     titulo = models.CharField(max_length=200)
     conteudo = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, null=True, blank=True)
+    autor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='avisos_criados')
+    destinatario = models.CharField(max_length=20, choices=DESTINATARIO_CHOICES, default='todos')
+    ativo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.titulo
@@ -260,3 +270,46 @@ class Documento(models.Model):
     class Meta:
         verbose_name = "Documento"
         verbose_name_plural = "Documentos"
+
+
+class Material(models.Model):
+    TIPO_CHOICES = [
+        ('apostila', 'Apostila'),
+        ('exercicio', 'Lista de Exercícios'),
+        ('slides', 'Slides/Apresentação'),
+        ('video', 'Vídeo'),
+        ('outro', 'Outro'),
+    ]
+    
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField(blank=True, null=True)
+    arquivo = models.FileField(upload_to='materiais/')
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='outro')
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name='materiais')
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, null=True, blank=True, related_name='materiais')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='materiais')
+    data_upload = models.DateTimeField(auto_now_add=True)
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.disciplina.nome}"
+
+    class Meta:
+        verbose_name = "Material"
+        verbose_name_plural = "Materiais"
+        ordering = ['-data_upload']
+
+
+class Sala(models.Model):
+    nome = models.CharField(max_length=100)
+    capacidade = models.IntegerField(default=40)
+    tipo = models.CharField(max_length=50, default='Sala de Aula')
+    bloco = models.CharField(max_length=50, blank=True, null=True)
+    recursos = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name = "Sala"
+        verbose_name_plural = "Salas"
