@@ -2021,17 +2021,27 @@ def professor_salvar_notas(request):
                     aluno = Aluno.objects.get(id=aluno_id)
                     matricula = Matricula.objects.filter(aluno=aluno, turma=turma).first()
                     
-                    if matricula:
-                        nota, created = Nota.objects.update_or_create(
-                            matricula=matricula,
-                            disciplina=disciplina,
-                            tipo_avaliacao=tipo_avaliacao,
-                            defaults={'valor': nota_valor}
-                        )
-                        if created:
-                            notas_salvas += 1
+                    if not matricula:
+                        if aluno.turma_atual == turma:
+                            matricula = Matricula.objects.create(
+                                aluno=aluno,
+                                turma=turma,
+                                status='Ativo'
+                            )
                         else:
-                            notas_atualizadas += 1
+                            notas_invalidas += 1
+                            continue
+                    
+                    nota, created = Nota.objects.update_or_create(
+                        matricula=matricula,
+                        disciplina=disciplina,
+                        tipo_avaliacao=tipo_avaliacao,
+                        defaults={'valor': nota_valor}
+                    )
+                    if created:
+                        notas_salvas += 1
+                    else:
+                        notas_atualizadas += 1
                 except (Aluno.DoesNotExist, ValueError, InvalidOperation):
                     notas_invalidas += 1
                     continue
@@ -2114,20 +2124,33 @@ def professor_salvar_frequencia(request):
             return redirect('professor_frequencia')
         
         alunos = Aluno.objects.filter(turma_atual=turma)
+        frequencias_salvas = 0
+        alunos_sem_matricula = 0
         
         for aluno in alunos:
             matricula = Matricula.objects.filter(aluno=aluno, turma=turma).first()
-            if matricula:
-                presente = request.POST.get(f'presente_{aluno.id}') == 'on'
-                
-                Frequencia.objects.update_or_create(
-                    matricula=matricula,
-                    disciplina=disciplina,
-                    data_aula=data_aula,
-                    defaults={'presente': presente}
+            
+            if not matricula:
+                matricula = Matricula.objects.create(
+                    aluno=aluno,
+                    turma=turma,
+                    status='Ativo'
                 )
+            
+            presente = request.POST.get(f'presente_{aluno.id}') == 'on'
+            
+            Frequencia.objects.update_or_create(
+                matricula=matricula,
+                disciplina=disciplina,
+                data_aula=data_aula,
+                defaults={'presente': presente}
+            )
+            frequencias_salvas += 1
         
-        messages.success(request, 'Frequência salva com sucesso!')
+        msg = f'Frequência salva com sucesso! ({frequencias_salvas} alunos)'
+        if alunos_sem_matricula > 0:
+            msg += f' - {alunos_sem_matricula} aluno(s) sem matrícula foram ignorados.'
+        messages.success(request, msg)
         return redirect('professor_frequencia')
     
     return redirect('professor_frequencia')
