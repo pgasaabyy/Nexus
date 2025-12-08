@@ -1587,12 +1587,14 @@ def coordenacao_aluno_adicionar(request):
         email = request.POST.get('email')
         cpf = request.POST.get('cpf')
         matricula = request.POST.get('matricula')
-        data_nascimento = request.POST.get('data_nascimento')
+        data_nascimento_str = request.POST.get('data_nascimento')
         telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
         
-        if nome and email and cpf and matricula and data_nascimento:
+        if nome and email and cpf and matricula and data_nascimento_str:
             try:
+                from datetime import datetime
+                data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
                 aluno = Aluno(
                     nome=nome,
                     email=email,
@@ -1636,9 +1638,13 @@ def coordenacao_aluno_editar(request, aluno_id):
         aluno.email = request.POST.get('email')
         aluno.cpf = request.POST.get('cpf')
         aluno.matricula = request.POST.get('matricula')
-        aluno.data_nascimento = request.POST.get('data_nascimento')
+        data_nascimento_str = request.POST.get('data_nascimento')
         aluno.telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
+        
+        if data_nascimento_str:
+            from datetime import datetime
+            aluno.data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
         
         if turma_id:
             aluno.turma_atual_id = turma_id

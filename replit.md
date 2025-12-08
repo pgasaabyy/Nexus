@@ -4,6 +4,16 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** CRUD completo para Coordenação gerenciar Turmas e Alunos
+  - Novas views: coordenacao_turma_adicionar, coordenacao_turma_editar, coordenacao_turma_excluir
+  - Novas views: coordenacao_aluno_adicionar, coordenacao_aluno_editar, coordenacao_aluno_excluir
+  - Templates: coor_turma_form.html, coor_aluno_form.html, coor_turma_excluir.html, coor_aluno_excluir.html
+  - Correção de parsing de data_nascimento usando datetime.strptime
+  - Padronização de logos em todos os templates base (usando imagem logo-nexus.png)
+  - Redesign de aluno_calendario.html com layout moderno
+  - Gráfico de frequência do aluno agora usa dados reais (porcentagem_geral)
+  - Página de relatórios (coor_relatorios.html) com analytics detalhados e exportação
+
 - **08/12/2025:** Atualização completa de views e templates
   - Adicionada funcionalidade de configurações para todos os perfis (aluno, professor, secretaria, coordenação)
   - Views de configurações agora permitem atualizar perfil e alterar senha
@@ -80,10 +90,12 @@ escola/             # App principal com models, views, templates
 - Configurações de perfil e senha
 
 **Coordenação:**
+- CRUD completo de turmas (adicionar/editar/excluir)
+- CRUD completo de alunos (adicionar/editar/excluir)
 - Gerenciar eventos do calendário (adicionar/editar/excluir)
 - Enviar comunicados às turmas (com CRUD completo)
-- Gerar relatórios
-- Supervisionar turmas e alunos
+- Gerar relatórios com analytics detalhados
+- Supervisionar professores
 - Configurações de perfil e senha
 
 ### URLs Importantes
@@ -93,8 +105,15 @@ escola/             # App principal com models, views, templates
 - `/dashboard/professor/materiais/` - Gerenciar materiais
 - `/dashboard/professor/materiais/download/<id>/` - Download de material
 - `/dashboard/secretaria/alunos/adicionar/` - Adicionar aluno
+- `/dashboard/coordenacao/turmas/` - Listar turmas
+- `/dashboard/coordenacao/turmas/adicionar/` - Adicionar turma
+- `/dashboard/coordenacao/turmas/editar/<id>/` - Editar turma
+- `/dashboard/coordenacao/alunos/` - Listar alunos
+- `/dashboard/coordenacao/alunos/adicionar/` - Adicionar aluno
+- `/dashboard/coordenacao/alunos/editar/<id>/` - Editar aluno
 - `/dashboard/coordenacao/calendario/evento/adicionar/` - Adicionar evento
 - `/dashboard/coordenacao/comunicados/` - Enviar comunicados
+- `/dashboard/coordenacao/relatorios/` - Relatórios com analytics
 
 ## Configuração do Ambiente
 
