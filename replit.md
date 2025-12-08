@@ -4,6 +4,15 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** Bug fixes and improvements across all dashboards
+  - **Professor Dashboard Fix**: Fixed student count display showing "3+3+1" - now shows correct total sum using pre-calculated `total_alunos` context variable
+  - **Turma Creation Fix**: Removed non-existent 'ano' field references from `coordenacao_turma_adicionar` and `coordenacao_turma_editar` views
+  - **Coordination Professors CRUD**: Complete rewrite of `coor_professores.html` with modal-based add/edit/view functionality; added corresponding views and URLs
+  - **Settings Pages Fix**: Rewrote `coor_configuracoes.html` and `secre_configuracoes.html` to properly extend base templates with user profile display and password change forms
+  - **Secretaria Calendar Fix**: Rewrote `secre_calendario.html` to extend `base_secretaria.html` with dynamic JavaScript calendar and events list
+  - **Secretaria Academic Management Fix**: Rewrote `secre_academico.html` with proper tabs for Cursos, Turmas, and Disciplinas
+  - **Reports Page Filter Fix**: Updated `coordenacao_relatorios` view to handle turma filtering from GET parameters
+
 - **08/12/2025:** CRUD completo para Coordenação gerenciar Turmas e Alunos
   - Novas views: coordenacao_turma_adicionar, coordenacao_turma_editar, coordenacao_turma_excluir
   - Novas views: coordenacao_aluno_adicionar, coordenacao_aluno_editar, coordenacao_aluno_excluir
@@ -92,9 +101,10 @@ escola/             # App principal com models, views, templates
 **Coordenação:**
 - CRUD completo de turmas (adicionar/editar/excluir)
 - CRUD completo de alunos (adicionar/editar/excluir)
+- CRUD completo de professores (adicionar/editar/excluir com criação opcional de usuário)
 - Gerenciar eventos do calendário (adicionar/editar/excluir)
 - Enviar comunicados às turmas (com CRUD completo)
-- Gerar relatórios com analytics detalhados
+- Gerar relatórios com analytics detalhados e filtro por turma
 - Supervisionar professores
 - Configurações de perfil e senha
 

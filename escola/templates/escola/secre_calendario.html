@@ -1,199 +1,161 @@
+{% extends 'escola/base_secretaria.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Acadêmico - Secretaria</title>
-    <link rel="stylesheet" href="{% static 'escola/css/secretaria.css' %}">
-    <!-- Reutilizando CSS específico de calendário se houver, ou estilo inline para garantir -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        /* Estilos específicos do Calendário */
-        .calendar-container {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .calendar-title {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .weekday {
-            text-align: center;
-            font-weight: 600;
-            color: #666;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        .day {
-            min-height: 100px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 10px;
-            position: relative;
-            transition: 0.2s;
-        }
-        .day:hover {
-            border-color: var(--secondary-color);
-            background: #fcfcfc;
-        }
-        .day-number {
-            font-weight: 600;
-            color: #333;
-        }
-        .event-dot {
-            display: block;
-            margin-top: 5px;
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: white;
-            background-color: var(--primary-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .event-feriado { background-color: #FF6B9D; }
-        .event-reuniao { background-color: #28a745; }
-        
-        /* Controles do Mês */
-        .month-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .btn-nav-cal {
-            background: none;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 5px 10px;
-            cursor: pointer;
-            color: #666;
-        }
-        .btn-nav-cal:hover {
-            background: #eee;
-            color: var(--primary-color);
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header"><div class="logo-circle">PA</div><span>Colégio Paulo de Alcantara</span></div>
-            <nav class="sidebar-nav">
-                <a href="{% url 'dashboard_secretaria' %}" class="nav-item"><i class="ph ph-house"></i> <span>Dashboard</span></a>
-                <a href="{% url 'secretaria_alunos' %}" class="nav-item"><i class="ph ph-graduation-cap"></i> <span>Alunos</span></a>
-                <a href="{% url 'secretaria_professores' %}" class="nav-item"><i class="ph ph-chalkboard-teacher"></i> <span>Professores</span></a>
-                <a href="{% url 'secretaria_academico' %}" class="nav-item"><i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span></a>
-                <a href="{% url 'secretaria_documentos' %}" class="nav-item"><i class="ph ph-newspaper"></i> <span>Documentos</span></a>
-                <a href="#" class="nav-item active"><i class="ph ph-calendar"></i> <span>Calendário</span></a>
-                <a href="#" class="nav-item"><i class="ph ph-gear"></i> <span>Configurações</span></a>
-                <a href="{% url 'logout' %}" class="nav-item logout"><i class="ph ph-sign-out"></i> <span>Sair</span></a>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <header class="main-header">
-                <div class="welcome-message"><h1>Calendário Acadêmico</h1></div>
-                <div class="user-profile">
-                    <div class="user-info"><strong>{{ user.username|title }}</strong><span>Secretaria</span></div>
-                    <div class="user-avatar">SC</div>
-                </div>
-            </header>
+{% block title %}Calendário Acadêmico - Secretaria{% endblock %}
+{% block nav_calendario %}active{% endblock %}
+{% block page_title %}Calendário Acadêmico{% endblock %}
 
-            <div class="calendar-container">
-                <div class="calendar-header">
-                    <div class="month-controls">
-                        <button class="btn-nav-cal" id="prevMonth"><i class="ph ph-caret-left"></i></button>
-                        <h2 class="calendar-title" id="monthYearDisplay">Dezembro 2025</h2>
-                        <button class="btn-nav-cal" id="nextMonth"><i class="ph ph-caret-right"></i></button>
-                    </div>
-                    <button class="btn-action primary" onclick="alert('Funcionalidade em desenvolvimento!')">
-                        <i class="ph ph-plus"></i> Adicionar Evento
-                    </button>
-                </div>
+{% block extra_css %}
+<style>
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .month-nav { display: flex; align-items: center; gap: 16px; }
+    .month-title { font-size: 20px; font-weight: 600; color: #003366; min-width: 200px; text-align: center; }
+    .btn-nav { width: 36px; height: 36px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .btn-nav:hover { background: #f0f0f0; border-color: #003366; }
+    .content-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .weekday { padding: 12px; text-align: center; font-weight: 600; color: #666; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
+    .day { min-height: 100px; padding: 8px; border: 1px solid #f0f0f0; position: relative; cursor: pointer; transition: background 0.2s; }
+    .day:hover { background: #f8f9fa; }
+    .day.other-month { background: #fafafa; }
+    .day.other-month .day-number { color: #ccc; }
+    .day.today { background: #e3f2fd; }
+    .day.today .day-number { background: #003366; color: white; }
+    .day-number { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 50%; font-weight: 600; font-size: 13px; color: #333; }
+    .event-dot { display: block; margin-top: 4px; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .event-reuniao { background: #28a745; }
+    .event-feriado { background: #dc3545; }
+    .event-prova { background: #ffc107; color: #333; }
+    .event-outro { background: #6c757d; }
+    .events-list { margin-top: 24px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
+    .card-header h3 { font-size: 16px; font-weight: 600; color: #333; margin: 0; }
+    .card-body { padding: 20px; }
+    .event-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #f0f0f0; }
+    .event-item:last-child { border-bottom: none; }
+    .event-date { width: 50px; height: 50px; background: #003366; color: white; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .event-date .day { font-size: 18px; font-weight: 700; line-height: 1; min-height: auto; padding: 0; border: none; }
+    .event-date .month { font-size: 11px; text-transform: uppercase; }
+    .event-info { flex: 1; }
+    .event-info h4 { margin: 0 0 4px 0; color: #333; font-size: 14px; }
+    .event-info p { margin: 0; color: #666; font-size: 13px; }
+    .event-type { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .empty-message { text-align: center; padding: 40px; color: #666; }
+</style>
+{% endblock %}
 
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Dias da Semana -->
-                    <div class="weekday">Dom</div>
-                    <div class="weekday">Seg</div>
-                    <div class="weekday">Ter</div>
-                    <div class="weekday">Qua</div>
-                    <div class="weekday">Qui</div>
-                    <div class="weekday">Sex</div>
-                    <div class="weekday">Sáb</div>
-
-                    <!-- Exemplo de Dias (O JS deve preencher isso dinamicamente depois) -->
-                    <!-- Dias Vazios (Mês anterior) -->
-                    <div class="day" style="background: #f9f9f9;"></div>
-                    <div class="day" style="background: #f9f9f9;"></div>
-                    
-                    <!-- Dias do Mês -->
-                    <div class="day"><div class="day-number">1</div></div>
-                    <div class="day"><div class="day-number">2</div></div>
-                    <div class="day">
-                        <div class="day-number">3</div>
-                        <span class="event-dot event-reuniao">Reunião Pedagógica</span>
-                    </div>
-                    <div class="day"><div class="day-number">4</div></div>
-                    <div class="day"><div class="day-number">5</div></div>
-                    <div class="day"><div class="day-number">6</div></div>
-                    <div class="day"><div class="day-number">7</div></div>
-                    <div class="day"><div class="day-number">8</div></div>
-                    <div class="day"><div class="day-number">9</div></div>
-                    <div class="day"><div class="day-number">10</div></div>
-                    <div class="day">
-                        <div class="day-number">11</div>
-                        <span class="event-dot event-feriado">Feriado Local</span>
-                    </div>
-                    <!-- ... Restante dos dias ... -->
-                </div>
-            </div>
-        </main>
+{% block content %}
+<div class="calendar-header">
+    <div class="month-nav">
+        <button class="btn-nav" id="prevMonth">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <h2 class="month-title" id="monthYear">Dezembro 2025</h2>
+        <button class="btn-nav" id="nextMonth">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
     </div>
+</div>
+
+<div class="content-card">
+    <div class="calendar-grid">
+        <div class="weekday">Dom</div>
+        <div class="weekday">Seg</div>
+        <div class="weekday">Ter</div>
+        <div class="weekday">Qua</div>
+        <div class="weekday">Qui</div>
+        <div class="weekday">Sex</div>
+        <div class="weekday">Sáb</div>
+        <div id="calendarDays"></div>
+    </div>
+</div>
+
+<div class="content-card events-list">
+    <div class="card-header">
+        <h3>Próximos Eventos</h3>
+    </div>
+    <div class="card-body">
+        {% if eventos %}
+        {% for evento in eventos|slice:":5" %}
+        <div class="event-item">
+            <div class="event-date">
+                <span class="day" style="min-height: auto; padding: 0; border: none;">{{ evento.data|date:"d" }}</span>
+                <span class="month">{{ evento.data|date:"M" }}</span>
+            </div>
+            <div class="event-info">
+                <h4>{{ evento.titulo }}</h4>
+                <p>{{ evento.descricao|default:"Sem descrição"|truncatewords:15 }}</p>
+            </div>
+            <span class="event-type event-{{ evento.tipo|lower }}">{{ evento.get_tipo_display|default:evento.tipo }}</span>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="empty-message">Nenhum evento agendado.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const monthNamesShort = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+let currentDate = new Date();
+
+const eventos = {{ eventos_json|safe }};
+
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
     
-    <!-- Script simples para demonstrar navegação (pode ser aprimorado depois) -->
-    <script>
-        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        let currentDate = new Date();
-
-        function updateCalendarHeader() {
-            const month = monthNames[currentDate.getMonth()];
-            const year = currentDate.getFullYear();
-            document.getElementById('monthYearDisplay').textContent = `${month} ${year}`;
-        }
-
-        document.getElementById('prevMonth').addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            updateCalendarHeader();
-            // Aqui chamaria uma função para renderizar os dias reais
-        });
-
-        document.getElementById('nextMonth').addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            updateCalendarHeader();
-        });
-
-        // Inicializa
-        updateCalendarHeader();
-    </script>
+    document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
     
-    <script src="{% static 'escola/js/secretaria.js' %}"></script>
-</body>
-</html>
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    let html = '';
+    
+    for (let i = firstDay - 1; i >= 0; i--) {
+        html += `<div class="day other-month"><span class="day-number">${daysInPrevMonth - i}</span></div>`;
+    }
+    
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        const dayEvents = eventos.filter(e => e.data === dateStr);
+        let eventsHtml = '';
+        dayEvents.forEach(e => {
+            const typeClass = e.tipo ? `event-${e.tipo.toLowerCase()}` : 'event-outro';
+            eventsHtml += `<span class="event-dot ${typeClass}">${e.titulo}</span>`;
+        });
+        
+        html += `<div class="day${isToday ? ' today' : ''}"><span class="day-number">${day}</span>${eventsHtml}</div>`;
+    }
+    
+    const totalCells = firstDay + daysInMonth;
+    const remainingCells = (7 - (totalCells % 7)) % 7;
+    for (let i = 1; i <= remainingCells; i++) {
+        html += `<div class="day other-month"><span class="day-number">${i}</span></div>`;
+    }
+    
+    document.getElementById('calendarDays').innerHTML = html;
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+renderCalendar();
+</script>
+{% endblock %}

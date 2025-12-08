@@ -60,7 +60,7 @@
         
         <div class="stat-card">
             <div class="stat-info">
-                <span class="stat-value">{% if turmas %}{% for t in turmas %}{{ t.total_alunos }}{% if not forloop.last %}+{% endif %}{% endfor %}{% else %}0{% endif %}</span>
+                <span class="stat-value">{{ total_alunos|default:0 }}</span>
                 <span class="stat-label">Total de Alunos</span>
             </div>
             <div class="stat-icon green">

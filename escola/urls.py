@@ -64,4 +64,9 @@ urlpatterns = [
     path('dashboard/coordenacao/alunos/adicionar/', views.coordenacao_aluno_adicionar, name='coordenacao_aluno_adicionar'),
     path('dashboard/coordenacao/alunos/<int:aluno_id>/editar/', views.coordenacao_aluno_editar, name='coordenacao_aluno_editar'),
     path('dashboard/coordenacao/alunos/<int:aluno_id>/excluir/', views.coordenacao_aluno_excluir, name='coordenacao_aluno_excluir'),
+    
+    # Coordenação - Gestão de Professores
+    path('dashboard/coordenacao/professores/adicionar/', views.coordenacao_professor_adicionar, name='coordenacao_professor_adicionar'),
+    path('dashboard/coordenacao/professores/<int:professor_id>/editar/', views.coordenacao_professor_editar, name='coordenacao_professor_editar'),
+    path('dashboard/coordenacao/professores/<int:professor_id>/excluir/', views.coordenacao_professor_excluir, name='coordenacao_professor_excluir'),
 ]

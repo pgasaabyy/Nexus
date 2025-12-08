@@ -609,10 +609,12 @@ def secretaria_calendario(request):
         messages.error(request, "Acesso não autorizado.")
         return redirect('home')
 
+    eventos = Evento.objects.select_related('turma').order_by('-data')
     eventos_query = Evento.objects.all().values('titulo', 'data', 'tipo', 'turma__codigo')
     eventos_json = json.dumps(list(eventos_query), cls=DjangoJSONEncoder)
 
     context = {
+        'eventos': eventos,
         'eventos_json': eventos_json,
     }
     
@@ -745,10 +747,25 @@ def coordenacao_relatorios(request):
     
     turmas = Turma.objects.annotate(
         total_alunos=Count('alunos_turma')
-    )
+    ).order_by('-total_alunos')
+    
+    turma_id = request.GET.get('turma')
+    turma_selecionada = None
+    
+    if turma_id:
+        try:
+            turma_selecionada = Turma.objects.annotate(
+                total_alunos=Count('alunos_turma')
+            ).get(id=turma_id)
+        except Turma.DoesNotExist:
+            pass
+    
+    total_alunos = Aluno.objects.count()
     
     context = {
-        'turmas': turmas
+        'turmas': turmas,
+        'turma_selecionada': turma_selecionada,
+        'total_alunos': total_alunos,
     }
     return render(request, 'escola/coor_relatorios.html', context)
 
@@ -891,11 +908,13 @@ def dashboard_professor(request):
     
     turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))[:5]
     avisos = Aviso.objects.order_by('-data_criacao')[:3]
+    total_alunos = sum(t.total_alunos for t in turmas)
     
     context = {
         'professor': professor,
         'turmas': turmas,
-        'avisos': avisos
+        'avisos': avisos,
+        'total_alunos': total_alunos
     }
     return render(request, 'escola/dashboard_professor.html', context)
 
@@ -1500,7 +1519,6 @@ def coordenacao_turma_adicionar(request):
         curso_id = request.POST.get('curso_id')
         semestre = request.POST.get('semestre')
         turno = request.POST.get('turno')
-        ano = request.POST.get('ano')
         
         if codigo and curso_id:
             try:
@@ -1508,8 +1526,7 @@ def coordenacao_turma_adicionar(request):
                     codigo=codigo,
                     curso_id=curso_id,
                     semestre=semestre,
-                    turno=turno,
-                    ano=ano
+                    turno=turno
                 )
                 turma.save()
                 messages.success(request, f'Turma {codigo} criada com sucesso!')
@@ -1540,7 +1557,6 @@ def coordenacao_turma_editar(request, turma_id):
         turma.curso_id = request.POST.get('curso_id')
         turma.semestre = request.POST.get('semestre')
         turma.turno = request.POST.get('turno')
-        turma.ano = request.POST.get('ano')
         
         try:
             turma.save()
@@ -1680,3 +1696,101 @@ def coordenacao_aluno_excluir(request, aluno_id):
         return redirect('coordenacao_alunos')
     
     return render(request, 'escola/coor_aluno_excluir.html', {'aluno': aluno})
+
+
+@login_required
+def coordenacao_professor_adicionar(request):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        especialidade = request.POST.get('especialidade')
+        data_admissao_str = request.POST.get('data_admissao')
+        criar_usuario = request.POST.get('criar_usuario', 'nao')
+        
+        if nome and email and data_admissao_str:
+            try:
+                from datetime import datetime
+                data_admissao = datetime.strptime(data_admissao_str, '%Y-%m-%d').date()
+                
+                professor = Professor(
+                    nome=nome,
+                    email=email,
+                    telefone=telefone,
+                    especialidade=especialidade,
+                    data_admissao=data_admissao
+                )
+                
+                if criar_usuario == 'sim':
+                    from django.contrib.auth.models import User, Group
+                    username = email.split('@')[0]
+                    if User.objects.filter(username=username).exists():
+                        username = f"{username}_{Professor.objects.count() + 1}"
+                    user = User.objects.create_user(
+                        username=username,
+                        email=email,
+                        password='senha123',
+                        first_name=nome.split()[0] if nome else '',
+                        last_name=' '.join(nome.split()[1:]) if len(nome.split()) > 1 else ''
+                    )
+                    professor_group, _ = Group.objects.get_or_create(name='Professor')
+                    user.groups.add(professor_group)
+                    professor.usuario = user
+                
+                professor.save()
+                messages.success(request, f'Professor {nome} cadastrado com sucesso!')
+                return redirect('coordenacao_professores')
+            except Exception as e:
+                messages.error(request, f'Erro ao cadastrar professor: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return redirect('coordenacao_professores')
+
+
+@login_required
+def coordenacao_professor_editar(request, professor_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    professor = get_object_or_404(Professor, id=professor_id)
+    
+    if request.method == 'POST':
+        professor.nome = request.POST.get('nome')
+        professor.email = request.POST.get('email')
+        professor.telefone = request.POST.get('telefone')
+        professor.especialidade = request.POST.get('especialidade')
+        data_admissao_str = request.POST.get('data_admissao')
+        
+        if data_admissao_str:
+            from datetime import datetime
+            professor.data_admissao = datetime.strptime(data_admissao_str, '%Y-%m-%d').date()
+        
+        try:
+            professor.save()
+            messages.success(request, f'Professor {professor.nome} atualizado com sucesso!')
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar professor: {str(e)}')
+    
+    return redirect('coordenacao_professores')
+
+
+@login_required
+def coordenacao_professor_excluir(request, professor_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    professor = get_object_or_404(Professor, id=professor_id)
+    
+    if request.method == 'POST':
+        nome = professor.nome
+        professor.delete()
+        messages.success(request, f'Professor {nome} excluído com sucesso!')
+    
+    return redirect('coordenacao_professores')

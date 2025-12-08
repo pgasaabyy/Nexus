@@ -1,0 +1,33 @@
+#admin
+sem pagina de admin, preciso que voce crie uma pagina estilizada, padronizada com o resto do projeto
+
+#secretaria
+faça com que seja possivel com que quando a secretaria criar um novo usuario, ele realmente seja criado com login e senha, para que a pagina do mesmo seja acessada
+faça com que a secretaria possa adicionar editar ou excluir professores, enfim, fazer a gestão de professores
+arrume css da pagina gestão academica da secretaria e adicione a respectiva função para que possa adicionar, editar e exluir cursos, turmas e disciplinas
+adicione toda a funcionalidade da pagina de solicitar documentos, para que seja possivel que as funções sejam executadas corretamente
+pagina calendario fora de funcionalidade, trabalhe em cima dela, arrume o css e corrija o erro, fala que a funcionalidade está em desenvolvimento, sincronize com o resto do sistema e faça com que a funcionalidade venha funcionar corretamente
+sidebar da pagina calendario não redirecionando corretamente, verifique as rotas dessa pagina
+retrabalhe na pagina de configurações, css todo bagunçado, pagina está feia e arrume a funcinalidade, que tambem fala que está em desenvolvimento, faça funcionar
+logout de secretaria bugado e não funciona
+faça com que a secretaria tenha acesso a grade de aulas de todas as salas criaveis e que possa editar a grade, adicionando ou excluindo aulas ou eventos
+
+#coordenação
+erro "Erro ao criar turma: Turma() got unexpected keyword arguments: 'ano'" ao tentar criar turma
+pagina professores com css bem prejudicado e sem função nenhuma, refaça essa pagina, assim como seu css seguindo a padronização e suas funções, que devem ser de adicionar, visualizar, editar e excluir professores
+Pagina relatorios com quase nenhuma função, botão filtrar não funciona
+refaça o css da pagina de comunicados para que se pareça com o da pagina calendario
+pagina de configurações não aparece nada, refaça ela para que apareça as informações e que seja possivel edita-las
+faça com que a coordenação tenha acesso a grade de aulas de todas as salas criaveis e que possa editar a grade, adicionando ou excluindo aulas ou eventos
+
+#professor
+na pagina de dashboard, a contagem de alunos aparece bugada "3+3+1", aparece como uma conta matemática, corrija o erro
+o card avisos recentes na dashboard com o css bugado, cards azuis dificultam a visualização
+
+#aluno
+dashboard principal com os cards se sobrepondo (como na imagem) fazer com que apareça corretamente
+grafico de desempenho por bimestre não aparece, fazer aparecer de acordo com o banco de dados
+pagina de calendario bugada, não aparece nenhum dos eventos marcados e css da pagina sai totalmente da padronização, corrigir
+
+#banco de dados
+facilitar a integração e conexão com banco de dados para rodar localmente, colocar o passo a passo para isso no readme

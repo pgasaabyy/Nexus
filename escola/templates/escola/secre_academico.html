@@ -1,69 +1,150 @@
+{% extends 'escola/base_secretaria.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestão Acadêmica</title>
-    <link rel="stylesheet" href="{% static 'escola/css/secretaria.css' %}">
-    <script src="[https://unpkg.com/@phosphor-icons/web](https://unpkg.com/@phosphor-icons/web)"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header"><div class="logo-circle">PA</div><span>Colégio Paulo de Alcantara</span></div>
-            <nav class="sidebar-nav">
-                <a href="{% url 'dashboard_secretaria' %}" class="nav-item"><i class="ph ph-house"></i> <span>Dashboard</span></a>
-                <a href="{% url 'secretaria_alunos' %}" class="nav-item"><i class="ph ph-graduation-cap"></i> <span>Alunos</span></a>
-                <a href="{% url 'secretaria_professores' %}" class="nav-item"><i class="ph ph-chalkboard-teacher"></i> <span>Professores</span></a>
-                <a href="{% url 'secretaria_academico' %}" class="nav-item active"><i class="ph ph-chart-line"></i> <span>Gestão Acadêmica</span></a>
-                <a href="{% url 'secretaria_documentos' %}" class="nav-item"><i class="ph ph-newspaper"></i> <span>Documentos</span></a>
-                <a href="{% url 'secretaria_calendario' %}" class="nav-item"><i class="ph ph-calendar"></i> <span>Calendário</span></a>
-                <a href="{% url 'secretaria_configuracoes' %}" class="nav-item"><i class="ph ph-gear"></i> <span>Configurações</span></a>
-                <a href="{% url 'logout' %}" class="nav-item logout"><i class="ph ph-sign-out"></i> <span>Sair</span></a>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <header class="main-header"><h1>Gestão Acadêmica</h1></header>
-            
-            <div class="tabs">
-                <button class="tab-button active" data-tab="tab1">Cursos</button>
-                <button class="tab-button" data-tab="tab2">Turmas</button>
-                <button class="tab-button" data-tab="tab3">Disciplinas</button>
-            </div>
+{% block title %}Gestão Acadêmica - Secretaria{% endblock %}
+{% block nav_academico %}active{% endblock %}
+{% block page_title %}Gestão Acadêmica{% endblock %}
 
-            <div class="widget table-widget">
-                <div style="text-align: right; margin-bottom: 15px;">
-                    <a href="/admin/escola/" target="_blank" class="btn-action primary" style="text-decoration:none;">+ Gerenciar no Admin</a>
-                </div>
-                
-                <table class="data-table">
-                    <thead><tr><th>Nome</th><th>Descrição</th><th>Detalhes</th></tr></thead>
-                    
-                    <!-- Tab 1: Cursos -->
-                    <tbody id="tab1" class="tab-content" style="display: table-row-group;">
-                        {% for curso in cursos %}
-                        <tr><td><strong>{{ curso.nome }}</strong></td><td>{{ curso.codigo }}</td><td>{{ curso.total_turmas }} Turmas</td></tr>
-                        {% empty %}<tr><td colspan="3" style="text-align:center; padding:20px;">Vazio.</td></tr>{% endfor %}
-                    </tbody>
+{% block extra_css %}
+<style>
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tab-btn { padding: 10px 20px; background: white; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: #666; }
+    .tab-btn.active { background: #003366; color: white; border-color: #003366; }
+    .tab-btn:hover:not(.active) { background: #f0f0f0; }
+    .content-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
+    .card-header h3 { font-size: 16px; font-weight: 600; color: #333; margin: 0; }
+    .btn-admin { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #003366; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+    .btn-admin:hover { background: #002244; }
+    .card-body { padding: 20px; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+    .data-table th { font-weight: 600; color: #333; font-size: 13px; background: #f8f9fa; }
+    .data-table tbody tr:hover { background: #f8f9fa; }
+    .empty-message { text-align: center; padding: 40px; color: #666; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #e3f2fd; color: #1565c0; }
+</style>
+{% endblock %}
 
-                    <!-- Tab 2: Turmas -->
-                    <tbody id="tab2" class="tab-content">
-                        {% for turma in turmas %}
-                        <tr><td><strong>{{ turma.codigo }}</strong></td><td>{{ turma.curso.nome }}</td><td>{{ turma.total_alunos }} Alunos</td></tr>
-                        {% empty %}<tr><td colspan="3" style="text-align:center; padding:20px;">Vazio.</td></tr>{% endfor %}
-                    </tbody>
+{% block content %}
+<div class="tabs">
+    <button class="tab-btn active" data-tab="cursos">Cursos</button>
+    <button class="tab-btn" data-tab="turmas">Turmas</button>
+    <button class="tab-btn" data-tab="disciplinas">Disciplinas</button>
+</div>
 
-                    <!-- Tab 3: Disciplinas -->
-                    <tbody id="tab3" class="tab-content">
-                        {% for disciplina in disciplinas %}
-                        <tr><td><strong>{{ disciplina.nome }}</strong></td><td>{{ disciplina.curso.nome }}</td><td>-</td></tr>
-                        {% empty %}<tr><td colspan="3" style="text-align:center; padding:20px;">Vazio.</td></tr>{% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </main>
+<div class="content-card">
+    <div class="card-header">
+        <h3 id="tabTitle">Cursos Cadastrados</h3>
+        <a href="/admin/escola/" target="_blank" class="btn-admin">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            Gerenciar no Admin
+        </a>
     </div>
-    <script src="{% static 'escola/js/secretaria.js' %}"></script>
-</body>
-</html>
+    <div class="card-body">
+        <div id="cursos" class="tab-content active">
+            {% if cursos %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Código</th>
+                        <th>Turmas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for curso in cursos %}
+                    <tr>
+                        <td><strong>{{ curso.nome }}</strong></td>
+                        <td>{{ curso.codigo }}</td>
+                        <td><span class="badge">{{ curso.total_turmas }} Turmas</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">Nenhum curso cadastrado.</p>
+            {% endif %}
+        </div>
+
+        <div id="turmas" class="tab-content">
+            {% if turmas %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Curso</th>
+                        <th>Turno</th>
+                        <th>Alunos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turma in turmas %}
+                    <tr>
+                        <td><strong>{{ turma.codigo }}</strong></td>
+                        <td>{{ turma.curso.nome }}</td>
+                        <td>{{ turma.turno|default:"-" }}</td>
+                        <td><span class="badge">{{ turma.total_alunos }} Alunos</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">Nenhuma turma cadastrada.</p>
+            {% endif %}
+        </div>
+
+        <div id="disciplinas" class="tab-content">
+            {% if disciplinas %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Curso</th>
+                        <th>Carga Horária</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for disciplina in disciplinas %}
+                    <tr>
+                        <td><strong>{{ disciplina.nome }}</strong></td>
+                        <td>{{ disciplina.curso.nome }}</td>
+                        <td>{{ disciplina.carga_horaria|default:"-" }}h</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">Nenhuma disciplina cadastrada.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+const tabs = document.querySelectorAll('.tab-btn');
+const contents = document.querySelectorAll('.tab-content');
+const tabTitle = document.getElementById('tabTitle');
+const titles = {
+    'cursos': 'Cursos Cadastrados',
+    'turmas': 'Turmas Cadastradas',
+    'disciplinas': 'Disciplinas Cadastradas'
+};
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        const tabId = this.dataset.tab;
+        document.getElementById(tabId).classList.add('active');
+        tabTitle.textContent = titles[tabId];
+    });
+});
+</script>
+{% endblock %}
