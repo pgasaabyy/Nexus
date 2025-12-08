@@ -9,38 +9,39 @@
 <style>
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .month-nav { display: flex; align-items: center; gap: 16px; }
-    .month-title { font-size: 20px; font-weight: 600; color: #003366; min-width: 200px; text-align: center; }
-    .btn-nav { width: 36px; height: 36px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .month-title { font-size: 18px; font-weight: 600; color: #003366; min-width: 180px; text-align: center; }
+    .btn-nav { width: 32px; height: 32px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .btn-nav:hover { background: #f0f0f0; border-color: #003366; }
-    .content-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
-    .weekday { padding: 12px; text-align: center; font-weight: 600; color: #666; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
-    .day { min-height: 100px; padding: 8px; border: 1px solid #f0f0f0; position: relative; cursor: pointer; transition: background 0.2s; }
-    .day:hover { background: #f8f9fa; }
-    .day.other-month { background: #fafafa; }
-    .day.other-month .day-number { color: #ccc; }
-    .day.today { background: #e3f2fd; }
-    .day.today .day-number { background: #003366; color: white; }
-    .day-number { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 50%; font-weight: 600; font-size: 13px; color: #333; }
-    .event-dot { display: block; margin-top: 4px; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .content-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; max-width: 800px; }
+    .calendar-wrapper { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .weekday { padding: 8px 4px; text-align: center; font-weight: 600; color: #666; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; font-size: 12px; }
+    .calendar-days { display: contents; }
+    .cal-day { min-height: 70px; max-height: 90px; padding: 6px; border: 1px solid #f0f0f0; position: relative; cursor: pointer; transition: background 0.2s; overflow: hidden; }
+    .cal-day:hover { background: #f8f9fa; }
+    .cal-day.other-month { background: #fafafa; }
+    .cal-day.other-month .day-number { color: #ccc; }
+    .cal-day.today { background: #e3f2fd; }
+    .cal-day.today .day-number { background: #003366; color: white; }
+    .day-number { display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; font-weight: 600; font-size: 12px; color: #333; }
+    .event-dot { display: block; margin-top: 2px; padding: 1px 4px; border-radius: 3px; font-size: 9px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .event-reuniao { background: #28a745; }
     .event-feriado { background: #dc3545; }
     .event-prova { background: #ffc107; color: #333; }
     .event-outro { background: #6c757d; }
-    .events-list { margin-top: 24px; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
-    .card-header h3 { font-size: 16px; font-weight: 600; color: #333; margin: 0; }
-    .card-body { padding: 20px; }
-    .event-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #f0f0f0; }
+    .events-list { margin-top: 24px; max-width: 800px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
+    .card-header h3 { font-size: 15px; font-weight: 600; color: #333; margin: 0; }
+    .card-body { padding: 16px; }
+    .event-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #f0f0f0; }
     .event-item:last-child { border-bottom: none; }
-    .event-date { width: 50px; height: 50px; background: #003366; color: white; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .event-date .day { font-size: 18px; font-weight: 700; line-height: 1; min-height: auto; padding: 0; border: none; }
-    .event-date .month { font-size: 11px; text-transform: uppercase; }
+    .event-date-box { width: 45px; height: 45px; background: #003366; color: white; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+    .event-date-box .day-num { font-size: 16px; font-weight: 700; line-height: 1; }
+    .event-date-box .month-name { font-size: 10px; text-transform: uppercase; }
     .event-info { flex: 1; }
     .event-info h4 { margin: 0 0 4px 0; color: #333; font-size: 14px; }
-    .event-info p { margin: 0; color: #666; font-size: 13px; }
-    .event-type { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-    .empty-message { text-align: center; padding: 40px; color: #666; }
+    .event-info p { margin: 0; color: #666; font-size: 12px; }
+    .event-type { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+    .empty-message { text-align: center; padding: 30px; color: #666; }
 </style>
 {% endblock %}
 
@@ -62,7 +63,7 @@
 </div>
 
 <div class="content-card">
-    <div class="calendar-grid">
+    <div class="calendar-wrapper">
         <div class="weekday">Dom</div>
         <div class="weekday">Seg</div>
         <div class="weekday">Ter</div>
@@ -70,7 +71,7 @@
         <div class="weekday">Qui</div>
         <div class="weekday">Sex</div>
         <div class="weekday">Sáb</div>
-        <div id="calendarDays"></div>
+        <div id="calendarDays" class="calendar-days"></div>
     </div>
 </div>
 
@@ -82,9 +83,9 @@
         {% if eventos %}
         {% for evento in eventos|slice:":5" %}
         <div class="event-item">
-            <div class="event-date">
-                <span class="day" style="min-height: auto; padding: 0; border: none;">{{ evento.data|date:"d" }}</span>
-                <span class="month">{{ evento.data|date:"M" }}</span>
+            <div class="event-date-box">
+                <span class="day-num">{{ evento.data|date:"d" }}</span>
+                <span class="month-name">{{ evento.data|date:"M" }}</span>
             </div>
             <div class="event-info">
                 <h4>{{ evento.titulo }}</h4>
@@ -119,7 +120,7 @@ function renderCalendar() {
     let html = '';
     
     for (let i = firstDay - 1; i >= 0; i--) {
-        html += `<div class="day other-month"><span class="day-number">${daysInPrevMonth - i}</span></div>`;
+        html += `<div class="cal-day other-month"><span class="day-number">${daysInPrevMonth - i}</span></div>`;
     }
     
     const today = new Date();
@@ -129,18 +130,21 @@ function renderCalendar() {
         
         const dayEvents = eventos.filter(e => e.data === dateStr);
         let eventsHtml = '';
-        dayEvents.forEach(e => {
+        dayEvents.slice(0, 2).forEach(e => {
             const typeClass = e.tipo ? `event-${e.tipo.toLowerCase()}` : 'event-outro';
             eventsHtml += `<span class="event-dot ${typeClass}">${e.titulo}</span>`;
         });
+        if (dayEvents.length > 2) {
+            eventsHtml += `<span class="event-dot event-outro">+${dayEvents.length - 2}</span>`;
+        }
         
-        html += `<div class="day${isToday ? ' today' : ''}"><span class="day-number">${day}</span>${eventsHtml}</div>`;
+        html += `<div class="cal-day${isToday ? ' today' : ''}"><span class="day-number">${day}</span>${eventsHtml}</div>`;
     }
     
     const totalCells = firstDay + daysInMonth;
     const remainingCells = (7 - (totalCells % 7)) % 7;
     for (let i = 1; i <= remainingCells; i++) {
-        html += `<div class="day other-month"><span class="day-number">${i}</span></div>`;
+        html += `<div class="cal-day other-month"><span class="day-number">${i}</span></div>`;
     }
     
     document.getElementById('calendarDays').innerHTML = html;

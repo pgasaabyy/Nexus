@@ -1,0 +1,135 @@
+{% extends 'escola/base_secretaria.html' %}
+
+{% block title %}Excluir Professor - Secretaria{% endblock %}
+{% block nav_professores %}active{% endblock %}
+{% block page_title %}Excluir Professor{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-container {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        max-width: 500px;
+        text-align: center;
+    }
+    
+    .warning-icon {
+        width: 64px;
+        height: 64px;
+        background: #fff3cd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .warning-icon svg {
+        color: #856404;
+    }
+    
+    .delete-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .delete-message {
+        color: #666;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+    
+    .professor-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+        text-align: left;
+    }
+    
+    .professor-info p {
+        margin: 6px 0;
+        font-size: 14px;
+    }
+    
+    .professor-info strong {
+        color: #092f76;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .btn-delete:hover {
+        background: #c82333;
+    }
+    
+    .btn-cancel {
+        background: #f0f0f0;
+        color: #333;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.3s;
+    }
+    
+    .btn-cancel:hover {
+        background: #e0e0e0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="warning-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </div>
+    
+    <h2 class="delete-title">Confirmar Exclusão</h2>
+    <p class="delete-message">
+        Tem certeza que deseja excluir este professor? Esta ação não pode ser desfeita.
+    </p>
+    
+    <div class="professor-info">
+        <p><strong>Nome:</strong> {{ professor.nome }}</p>
+        <p><strong>E-mail:</strong> {{ professor.email }}</p>
+        <p><strong>Especialidade:</strong> {{ professor.especialidade|default:"Não informada" }}</p>
+        {% if professor.user %}
+        <p><strong>Usuário:</strong> {{ professor.user.username }}</p>
+        {% endif %}
+    </div>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit" class="btn-delete">Sim, Excluir</button>
+            <a href="{% url 'secretaria_professores' %}" class="btn-cancel">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

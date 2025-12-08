@@ -1,8 +1,8 @@
 {% extends 'escola/base_secretaria.html' %}
 
-{% block title %}{{ acao }} Aluno - Secretaria{% endblock %}
-{% block nav_alunos %}active{% endblock %}
-{% block page_title %}{{ acao }} Aluno{% endblock %}
+{% block title %}{{ acao }} Professor - Secretaria{% endblock %}
+{% block nav_professores %}active{% endblock %}
+{% block page_title %}{{ acao }} Professor{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -135,49 +135,30 @@
             
             <div class="form-group">
                 <label for="nome" class="required-field">Nome Completo</label>
-                <input type="text" name="nome" id="nome" required value="{{ aluno.nome|default:'' }}" placeholder="Digite o nome completo">
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="matricula" class="required-field">Matrícula</label>
-                    <input type="text" name="matricula" id="matricula" required value="{{ aluno.matricula|default:'' }}" placeholder="Ex: 2024001">
-                </div>
-                
-                <div class="form-group">
-                    <label for="cpf" class="required-field">CPF</label>
-                    <input type="text" name="cpf" id="cpf" required value="{{ aluno.cpf|default:'' }}" placeholder="000.000.000-00">
-                </div>
+                <input type="text" name="nome" id="nome" required value="{{ professor.nome|default:'' }}" placeholder="Digite o nome completo">
             </div>
             
             <div class="form-row">
                 <div class="form-group">
                     <label for="email" class="required-field">E-mail</label>
-                    <input type="email" name="email" id="email" required value="{{ aluno.email|default:'' }}" placeholder="email@exemplo.com">
+                    <input type="email" name="email" id="email" required value="{{ professor.email|default:'' }}" placeholder="email@exemplo.com">
                 </div>
                 
                 <div class="form-group">
                     <label for="telefone">Telefone</label>
-                    <input type="text" name="telefone" id="telefone" value="{{ aluno.telefone|default:'' }}" placeholder="(00) 00000-0000">
+                    <input type="text" name="telefone" id="telefone" value="{{ professor.telefone|default:'' }}" placeholder="(00) 00000-0000">
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="data_nascimento" class="required-field">Data de Nascimento</label>
-                    <input type="date" name="data_nascimento" id="data_nascimento" required value="{% if aluno and aluno.data_nascimento %}{{ aluno.data_nascimento|date:'Y-m-d' }}{% endif %}">
+                    <label for="especialidade">Especialidade</label>
+                    <input type="text" name="especialidade" id="especialidade" value="{{ professor.especialidade|default:'' }}" placeholder="Ex: Matemática, Português...">
                 </div>
                 
                 <div class="form-group">
-                    <label for="turma_id">Turma</label>
-                    <select name="turma_id" id="turma_id">
-                        <option value="">Selecione uma turma</option>
-                        {% for turma in turmas %}
-                        <option value="{{ turma.id }}" {% if aluno and aluno.turma_atual and aluno.turma_atual.id == turma.id %}selected{% endif %}>
-                            {{ turma.codigo }} - {{ turma.curso.nome }}
-                        </option>
-                        {% endfor %}
-                    </select>
+                    <label for="data_admissao" class="required-field">Data de Admissão</label>
+                    <input type="date" name="data_admissao" id="data_admissao" required value="{% if professor and professor.data_admissao %}{{ professor.data_admissao|date:'Y-m-d' }}{% endif %}">
                 </div>
             </div>
         </div>
@@ -194,14 +175,14 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="username">Nome de Usuário</label>
-                    <input type="text" name="username" id="username" value="{% if aluno and aluno.user %}{{ aluno.user.username }}{% endif %}" placeholder="Usuario para login">
+                    <input type="text" name="username" id="username" value="{% if professor and professor.user %}{{ professor.user.username }}{% endif %}" placeholder="Usuario para login">
                     <p class="help-text">Deixe em branco para não criar usuário de acesso</p>
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Senha</label>
-                    <input type="password" name="password" id="password" placeholder="{% if aluno and aluno.user %}Deixe em branco para manter{% else %}Senha inicial{% endif %}">
-                    {% if aluno and aluno.user %}
+                    <input type="password" name="password" id="password" placeholder="{% if professor and professor.user %}Deixe em branco para manter{% else %}Senha inicial{% endif %}">
+                    {% if professor and professor.user %}
                     <p class="help-text">Deixe em branco para manter a senha atual</p>
                     {% else %}
                     <p class="help-text">Senha para acesso ao sistema</p>
@@ -211,8 +192,8 @@
         </div>
         
         <div class="btn-group">
-            <button type="submit" class="btn-submit">{{ acao }} Aluno</button>
-            <a href="{% url 'secretaria_alunos' %}" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-submit">{{ acao }} Professor</button>
+            <a href="{% url 'secretaria_professores' %}" class="btn-cancel">Cancelar</a>
         </div>
     </form>
 </div>

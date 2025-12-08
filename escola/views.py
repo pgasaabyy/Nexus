@@ -7,6 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from rest_framework import viewsets
 from reportlab.pdfgen import canvas
@@ -527,7 +528,152 @@ def secretaria_professores(request):
         return redirect('home')
     
     professores = Professor.objects.all().order_by('nome')
-    return render(request, 'escola/secre_professores.html', {'professores': professores})
+    disciplinas = Disciplina.objects.all()
+    return render(request, 'escola/secre_professores.html', {
+        'professores': professores,
+        'disciplinas': disciplinas
+    })
+
+
+@login_required
+def secretaria_professor_adicionar(request):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    disciplinas = Disciplina.objects.all()
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        especialidade = request.POST.get('especialidade')
+        data_admissao = request.POST.get('data_admissao')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        if nome and email and data_admissao:
+            try:
+                professor = Professor(
+                    nome=nome,
+                    email=email,
+                    telefone=telefone,
+                    especialidade=especialidade,
+                    data_admissao=data_admissao
+                )
+                
+                if username and password:
+                    if User.objects.filter(username=username).exists():
+                        messages.error(request, 'Este nome de usuário já está em uso.')
+                        return render(request, 'escola/secre_professor_form.html', {
+                            'disciplinas': disciplinas, 
+                            'acao': 'Adicionar'
+                        })
+                    user = User.objects.create_user(
+                        username=username,
+                        email=email,
+                        password=password,
+                        first_name=nome.split()[0] if nome else '',
+                        last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                    )
+                    professor.user = user
+                
+                professor.save()
+                messages.success(request, f'Professor {nome} cadastrado com sucesso!')
+                return redirect('secretaria_professores')
+            except Exception as e:
+                messages.error(request, f'Erro ao cadastrar professor: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return render(request, 'escola/secre_professor_form.html', {
+        'disciplinas': disciplinas, 
+        'acao': 'Adicionar'
+    })
+
+
+@login_required
+def secretaria_professor_editar(request, professor_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    professor = get_object_or_404(Professor, id=professor_id)
+    disciplinas = Disciplina.objects.all()
+    
+    if request.method == 'POST':
+        professor.nome = request.POST.get('nome')
+        professor.email = request.POST.get('email')
+        professor.telefone = request.POST.get('telefone')
+        professor.especialidade = request.POST.get('especialidade')
+        professor.data_admissao = request.POST.get('data_admissao')
+        
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        try:
+            if username:
+                if professor.user:
+                    if professor.user.username != username:
+                        if User.objects.filter(username=username).exclude(id=professor.user.id).exists():
+                            messages.error(request, 'Este nome de usuário já está em uso.')
+                            return render(request, 'escola/secre_professor_form.html', {
+                                'disciplinas': disciplinas, 
+                                'professor': professor, 
+                                'acao': 'Editar'
+                            })
+                        professor.user.username = username
+                    if password:
+                        professor.user.set_password(password)
+                    professor.user.email = professor.email
+                    professor.user.save()
+                else:
+                    if User.objects.filter(username=username).exists():
+                        messages.error(request, 'Este nome de usuário já está em uso.')
+                        return render(request, 'escola/secre_professor_form.html', {
+                            'disciplinas': disciplinas, 
+                            'professor': professor, 
+                            'acao': 'Editar'
+                        })
+                    user = User.objects.create_user(
+                        username=username,
+                        email=professor.email,
+                        password=password if password else 'senha123',
+                        first_name=professor.nome.split()[0] if professor.nome else '',
+                        last_name=' '.join(professor.nome.split()[1:]) if professor.nome and len(professor.nome.split()) > 1 else ''
+                    )
+                    professor.user = user
+            
+            professor.save()
+            messages.success(request, f'Professor {professor.nome} atualizado com sucesso!')
+            return redirect('secretaria_professores')
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar professor: {str(e)}')
+    
+    return render(request, 'escola/secre_professor_form.html', {
+        'disciplinas': disciplinas, 
+        'professor': professor, 
+        'acao': 'Editar'
+    })
+
+
+@login_required
+def secretaria_professor_excluir(request, professor_id):
+    if not check_secretaria_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    professor = get_object_or_404(Professor, id=professor_id)
+    
+    if request.method == 'POST':
+        nome = professor.nome
+        if professor.user:
+            professor.user.delete()
+        professor.delete()
+        messages.success(request, f'Professor {nome} excluído com sucesso!')
+        return redirect('secretaria_professores')
+    
+    return render(request, 'escola/secre_professor_excluir.html', {'professor': professor})
 
 
 @login_required
@@ -1303,6 +1449,8 @@ def secretaria_aluno_adicionar(request):
         data_nascimento = request.POST.get('data_nascimento')
         telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
         if nome and email and cpf and matricula and data_nascimento:
             try:
@@ -1314,6 +1462,23 @@ def secretaria_aluno_adicionar(request):
                     data_nascimento=data_nascimento,
                     telefone=telefone
                 )
+                
+                if username:
+                    if User.objects.filter(username=username).exists():
+                        messages.error(request, 'Este nome de usuário já está em uso.')
+                        return render(request, 'escola/secre_aluno_form.html', {
+                            'turmas': turmas, 
+                            'acao': 'Adicionar'
+                        })
+                    user = User.objects.create_user(
+                        username=username,
+                        email=email,
+                        password=password if password else 'senha123',
+                        first_name=nome.split()[0] if nome else '',
+                        last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                    )
+                    aluno.user = user
+                
                 if turma_id:
                     aluno.turma_atual_id = turma_id
                 aluno.save()
@@ -1352,6 +1517,8 @@ def secretaria_aluno_editar(request, aluno_id):
         aluno.data_nascimento = request.POST.get('data_nascimento')
         aluno.telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
         if turma_id:
             aluno.turma_atual_id = turma_id
@@ -1359,6 +1526,40 @@ def secretaria_aluno_editar(request, aluno_id):
             aluno.turma_atual = None
         
         try:
+            if username:
+                if aluno.user:
+                    if aluno.user.username != username:
+                        if User.objects.filter(username=username).exclude(id=aluno.user.id).exists():
+                            messages.error(request, 'Este nome de usuário já está em uso.')
+                            return render(request, 'escola/secre_aluno_form.html', {
+                                'turmas': turmas, 
+                                'aluno': aluno, 
+                                'acao': 'Editar'
+                            })
+                        aluno.user.username = username
+                    if password:
+                        aluno.user.set_password(password)
+                    aluno.user.email = aluno.email
+                    aluno.user.first_name = aluno.nome.split()[0] if aluno.nome else ''
+                    aluno.user.last_name = ' '.join(aluno.nome.split()[1:]) if aluno.nome and len(aluno.nome.split()) > 1 else ''
+                    aluno.user.save()
+                else:
+                    if User.objects.filter(username=username).exists():
+                        messages.error(request, 'Este nome de usuário já está em uso.')
+                        return render(request, 'escola/secre_aluno_form.html', {
+                            'turmas': turmas, 
+                            'aluno': aluno, 
+                            'acao': 'Editar'
+                        })
+                    user = User.objects.create_user(
+                        username=username,
+                        email=aluno.email,
+                        password=password if password else 'senha123',
+                        first_name=aluno.nome.split()[0] if aluno.nome else '',
+                        last_name=' '.join(aluno.nome.split()[1:]) if aluno.nome and len(aluno.nome.split()) > 1 else ''
+                    )
+                    aluno.user = user
+            
             aluno.save()
             messages.success(request, f'Aluno {aluno.nome} atualizado com sucesso!')
             return redirect('secretaria_alunos')
