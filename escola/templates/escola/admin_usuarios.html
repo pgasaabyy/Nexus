@@ -1,0 +1,215 @@
+{% extends 'escola/base_admin.html' %}
+{% load static %}
+
+{% block title %}Usuários - Administração{% endblock %}
+{% block nav_usuarios %}active{% endblock %}
+{% block page_title %}Gerenciar Usuários{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .btn-primary { background: #092f76; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary:hover { background: #003D96; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; }
+    .card-header { background: linear-gradient(90deg, #092f76, #003D96); color: white; padding: 16px 20px; font-weight: 600; }
+    .card-body { padding: 20px; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: 12px; background: #f8f8f8; border-bottom: 2px solid #e0e0e0; font-weight: 600; color: #333; font-size: 13px; }
+    .data-table td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+    .data-table tr:hover { background-color: #f8fafc; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .badge-admin { background: #ffeeba; color: #856404; }
+    .badge-staff { background: #d4edda; color: #155724; }
+    .badge-user { background: #e2e3e5; color: #383d41; }
+    .actions { display: flex; gap: 8px; }
+    .btn-sm { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .btn-edit { background: #8ed6d7; color: #092f76; }
+    .btn-delete { background: #f8d7da; color: #721c24; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; border-radius: 12px; padding: 24px; width: 100%; max-width: 500px; }
+    .modal-header { font-size: 18px; font-weight: 600; color: #092f76; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; }
+    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #092f76; }
+    .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+    .btn-cancel { background: #e0e0e0; color: #333; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; }
+    .checkbox-group input { width: auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div></div>
+    <button class="btn-primary" onclick="openModal('addModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Novo Usuário
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-header">Lista de Usuários</div>
+    <div class="card-body">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Grupos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td>{{ u.email|default:"-" }}</td>
+                    <td>{{ u.get_full_name|default:"-" }}</td>
+                    <td>
+                        {% if u.is_superuser %}
+                        <span class="badge badge-admin">Administrador</span>
+                        {% elif u.is_staff %}
+                        <span class="badge badge-staff">Staff</span>
+                        {% else %}
+                        <span class="badge badge-user">Usuário</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ u.groups.all|join:", "|default:"-" }}</td>
+                    <td class="actions">
+                        <button class="btn-sm btn-edit" data-id="{{ u.id }}" data-username="{{ u.username }}" data-email="{{ u.email|default:'' }}" data-firstname="{{ u.first_name|default:'' }}" data-lastname="{{ u.last_name|default:'' }}">Editar</button>
+                        {% if u != request.user %}
+                        <form method="post" style="display:inline;" onsubmit="return confirm('Excluir este usuário?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="user_id" value="{{ u.id }}">
+                            <button type="submit" class="btn-sm btn-delete">Excluir</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">Nenhum usuário encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <div class="modal-header">Novo Usuário</div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <div class="form-group">
+                <label>Usuário *</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email">
+            </div>
+            <div class="form-group">
+                <label>Senha *</label>
+                <input type="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="first_name">
+            </div>
+            <div class="form-group">
+                <label>Sobrenome</label>
+                <input type="text" name="last_name">
+            </div>
+            <div class="form-group">
+                <label>Grupo</label>
+                <select name="grupo">
+                    <option value="">Nenhum</option>
+                    {% for g in grupos %}
+                    <option value="{{ g.id }}">{{ g.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" name="is_superuser" id="is_superuser">
+                <label for="is_superuser" style="margin-bottom: 0;">Administrador (superuser)</label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('addModal')">Cancelar</button>
+                <button type="submit" class="btn-primary">Criar Usuário</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">Editar Usuário</div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="user_id" id="edit_user_id">
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="edit_username" disabled style="background:#f0f0f0;">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" id="edit_email">
+            </div>
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="first_name" id="edit_first_name">
+            </div>
+            <div class="form-group">
+                <label>Sobrenome</label>
+                <input type="text" name="last_name" id="edit_last_name">
+            </div>
+            <div class="form-group">
+                <label>Nova Senha (deixe em branco para manter)</label>
+                <input type="password" name="new_password">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('editModal')">Cancelar</button>
+                <button type="submit" class="btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-edit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var userId = this.getAttribute('data-id');
+            var username = this.getAttribute('data-username');
+            var email = this.getAttribute('data-email') || '';
+            var firstName = this.getAttribute('data-firstname') || '';
+            var lastName = this.getAttribute('data-lastname') || '';
+            
+            document.getElementById('edit_user_id').value = userId;
+            document.getElementById('edit_username').value = username;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_first_name').value = firstName;
+            document.getElementById('edit_last_name').value = lastName;
+            openModal('editModal');
+        });
+    });
+    
+    document.querySelectorAll('.modal').forEach(function(modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

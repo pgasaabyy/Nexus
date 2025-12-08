@@ -1,0 +1,217 @@
+{% extends 'escola/base_admin.html' %}
+{% load static %}
+
+{% block title %}Professores - Administração{% endblock %}
+{% block nav_professores %}active{% endblock %}
+{% block page_title %}Gerenciar Professores{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header { display: flex; justify-content: flex-end; margin-bottom: 24px; }
+    .btn-primary { background: #092f76; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary:hover { background: #003D96; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; }
+    .card-header { background: linear-gradient(90deg, #092f76, #003D96); color: white; padding: 16px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .card-body { padding: 20px; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: 12px; background: #f8f8f8; border-bottom: 2px solid #e0e0e0; font-weight: 600; color: #333; font-size: 13px; }
+    .data-table td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+    .data-table tr:hover { background-color: #f8fafc; }
+    .total-count { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 14px; }
+    .actions { display: flex; gap: 8px; }
+    .btn-sm { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .btn-edit { background: #8ed6d7; color: #092f76; }
+    .btn-delete { background: #f8d7da; color: #721c24; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; border-radius: 12px; padding: 24px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { font-size: 18px; font-weight: 600; color: #092f76; margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; }
+    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #092f76; }
+    .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+    .btn-cancel { background: #e0e0e0; color: #333; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+    .form-section { border-top: 1px solid #eee; margin-top: 16px; padding-top: 16px; }
+    .form-section-title { font-weight: 600; color: #092f76; margin-bottom: 12px; font-size: 14px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <button class="btn-primary" onclick="openModal('addModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Novo Professor
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span>Lista de Professores</span>
+        <span class="total-count">{{ professores.count }} professores</span>
+    </div>
+    <div class="card-body">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Especialidade</th>
+                    <th>Telefone</th>
+                    <th>Data Admissão</th>
+                    <th>Usuário</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for professor in professores %}
+                <tr>
+                    <td><strong>{{ professor.nome }}</strong></td>
+                    <td>{{ professor.email }}</td>
+                    <td>{{ professor.especialidade|default:"-" }}</td>
+                    <td>{{ professor.telefone|default:"-" }}</td>
+                    <td>{{ professor.data_admissao|date:"d/m/Y" }}</td>
+                    <td>{{ professor.user.username|default:"-" }}</td>
+                    <td class="actions">
+                        <button class="btn-sm btn-edit" data-id="{{ professor.id }}" data-nome="{{ professor.nome }}" data-email="{{ professor.email }}" data-telefone="{{ professor.telefone|default:'' }}" data-especialidade="{{ professor.especialidade|default:'' }}" data-username="{{ professor.user.username|default:'' }}">Editar</button>
+                        <form method="post" style="display:inline;" onsubmit="return confirm('Excluir este professor?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="professor_id" value="{{ professor.id }}">
+                            <button type="submit" class="btn-sm btn-delete">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" style="text-align:center; padding:30px; color:#666;">Nenhum professor encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <div class="modal-header">Novo Professor</div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Especialidade</label>
+                    <input type="text" name="especialidade">
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="text" name="telefone">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Data de Admissão *</label>
+                <input type="date" name="data_admissao" required>
+            </div>
+            <div class="form-section">
+                <div class="form-section-title">Acesso ao Sistema (opcional)</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" name="username">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" name="password">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('addModal')">Cancelar</button>
+                <button type="submit" class="btn-primary">Cadastrar Professor</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">Editar Professor</div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="professor_id" id="edit_professor_id">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" name="nome" id="edit_nome">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" id="edit_email">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Especialidade</label>
+                    <input type="text" name="especialidade" id="edit_especialidade">
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="text" name="telefone" id="edit_telefone">
+                </div>
+            </div>
+            <div class="form-section">
+                <div class="form-section-title">Credenciais de Acesso</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" name="username" id="edit_username">
+                    </div>
+                    <div class="form-group">
+                        <label>Nova Senha (deixe em branco para manter)</label>
+                        <input type="password" name="new_password">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('editModal')">Cancelar</button>
+                <button type="submit" class="btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-edit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.getElementById('edit_professor_id').value = this.getAttribute('data-id');
+            document.getElementById('edit_nome').value = this.getAttribute('data-nome');
+            document.getElementById('edit_email').value = this.getAttribute('data-email');
+            document.getElementById('edit_telefone').value = this.getAttribute('data-telefone');
+            document.getElementById('edit_especialidade').value = this.getAttribute('data-especialidade');
+            document.getElementById('edit_username').value = this.getAttribute('data-username');
+            openModal('editModal');
+        });
+    });
+    
+    document.querySelectorAll('.modal').forEach(function(modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal(modal.id);
+        });
+    });
+});
+</script>
+{% endblock %}

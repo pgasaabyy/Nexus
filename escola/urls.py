@@ -69,4 +69,15 @@ urlpatterns = [
     path('dashboard/coordenacao/professores/adicionar/', views.coordenacao_professor_adicionar, name='coordenacao_professor_adicionar'),
     path('dashboard/coordenacao/professores/<int:professor_id>/editar/', views.coordenacao_professor_editar, name='coordenacao_professor_editar'),
     path('dashboard/coordenacao/professores/<int:professor_id>/excluir/', views.coordenacao_professor_excluir, name='coordenacao_professor_excluir'),
+    
+    # Dashboard Admin (Custom)
+    path('dashboard/admin/', views.dashboard_admin, name='dashboard_admin'),
+    path('dashboard/admin/usuarios/', views.admin_usuarios, name='admin_usuarios'),
+    path('dashboard/admin/alunos/', views.admin_alunos, name='admin_alunos'),
+    path('dashboard/admin/professores/', views.admin_professores, name='admin_professores'),
+    path('dashboard/admin/turmas/', views.admin_turmas, name='admin_turmas'),
+    path('dashboard/admin/cursos/', views.admin_cursos, name='admin_cursos'),
+    path('dashboard/admin/avisos/', views.admin_avisos, name='admin_avisos'),
+    path('dashboard/admin/eventos/', views.admin_eventos, name='admin_eventos'),
+    path('dashboard/admin/configuracoes/', views.admin_configuracoes, name='admin_configuracoes'),
 ]
