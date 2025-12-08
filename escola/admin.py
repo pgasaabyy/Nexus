@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
+from django.contrib.auth.models import Group
 from django.utils import timezone
 from .models import (
     Aluno, Turma, Disciplina, Professor, Aviso, 
@@ -50,6 +51,23 @@ class AlunoAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+    
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj.turma_atual:
+            matricula_existente = Matricula.objects.filter(
+                aluno=obj, 
+                turma=obj.turma_atual
+            ).exists()
+            if not matricula_existente:
+                Matricula.objects.create(
+                    aluno=obj,
+                    turma=obj.turma_atual,
+                    status='Ativo'
+                )
+        if obj.user:
+            aluno_group, _ = Group.objects.get_or_create(name='Aluno')
+            obj.user.groups.add(aluno_group)
 
 
 @admin.register(Professor)
@@ -77,6 +95,12 @@ class ProfessorAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+    
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj.user:
+            professor_group, _ = Group.objects.get_or_create(name='Professor')
+            obj.user.groups.add(professor_group)
 
 
 @admin.register(Turma)
