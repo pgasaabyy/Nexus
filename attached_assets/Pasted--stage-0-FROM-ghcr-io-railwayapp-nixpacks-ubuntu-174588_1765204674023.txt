@@ -1,0 +1,114 @@
+
+
+stage-0
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+15ms
+[snapshot] received sha256:412391e15d3cc26b1d40b1e13dce547838518635c4e0355aa9c692d5db1b1429 md5:1251a94d4db6fe038990689e962fb8f7
+receiving snapshot
+25.8 MB
+6.5s
+found 'railway.toml' at 'railway.toml'
+analyzing snapshot
+25.8 MB
+143ms
+uploading snapshot
+25.8 MB
+966ms
+scheduling build on Metal builder "builder-nphuxd"
+fetched snapshot sha256:412391e15d3cc26b1d40b1e13dce547838518635c4e0355aa9c692d5db1b1429 (27 MB bytes)
+fetching snapshot
+25.8 MB
+797ms
+unpacking archive
+27.8 MB
+231ms
+using build driver nixpacks-v1.41.0
+ 
+╔══════════════════════════════ Nixpacks v1.41.0 ══════════════════════════════╗
+║ setup      │ python311, postgresql_16.dev, gcc                               ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ install    │ python -m venv --copies /opt/venv && . /opt/venv/bin/activate   ║
+║            │ && pip install -r requirements.txt                              ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ start      │ python manage.py migrate && python manage.py collectstatic      ║
+║            │ --noinput && gunicorn nexus.wsgi --bind 0.0.0.0:$PORT           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+ 
+ 
+Saved output to:
+  snapshot-target-unpack
+
+internal
+load build definition from Dockerfile
+1ms
+
+internal
+load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+167ms
+
+internal
+load .dockerignore
+0ms
+UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 18)(https://docs.docker.com/go/dockerfile/rule/undefined-var/)
+ details: Variables should be defined before their use
+
+internal
+load build context
+0ms
+
+stage-0
+RUN nix-env -if .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix && nix-collect-garbage -d cached
+0ms
+
+stage-0
+COPY .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix cached
+0ms
+
+stage-0
+WORKDIR /app/ cached
+0ms
+
+stage-0
+COPY . /app/.
+390ms
+
+stage-0
+RUN python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt
+11s
+Successfully installed Django-5.2.8 asgiref-3.11.0 charset-normalizer-3.4.4 diff-match-patch-20241021 dj-database-url-3.0.1 django-crispy-forms-2.5 django-environ-0.12.0 django-filter-25.2 django-import-export-4.3.14 djangorestframework-3.16.1 et_xmlfile-2.0.0 gunicorn-23.0.0 openpyxl-3.1.5 packaging-25.0 pillow-12.0.0 psycopg-3.3.2 psycopg-binary-3.3.2 psycopg2-binary-2.9.11 reportlab-4.4.5 sqlparse-0.5.3 tablib-3.9.0 typing-extensions-4.15.0 tzdata-2025.2 whitenoise-6.11.0
+
+stage-0
+RUN printf '\nPATH=/opt/venv/bin:$PATH' >> /root/.profile
+467ms
+
+stage-0
+COPY . /app
+573ms
+
+exporting to docker image format
+6s
+containerimage.config.digest: sha256:7d1372a4e524b8984172ea7c17b6fa2a2117e8bd5ee48f015912c8f5db0a6ab5
+containerimage.digest: sha256:e853730f5419ae51e99510947905957026ac51eb0190132cb10a4d9951b757b4
+containerimage.descriptor: eyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQub2NpLmltYWdlLm1hbmlmZXN0LnYxK2pzb24iLCJkaWdlc3QiOiJzaGEyNTY6ZTg1MzczMGY1NDE5YWU1MWU5OTUxMDk0NzkwNTk1NzAyNmFjNTFlYjAxOTAxMzJjYjEwYTRkOTk1MWI3NTdiNCIsInNpemUiOjIzODcsImFubm90YXRpb25zIjp7Im9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5jcmVhdGVkIjoiMjAyNS0xMi0wOFQxNDozNDo0MloifSwicGxhdGZvcm0iOnsiYXJjaGl0ZWN0dXJlIjoiYW1kNjQiLCJvcyI6ImxpbnV4In19
+image push
+480.2 MB / 480.3 MB
+13.7s
+ 
+====================
+Starting Healthcheck
+====================
+Path: /
+Retry window: 1m40s
+ 
+Attempt #1 failed with service unavailable. Continuing to retry for 1m29s
+Attempt #2 failed with service unavailable. Continuing to retry for 1m28s
+Attempt #3 failed with service unavailable. Continuing to retry for 1m26s
+Attempt #4 failed with service unavailable. Continuing to retry for 1m22s
+Attempt #5 failed with service unavailable. Continuing to retry for 1m14s
+Attempt #6 failed with service unavailable. Continuing to retry for 58s
+Attempt #7 failed with service unavailable. Continuing to retry for 28s
+ 
+1/1 replicas never became healthy!
+
+Healthcheck failed!
+
