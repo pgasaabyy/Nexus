@@ -60,6 +60,11 @@ The project is structured with a main `escola/` app containing models, views, an
     *   Oversee teachers.
     *   Profile and password settings.
 
+**Marketing/Institutional Pages:**
+- `/institucional/` - About us page with company mission, vision, values, timeline, and team sections
+- `/plataforma/` - Platform features, pricing plans, FAQ, and how-it-works sections
+- `/juridico/` - Legal pages including Terms of Use, Privacy Policy, Cookie Policy, and LGPD compliance
+
 **System Design Choices:**
 - **Template Inheritance:** Extensive use of Django's template inheritance with base templates (`base_aluno.html`, `base_professor.html`, `base_secretaria.html`, `base_coordenacao.html`) for consistent UI and easier maintenance.
 - **Atomic Transactions:** Critical operations, especially those involving user creation, grade submission, and professor assignments to classes/disciplines, utilize atomic transactions for data integrity and error handling with rollback capabilities.
