@@ -4,6 +4,11 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** UI/UX Improvements and Bug Fixes
+  - **Date Format Bug Fix**: Fixed `secretaria_documento_visualizar` view date formatting from `%H:%i` to correct Python `%H:%M` format
+  - **Professor Dashboard Enhancement**: Improved avisos recentes card styling with background color, border-left accent, hover effects, and calendar icons
+  - **Custom Filters**: Verified `get_item` templatetag filter exists and works correctly for horarios grid
+
 - **08/12/2025:** Security fixes and functionality improvements (FINAL)
   - **Security Fix**: Removed all hardcoded 'senha123' default passwords - system now requires explicit password when creating user accounts
   - **Data Integrity**: Added atomic transactions for student/professor creation with proper error handling and rollback on user creation failures
