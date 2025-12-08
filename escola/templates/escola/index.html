@@ -21,9 +21,10 @@
         </div>
 
         <nav class="nav-menu">
-    <a href="#plataforma">SERVIÇOS</a>
-    <a href="#sobre">QUEM SOMOS</a>
-    <a href="#contrate">CONTRATE-NOS</a>
+    <a href="{% url 'home' %}">HOME</a>
+    <a href="{% url 'institucional' %}">INSTITUCIONAL</a>
+    <a href="{% url 'plataforma' %}">PLATAFORMA</a>
+    <a href="{% url 'juridico' %}">JURÍDICO</a>
 </nav>
 
 
@@ -452,22 +453,22 @@
       <div class="footer-links-container">
         <div class="footer-links-grid">
           <div class="footer-column">
-            <h3><a href="{% static 'institucional.html' %}">INSTITUCIONAL</a></h3>
+            <h3><a href="{% url 'institucional' %}">INSTITUCIONAL</a></h3>
             <ul>
-              <li><a href="{% static 'institucional.html' %}">Sobre nós</a></li>
-              <li><a href="{% static 'institucional.html' %}">Equipe</a></li>
-              <li><a href="{% static 'institucional.html' %}">Trabalhe conosco</a></li>
+              <li><a href="{% url 'institucional' %}">Sobre nós</a></li>
+              <li><a href="{% url 'institucional' %}">Equipe</a></li>
+              <li><a href="{% url 'institucional' %}">Trabalhe conosco</a></li>
             </ul>
           </div>
 
           <div class="footer-column">
-            <h3><a href="{% static 'plataforma.html' %}">PLATAFORMA</a></h3>
+            <h3><a href="{% url 'plataforma' %}">PLATAFORMA</a></h3>
             <ul>
-              <li><a href="{% static 'plataforma.html' %}">Funcionalidades</a></li>
-              <li><a href="{% static 'plataforma.html' %}">Planos</a></li>
-              <li><a href="{% static 'plataforma.html' %}">Como funciona</a></li>
-              <li><a href="{% static 'plataforma.html' %}">Central de suporte</a></li>
-              <li><a href="{% static 'plataforma.html' %}">FAQ</a></li>
+              <li><a href="{% url 'plataforma' %}">Funcionalidades</a></li>
+              <li><a href="{% url 'plataforma' %}">Planos</a></li>
+              <li><a href="{% url 'plataforma' %}">Como funciona</a></li>
+              <li><a href="{% url 'plataforma' %}">Central de suporte</a></li>
+              <li><a href="{% url 'plataforma' %}">FAQ</a></li>
             </ul>
           </div>
 
@@ -476,19 +477,18 @@
             <ul>
               <li><a href="tel:+5595378-7563">(11) 95378-7563</a></li>
               <li>
-                <a href="mailto:nexusgestao@contato.com"
-                  >nexusgestao@contato.com</a>
+                <a href="mailto:nexusgestao@contato.com">nexusgestao@contato.com</a>
               </li>
             </ul>
           </div>
 
           <div class="footer-column">
-            <h3><a href="{% static 'juridico.html' %}">JURÍDICO</a></h3>
+            <h3><a href="{% url 'juridico' %}">JURÍDICO</a></h3>
             <ul>
-              <li><a href="{% static 'juridico.html' %}">Política de privacidade</a></li>
-              <li><a href="{% static 'juridico.html' %}">Termos de uso</a></li>
-              <li><a href="{% static 'juridico.html' %}">Política de cookies</a></li>
-              <li><a href="{% static 'juridico.html' %}">Acessibilidade</a></li>
+              <li><a href="{% url 'juridico' %}#privacidade">Política de privacidade</a></li>
+              <li><a href="{% url 'juridico' %}#termos">Termos de uso</a></li>
+              <li><a href="{% url 'juridico' %}#cookies">Política de cookies</a></li>
+              <li><a href="{% url 'juridico' %}#lgpd">LGPD</a></li>
             </ul>
           </div>
         </div>
