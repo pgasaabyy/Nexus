@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma - NEXUS</title>
+    <link rel="shortcut icon" href="{% static 'escola/img/logo-nexus.png' %}">
+    <link rel="stylesheet" href="{% static 'escola/css/styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header-nexus">
+        <div class="header-bg"></div>
+        <div class="header-container">
+            <a href="{% url 'home' %}" class="logo-area">
+                <img src="{% static 'escola/img/logo-nexus.png' %}" alt="Nexus Logo" class="logo-img">
+                <span class="logo-text">NEXUS</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="{% url 'home' %}">HOME</a>
+                <a href="{% url 'institucional' %}">INSTITUCIONAL</a>
+                <a href="{% url 'plataforma' %}">PLATAFORMA</a>
+                <a href="{% url 'juridico' %}">JURIDICO</a>
+            </nav>
+            <a href="{% url 'login' %}" class="login-btn">LOGIN</a>
+        </div>
+    </header>
+
+    <section class="page-hero page-hero-plataforma">
+        <div class="page-hero-overlay">
+            <div class="page-hero-content">
+                <h1 class="page-hero-title">NOSSA PLATAFORMA</h1>
+                <p class="page-hero-subtitle">Uma solução completa para a gestão escolar moderna</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Funcionalidades</h2>
+            <p class="section-subtitle">Conheça todos os recursos disponíveis na plataforma NEXUS</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <h3>Gestão de Alunos</h3>
+                    <p>Cadastro completo, matrículas, histórico acadêmico e acompanhamento individual de cada estudante.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                        </svg>
+                    </div>
+                    <h3>Gestão Acadêmica</h3>
+                    <p>Lançamento de notas, frequência, boletins, históricos e relatórios de desempenho.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3>Gestão de Turmas</h3>
+                    <p>Criação e gerenciamento de turmas, horários, disciplinas e alocação de professores.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <h3>Relatórios Avançados</h3>
+                    <p>Relatórios detalhados em PDF e Excel para análise de desempenho e tomada de decisões.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </div>
+                    <h3>Comunicação</h3>
+                    <p>Envio de avisos, comunicados e notificações para alunos, professores e responsáveis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
+                        </svg>
+                    </div>
+                    <h3>Calendário Escolar</h3>
+                    <p>Gestão de eventos, feriados, provas e atividades escolares em um calendário integrado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="plans-section">
+        <div class="container">
+            <h2 class="section-title">Planos</h2>
+            <p class="section-subtitle">Escolha o plano ideal para sua instituição</p>
+            
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3>Básico</h3>
+                        <div class="plan-price">
+                            <span class="currency">R$</span>
+                            <span class="amount">299</span>
+                            <span class="period">/mês</span>
+                        </div>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Até 200 alunos</li>
+                        <li>Gestão acadêmica básica</li>
+                        <li>Relatórios padrão</li>
+                        <li>Suporte por email</li>
+                        <li>1 usuário admin</li>
+                    </ul>
+                    <a href="{% url 'home' %}#contrate" class="btn-plan">Contratar</a>
+                </div>
+                <div class="plan-card plan-featured">
+                    <div class="plan-badge">Mais Popular</div>
+                    <div class="plan-header">
+                        <h3>Profissional</h3>
+                        <div class="plan-price">
+                            <span class="currency">R$</span>
+                            <span class="amount">599</span>
+                            <span class="period">/mês</span>
+                        </div>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Até 500 alunos</li>
+                        <li>Gestão acadêmica completa</li>
+                        <li>Relatórios avançados</li>
+                        <li>Suporte prioritário</li>
+                        <li>5 usuários admin</li>
+                        <li>API de integração</li>
+                    </ul>
+                    <a href="{% url 'home' %}#contrate" class="btn-plan btn-plan-featured">Contratar</a>
+                </div>
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3>Enterprise</h3>
+                        <div class="plan-price">
+                            <span class="currency">R$</span>
+                            <span class="amount">999</span>
+                            <span class="period">/mês</span>
+                        </div>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Alunos ilimitados</li>
+                        <li>Todas as funcionalidades</li>
+                        <li>Relatórios personalizados</li>
+                        <li>Suporte 24/7</li>
+                        <li>Usuários ilimitados</li>
+                        <li>Customizações exclusivas</li>
+                    </ul>
+                    <a href="{% url 'home' %}#contrate" class="btn-plan">Contratar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works-section">
+        <div class="container">
+            <h2 class="section-title">Como Funciona</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Contrate</h3>
+                    <p>Escolha o plano ideal para sua instituição e entre em contato conosco.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Configure</h3>
+                    <p>Nossa equipe ajuda na configuração inicial e importação de dados.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Treine</h3>
+                    <p>Oferecemos treinamento completo para toda a equipe da escola.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Use</h3>
+                    <p>Comece a usar e transforme a gestão da sua instituição.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="container">
+            <h2 class="section-title">Perguntas Frequentes</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Quanto tempo leva a implementação?</h3>
+                    <p>A implementação básica leva de 1 a 2 semanas, dependendo do tamanho da instituição e volume de dados a importar.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Posso migrar de outro sistema?</h3>
+                    <p>Sim! Nossa equipe auxilia na migração de dados de qualquer sistema anterior para a plataforma NEXUS.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>A plataforma funciona em dispositivos móveis?</h3>
+                    <p>Sim, a NEXUS é totalmente responsiva e funciona em computadores, tablets e smartphones.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Como funciona o suporte?</h3>
+                    <p>Oferecemos suporte via email, chat e telefone, com tempo de resposta de acordo com o plano contratado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Pronto para transformar sua escola?</h2>
+            <p>Solicite uma demonstração gratuita e conheça todas as funcionalidades da NEXUS.</p>
+            <a href="{% url 'home' %}#contrate" class="btn-cta">Solicitar Demonstração</a>
+        </div>
+    </section>
+
+    <footer class="footer-nexus">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo-section">
+                    <img src="{% static 'escola/img/logo-nexus.png' %}" alt="NEXUS" class="footer-logo-img">
+                    <p>NEXUS - Sistema de Gestão Escolar</p>
+                </div>
+                <div class="footer-links">
+                    <a href="{% url 'institucional' %}">Institucional</a>
+                    <a href="{% url 'plataforma' %}">Plataforma</a>
+                    <a href="{% url 'juridico' %}">Jurídico</a>
+                    <a href="{% url 'login' %}">Login</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2024 NEXUS. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'escola/js/script.js' %}"></script>
+</body>
+</html>

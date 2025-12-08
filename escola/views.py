@@ -110,6 +110,18 @@ def home(request):
     return render(request, 'escola/index.html')
 
 
+def pagina_institucional(request):
+    return render(request, 'escola/institucional.html')
+
+
+def pagina_plataforma(request):
+    return render(request, 'escola/plataforma.html')
+
+
+def pagina_juridico(request):
+    return render(request, 'escola/juridico.html')
+
+
 @login_required
 def dashboard_aluno(request):
     try:

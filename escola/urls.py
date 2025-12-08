@@ -6,6 +6,11 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    
+    # Páginas Institucionais
+    path('institucional/', views.pagina_institucional, name='institucional'),
+    path('plataforma/', views.pagina_plataforma, name='plataforma'),
+    path('juridico/', views.pagina_juridico, name='juridico'),
 
     # Dashboard Aluno (mantém compatibilidade com rotas originais)
     path('dashboard/aluno/', views.dashboard_aluno, name='dashboard_aluno'),
