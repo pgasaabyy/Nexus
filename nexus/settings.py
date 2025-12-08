@@ -11,11 +11,16 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 import os
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -83,36 +88,9 @@ WSGI_APPLICATION = 'nexus.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # Supports PostgreSQL when DATABASE_URL is set, falls back to SQLite for development
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-
-if DATABASE_URL:
-    import urllib.parse
-    url = urllib.parse.urlparse(DATABASE_URL)
-    
-    # Extract sslmode from query parameters, default to 'disable' for development
-    query_params = urllib.parse.parse_qs(url.query)
-    sslmode = query_params.get('sslmode', ['disable'])[0]
-    
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': url.path[1:],
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port or 5432,
-            'OPTIONS': {
-                'sslmode': sslmode,
-            },
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+DATABASES = {
+    "default": env.db(),
+}
 
 
 # Password validation
