@@ -83,6 +83,23 @@
                 </div>
             </div>
             
+            <h3 style="font-size: 16px; font-weight: 600; color: #003366; margin: 24px 0 16px 0; padding-top: 16px; border-top: 1px solid #e0e0e0;">Credenciais de Acesso</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome de Usuário</label>
+                    <input type="text" name="username" value="{% if aluno and aluno.user %}{{ aluno.user.username }}{% endif %}" placeholder="Usuário para login">
+                    <small style="font-size: 11px; color: #666; margin-top: 4px; display: block;">Deixe em branco para não criar usuário</small>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" placeholder="{% if aluno and aluno.user %}Deixe em branco para manter{% else %}Senha inicial{% endif %}">
+                    {% if aluno and aluno.user %}
+                    <small style="font-size: 11px; color: #666; margin-top: 4px; display: block;">Deixe em branco para manter a senha atual</small>
+                    {% endif %}
+                </div>
+            </div>
+            
             <button type="submit" class="btn-submit">{{ acao }} Aluno</button>
         </form>
     </div>

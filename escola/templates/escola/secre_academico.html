@@ -14,8 +14,8 @@
     .content-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; }
     .card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; }
     .card-header h3 { font-size: 16px; font-weight: 600; color: #333; margin: 0; }
-    .btn-admin { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #003366; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.2s; }
-    .btn-admin:hover { background: #002244; }
+    .btn-add { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #003366; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+    .btn-add:hover { background: #002244; }
     .card-body { padding: 20px; }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
@@ -25,6 +25,26 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #e3f2fd; color: #1565c0; }
+    .btn-action { padding: 4px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+    .btn-edit { background: #e3f2fd; color: #1565c0; }
+    .btn-edit:hover { background: #1565c0; color: white; }
+    .btn-delete { background: #ffebee; color: #c62828; }
+    .btn-delete:hover { background: #c62828; color: white; }
+    .actions-cell { display: flex; gap: 6px; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; border-radius: 12px; padding: 24px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h3 { margin: 0; color: #003366; font-size: 18px; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #333; font-size: 14px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #003366; }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .btn-submit { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-submit:hover { background: #002244; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 </style>
 {% endblock %}
 
@@ -38,13 +58,13 @@
 <div class="content-card">
     <div class="card-header">
         <h3 id="tabTitle">Cursos Cadastrados</h3>
-        <a href="/admin/escola/" target="_blank" class="btn-admin">
+        <button class="btn-add" id="btnAdd" onclick="openAddModal()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            Gerenciar no Admin
-        </a>
+            <span id="btnAddText">Novo Curso</span>
+        </button>
     </div>
     <div class="card-body">
         <div id="cursos" class="tab-content active">
@@ -54,7 +74,9 @@
                     <tr>
                         <th>Nome</th>
                         <th>Código</th>
+                        <th>Carga Horária</th>
                         <th>Turmas</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,7 +84,17 @@
                     <tr>
                         <td><strong>{{ curso.nome }}</strong></td>
                         <td>{{ curso.codigo }}</td>
+                        <td>{{ curso.carga_horaria }}h</td>
                         <td><span class="badge">{{ curso.total_turmas }} Turmas</span></td>
+                        <td class="actions-cell">
+                            <button class="btn-action btn-edit" onclick="editCurso({{ curso.id }}, '{{ curso.nome|escapejs }}', '{{ curso.codigo|escapejs }}', '{{ curso.descricao|escapejs }}', {{ curso.carga_horaria }})">Editar</button>
+                            <form method="POST" style="display:inline" onsubmit="return confirm('Excluir curso {{ curso.nome }}?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="excluir_curso">
+                                <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                                <button type="submit" class="btn-action btn-delete">Excluir</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -79,8 +111,10 @@
                     <tr>
                         <th>Código</th>
                         <th>Curso</th>
+                        <th>Semestre</th>
                         <th>Turno</th>
                         <th>Alunos</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,8 +122,18 @@
                     <tr>
                         <td><strong>{{ turma.codigo }}</strong></td>
                         <td>{{ turma.curso.nome }}</td>
+                        <td>{{ turma.semestre }}</td>
                         <td>{{ turma.turno|default:"-" }}</td>
                         <td><span class="badge">{{ turma.total_alunos }} Alunos</span></td>
+                        <td class="actions-cell">
+                            <button class="btn-action btn-edit" onclick="editTurma({{ turma.id }}, '{{ turma.codigo|escapejs }}', '{{ turma.semestre|escapejs }}', '{{ turma.turno|escapejs }}', {{ turma.curso.id }})">Editar</button>
+                            <form method="POST" style="display:inline" onsubmit="return confirm('Excluir turma {{ turma.codigo }}?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="excluir_turma">
+                                <input type="hidden" name="turma_id" value="{{ turma.id }}">
+                                <button type="submit" class="btn-action btn-delete">Excluir</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -106,7 +150,8 @@
                     <tr>
                         <th>Nome</th>
                         <th>Curso</th>
-                        <th>Carga Horária</th>
+                        <th>Ementa</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,7 +159,16 @@
                     <tr>
                         <td><strong>{{ disciplina.nome }}</strong></td>
                         <td>{{ disciplina.curso.nome }}</td>
-                        <td>{{ disciplina.carga_horaria|default:"-" }}h</td>
+                        <td>{{ disciplina.ementa|default:"-"|truncatewords:10 }}</td>
+                        <td class="actions-cell">
+                            <button class="btn-action btn-edit" onclick="editDisciplina({{ disciplina.id }}, '{{ disciplina.nome|escapejs }}', '{{ disciplina.ementa|escapejs }}', {{ disciplina.curso.id }})">Editar</button>
+                            <form method="POST" style="display:inline" onsubmit="return confirm('Excluir disciplina {{ disciplina.nome }}?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="excluir_disciplina">
+                                <input type="hidden" name="disciplina_id" value="{{ disciplina.id }}">
+                                <button type="submit" class="btn-action btn-delete">Excluir</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -126,24 +180,200 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="cursoModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="cursoModalTitle">Novo Curso</h3>
+            <button class="modal-close" onclick="closeModal('cursoModal')">&times;</button>
+        </div>
+        <form method="POST" id="cursoForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" id="cursoAction" value="adicionar_curso">
+            <input type="hidden" name="curso_id" id="cursoId">
+            <div class="form-group">
+                <label>Nome do Curso</label>
+                <input type="text" name="nome" id="cursoNome" required placeholder="Ex: Ensino Fundamental">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Código</label>
+                    <input type="text" name="codigo" id="cursoCodigo" required placeholder="Ex: EF2024">
+                </div>
+                <div class="form-group">
+                    <label>Carga Horária</label>
+                    <input type="number" name="carga_horaria" id="cursoCarga" placeholder="Ex: 800">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea name="descricao" id="cursoDescricao" placeholder="Descrição do curso"></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Salvar Curso</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="turmaModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="turmaModalTitle">Nova Turma</h3>
+            <button class="modal-close" onclick="closeModal('turmaModal')">&times;</button>
+        </div>
+        <form method="POST" id="turmaForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" id="turmaAction" value="adicionar_turma">
+            <input type="hidden" name="turma_id" id="turmaId">
+            <div class="form-group">
+                <label>Código da Turma</label>
+                <input type="text" name="codigo" id="turmaCodigo" required placeholder="Ex: 6A-M">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Semestre</label>
+                    <input type="text" name="semestre" id="turmaSemestre" required placeholder="Ex: 2024.1">
+                </div>
+                <div class="form-group">
+                    <label>Turno</label>
+                    <select name="turno" id="turmaTurno" required>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                        <option value="Integral">Integral</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Curso</label>
+                <select name="curso_id" id="turmaCurso" required>
+                    {% for curso in cursos %}
+                    <option value="{{ curso.id }}">{{ curso.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-submit">Salvar Turma</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="disciplinaModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="disciplinaModalTitle">Nova Disciplina</h3>
+            <button class="modal-close" onclick="closeModal('disciplinaModal')">&times;</button>
+        </div>
+        <form method="POST" id="disciplinaForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" id="disciplinaAction" value="adicionar_disciplina">
+            <input type="hidden" name="disciplina_id" id="disciplinaId">
+            <div class="form-group">
+                <label>Nome da Disciplina</label>
+                <input type="text" name="nome" id="disciplinaNome" required placeholder="Ex: Matemática">
+            </div>
+            <div class="form-group">
+                <label>Curso</label>
+                <select name="curso_id" id="disciplinaCurso" required>
+                    {% for curso in cursos %}
+                    <option value="{{ curso.id }}">{{ curso.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Ementa</label>
+                <textarea name="ementa" id="disciplinaEmenta" placeholder="Descrição da ementa"></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Salvar Disciplina</button>
+        </form>
+    </div>
+</div>
+
 <script>
 const tabs = document.querySelectorAll('.tab-btn');
 const contents = document.querySelectorAll('.tab-content');
 const tabTitle = document.getElementById('tabTitle');
-const titles = {
-    'cursos': 'Cursos Cadastrados',
-    'turmas': 'Turmas Cadastradas',
-    'disciplinas': 'Disciplinas Cadastradas'
-};
+const btnAddText = document.getElementById('btnAddText');
+const titles = { 'cursos': 'Cursos Cadastrados', 'turmas': 'Turmas Cadastradas', 'disciplinas': 'Disciplinas Cadastradas' };
+const addTexts = { 'cursos': 'Novo Curso', 'turmas': 'Nova Turma', 'disciplinas': 'Nova Disciplina' };
+let currentTab = 'cursos';
 
 tabs.forEach(tab => {
     tab.addEventListener('click', function() {
         tabs.forEach(t => t.classList.remove('active'));
         contents.forEach(c => c.classList.remove('active'));
         this.classList.add('active');
-        const tabId = this.dataset.tab;
-        document.getElementById(tabId).classList.add('active');
-        tabTitle.textContent = titles[tabId];
+        currentTab = this.dataset.tab;
+        document.getElementById(currentTab).classList.add('active');
+        tabTitle.textContent = titles[currentTab];
+        btnAddText.textContent = addTexts[currentTab];
+    });
+});
+
+function openAddModal() {
+    if (currentTab === 'cursos') {
+        document.getElementById('cursoModalTitle').textContent = 'Novo Curso';
+        document.getElementById('cursoAction').value = 'adicionar_curso';
+        document.getElementById('cursoId').value = '';
+        document.getElementById('cursoNome').value = '';
+        document.getElementById('cursoCodigo').value = '';
+        document.getElementById('cursoCarga').value = '';
+        document.getElementById('cursoDescricao').value = '';
+        document.getElementById('cursoModal').classList.add('active');
+    } else if (currentTab === 'turmas') {
+        document.getElementById('turmaModalTitle').textContent = 'Nova Turma';
+        document.getElementById('turmaAction').value = 'adicionar_turma';
+        document.getElementById('turmaId').value = '';
+        document.getElementById('turmaCodigo').value = '';
+        document.getElementById('turmaSemestre').value = '';
+        document.getElementById('turmaTurno').value = 'Manhã';
+        document.getElementById('turmaModal').classList.add('active');
+    } else if (currentTab === 'disciplinas') {
+        document.getElementById('disciplinaModalTitle').textContent = 'Nova Disciplina';
+        document.getElementById('disciplinaAction').value = 'adicionar_disciplina';
+        document.getElementById('disciplinaId').value = '';
+        document.getElementById('disciplinaNome').value = '';
+        document.getElementById('disciplinaEmenta').value = '';
+        document.getElementById('disciplinaModal').classList.add('active');
+    }
+}
+
+function editCurso(id, nome, codigo, descricao, carga) {
+    document.getElementById('cursoModalTitle').textContent = 'Editar Curso';
+    document.getElementById('cursoAction').value = 'editar_curso';
+    document.getElementById('cursoId').value = id;
+    document.getElementById('cursoNome').value = nome;
+    document.getElementById('cursoCodigo').value = codigo;
+    document.getElementById('cursoCarga').value = carga;
+    document.getElementById('cursoDescricao').value = descricao;
+    document.getElementById('cursoModal').classList.add('active');
+}
+
+function editTurma(id, codigo, semestre, turno, cursoId) {
+    document.getElementById('turmaModalTitle').textContent = 'Editar Turma';
+    document.getElementById('turmaAction').value = 'editar_turma';
+    document.getElementById('turmaId').value = id;
+    document.getElementById('turmaCodigo').value = codigo;
+    document.getElementById('turmaSemestre').value = semestre;
+    document.getElementById('turmaTurno').value = turno;
+    document.getElementById('turmaCurso').value = cursoId;
+    document.getElementById('turmaModal').classList.add('active');
+}
+
+function editDisciplina(id, nome, ementa, cursoId) {
+    document.getElementById('disciplinaModalTitle').textContent = 'Editar Disciplina';
+    document.getElementById('disciplinaAction').value = 'editar_disciplina';
+    document.getElementById('disciplinaId').value = id;
+    document.getElementById('disciplinaNome').value = nome;
+    document.getElementById('disciplinaEmenta').value = ementa;
+    document.getElementById('disciplinaCurso').value = cursoId;
+    document.getElementById('disciplinaModal').classList.add('active');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) closeModal(this.id);
     });
 });
 </script>

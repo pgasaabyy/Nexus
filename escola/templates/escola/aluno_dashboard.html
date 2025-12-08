@@ -169,10 +169,18 @@
         color: #003366;
     }
     .avisos-widget {
-        grid-column: span 2;
+        grid-column: span 1;
     }
     .desempenho-widget {
-        grid-column: span 2;
+        grid-column: span 1;
+    }
+    @media (min-width: 900px) {
+        .avisos-widget {
+            grid-column: span 2;
+        }
+        .desempenho-widget {
+            grid-column: span 2;
+        }
     }
     .chart-wrapper {
         height: 250px;

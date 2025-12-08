@@ -1,6 +1,6 @@
 import json
 import io
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.db.models import Q, Count, Avg
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, JsonResponse
@@ -782,10 +782,18 @@ def secretaria_professor_editar(request, professor_id):
                             'professor': professor, 
                             'acao': 'Editar'
                         })
+                    if not password:
+                        messages.error(request, 'Por favor, informe uma senha para criar o usuário.')
+                        return render(request, 'escola/secre_professor_form.html', {
+                            'disciplinas': disciplinas,
+                            'turmas': turmas,
+                            'professor': professor, 
+                            'acao': 'Editar'
+                        })
                     user = User.objects.create_user(
                         username=username,
                         email=professor.email,
-                        password=password if password else 'senha123',
+                        password=password,
                         first_name=professor.nome.split()[0] if professor.nome else '',
                         last_name=' '.join(professor.nome.split()[1:]) if professor.nome and len(professor.nome.split()) > 1 else ''
                     )
@@ -833,9 +841,169 @@ def secretaria_academico(request):
     if not check_secretaria_permission(request.user):
         return redirect('home')
     
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        entity = request.POST.get('entity')
+        
+        if action == 'adicionar_curso':
+            nome = request.POST.get('nome')
+            codigo = request.POST.get('codigo')
+            descricao = request.POST.get('descricao', '')
+            carga_horaria = request.POST.get('carga_horaria', 0)
+            if nome and codigo:
+                try:
+                    Curso.objects.create(
+                        nome=nome,
+                        codigo=codigo,
+                        descricao=descricao,
+                        carga_horaria=int(carga_horaria) if carga_horaria else 0
+                    )
+                    messages.success(request, f'Curso "{nome}" criado com sucesso!')
+                except Exception as e:
+                    messages.error(request, f'Erro ao criar curso: {str(e)}')
+            else:
+                messages.error(request, 'Preencha nome e código do curso.')
+        
+        elif action == 'editar_curso':
+            curso_id = request.POST.get('curso_id')
+            nome = request.POST.get('nome')
+            codigo = request.POST.get('codigo')
+            descricao = request.POST.get('descricao', '')
+            carga_horaria = request.POST.get('carga_horaria', 0)
+            try:
+                curso = Curso.objects.get(id=curso_id)
+                curso.nome = nome
+                curso.codigo = codigo
+                curso.descricao = descricao
+                curso.carga_horaria = int(carga_horaria) if carga_horaria else 0
+                curso.save()
+                messages.success(request, f'Curso "{nome}" atualizado com sucesso!')
+            except Curso.DoesNotExist:
+                messages.error(request, 'Curso não encontrado.')
+            except Exception as e:
+                messages.error(request, f'Erro ao atualizar curso: {str(e)}')
+        
+        elif action == 'excluir_curso':
+            curso_id = request.POST.get('curso_id')
+            try:
+                curso = Curso.objects.get(id=curso_id)
+                nome = curso.nome
+                curso.delete()
+                messages.success(request, f'Curso "{nome}" excluído com sucesso!')
+            except Curso.DoesNotExist:
+                messages.error(request, 'Curso não encontrado.')
+            except Exception as e:
+                messages.error(request, f'Erro ao excluir curso: {str(e)}')
+        
+        elif action == 'adicionar_turma':
+            codigo = request.POST.get('codigo')
+            semestre = request.POST.get('semestre')
+            turno = request.POST.get('turno')
+            curso_id = request.POST.get('curso_id')
+            if codigo and semestre and turno and curso_id:
+                try:
+                    curso = Curso.objects.get(id=curso_id)
+                    Turma.objects.create(
+                        codigo=codigo,
+                        semestre=semestre,
+                        turno=turno,
+                        curso=curso
+                    )
+                    messages.success(request, f'Turma "{codigo}" criada com sucesso!')
+                except Curso.DoesNotExist:
+                    messages.error(request, 'Curso não encontrado.')
+                except Exception as e:
+                    messages.error(request, f'Erro ao criar turma: {str(e)}')
+            else:
+                messages.error(request, 'Preencha todos os campos obrigatórios.')
+        
+        elif action == 'editar_turma':
+            turma_id = request.POST.get('turma_id')
+            codigo = request.POST.get('codigo')
+            semestre = request.POST.get('semestre')
+            turno = request.POST.get('turno')
+            curso_id = request.POST.get('curso_id')
+            try:
+                turma = Turma.objects.get(id=turma_id)
+                curso = Curso.objects.get(id=curso_id)
+                turma.codigo = codigo
+                turma.semestre = semestre
+                turma.turno = turno
+                turma.curso = curso
+                turma.save()
+                messages.success(request, f'Turma "{codigo}" atualizada com sucesso!')
+            except (Turma.DoesNotExist, Curso.DoesNotExist):
+                messages.error(request, 'Turma ou curso não encontrado.')
+            except Exception as e:
+                messages.error(request, f'Erro ao atualizar turma: {str(e)}')
+        
+        elif action == 'excluir_turma':
+            turma_id = request.POST.get('turma_id')
+            try:
+                turma = Turma.objects.get(id=turma_id)
+                codigo = turma.codigo
+                turma.delete()
+                messages.success(request, f'Turma "{codigo}" excluída com sucesso!')
+            except Turma.DoesNotExist:
+                messages.error(request, 'Turma não encontrada.')
+            except Exception as e:
+                messages.error(request, f'Erro ao excluir turma: {str(e)}')
+        
+        elif action == 'adicionar_disciplina':
+            nome = request.POST.get('nome')
+            ementa = request.POST.get('ementa', '')
+            curso_id = request.POST.get('curso_id')
+            if nome and curso_id:
+                try:
+                    curso = Curso.objects.get(id=curso_id)
+                    Disciplina.objects.create(
+                        nome=nome,
+                        ementa=ementa,
+                        curso=curso
+                    )
+                    messages.success(request, f'Disciplina "{nome}" criada com sucesso!')
+                except Curso.DoesNotExist:
+                    messages.error(request, 'Curso não encontrado.')
+                except Exception as e:
+                    messages.error(request, f'Erro ao criar disciplina: {str(e)}')
+            else:
+                messages.error(request, 'Preencha nome e curso da disciplina.')
+        
+        elif action == 'editar_disciplina':
+            disciplina_id = request.POST.get('disciplina_id')
+            nome = request.POST.get('nome')
+            ementa = request.POST.get('ementa', '')
+            curso_id = request.POST.get('curso_id')
+            try:
+                disciplina = Disciplina.objects.get(id=disciplina_id)
+                curso = Curso.objects.get(id=curso_id)
+                disciplina.nome = nome
+                disciplina.ementa = ementa
+                disciplina.curso = curso
+                disciplina.save()
+                messages.success(request, f'Disciplina "{nome}" atualizada com sucesso!')
+            except (Disciplina.DoesNotExist, Curso.DoesNotExist):
+                messages.error(request, 'Disciplina ou curso não encontrado.')
+            except Exception as e:
+                messages.error(request, f'Erro ao atualizar disciplina: {str(e)}')
+        
+        elif action == 'excluir_disciplina':
+            disciplina_id = request.POST.get('disciplina_id')
+            try:
+                disciplina = Disciplina.objects.get(id=disciplina_id)
+                nome = disciplina.nome
+                disciplina.delete()
+                messages.success(request, f'Disciplina "{nome}" excluída com sucesso!')
+            except Disciplina.DoesNotExist:
+                messages.error(request, 'Disciplina não encontrada.')
+            except Exception as e:
+                messages.error(request, f'Erro ao excluir disciplina: {str(e)}')
+        
+        return redirect('secretaria_academico')
+    
     cursos = Curso.objects.annotate(total_turmas=Count('turma'))
-    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))
-    disciplinas = Disciplina.objects.all()
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma')).select_related('curso')
+    disciplinas = Disciplina.objects.select_related('curso')
     
     context = {
         'cursos': cursos,
@@ -1507,24 +1675,51 @@ def professor_salvar_notas(request):
             messages.error(request, 'Você não tem permissão para acessar esta turma ou disciplina.')
             return redirect('professor_notas')
         
+        notas_salvas = 0
+        notas_atualizadas = 0
+        notas_invalidas = 0
+        notas_vazias = 0
+        
         for key, value in request.POST.items():
             if key.startswith('nota_'):
                 aluno_id = key.replace('nota_', '')
                 try:
+                    if not value or not value.strip():
+                        notas_vazias += 1
+                        continue
+                    
+                    nota_valor = Decimal(value.strip().replace(',', '.'))
+                    if nota_valor < 0 or nota_valor > 10:
+                        notas_invalidas += 1
+                        continue
+                    
                     aluno = Aluno.objects.get(id=aluno_id)
                     matricula = Matricula.objects.filter(aluno=aluno, turma=turma).first()
                     
-                    if matricula and value:
-                        Nota.objects.create(
+                    if matricula:
+                        nota, created = Nota.objects.update_or_create(
                             matricula=matricula,
                             disciplina=disciplina,
-                            valor=Decimal(value),
-                            tipo_avaliacao=tipo_avaliacao
+                            tipo_avaliacao=tipo_avaliacao,
+                            defaults={'valor': nota_valor}
                         )
-                except (Aluno.DoesNotExist, ValueError):
+                        if created:
+                            notas_salvas += 1
+                        else:
+                            notas_atualizadas += 1
+                except (Aluno.DoesNotExist, ValueError, InvalidOperation):
+                    notas_invalidas += 1
                     continue
         
-        messages.success(request, 'Notas salvas com sucesso!')
+        if notas_salvas > 0 or notas_atualizadas > 0:
+            msg = f'Notas processadas: {notas_salvas} novas, {notas_atualizadas} atualizadas.'
+            if notas_invalidas > 0:
+                msg += f' ({notas_invalidas} valores inválidos foram ignorados - use valores entre 0 e 10)'
+            messages.success(request, msg)
+        elif notas_invalidas > 0:
+            messages.warning(request, f'{notas_invalidas} notas foram rejeitadas por valores inválidos. Use valores entre 0 e 10.')
+        else:
+            messages.info(request, 'Nenhuma nota foi informada para salvar.')
         return redirect('professor_notas')
     
     return redirect('professor_notas')
@@ -1868,42 +2063,53 @@ def secretaria_aluno_adicionar(request):
         password = request.POST.get('password')
         
         if nome and email and cpf and matricula and data_nascimento:
+            if username and User.objects.filter(username=username).exists():
+                messages.error(request, 'Este nome de usuário já está em uso.')
+                return render(request, 'escola/secre_aluno_form.html', {
+                    'turmas': turmas, 
+                    'acao': 'Adicionar'
+                })
+            
+            if username and not password:
+                messages.error(request, 'Por favor, informe uma senha para o usuário.')
+                return render(request, 'escola/secre_aluno_form.html', {
+                    'turmas': turmas, 
+                    'acao': 'Adicionar'
+                })
+            
             try:
-                aluno = Aluno(
-                    nome=nome,
-                    email=email,
-                    cpf=cpf,
-                    matricula=matricula,
-                    data_nascimento=data_nascimento,
-                    telefone=telefone
-                )
+                from django.db import transaction
                 
-                if username:
-                    if User.objects.filter(username=username).exists():
-                        messages.error(request, 'Este nome de usuário já está em uso.')
-                        return render(request, 'escola/secre_aluno_form.html', {
-                            'turmas': turmas, 
-                            'acao': 'Adicionar'
-                        })
-                    user = User.objects.create_user(
-                        username=username,
+                with transaction.atomic():
+                    aluno = Aluno(
+                        nome=nome,
                         email=email,
-                        password=password if password else 'senha123',
-                        first_name=nome.split()[0] if nome else '',
-                        last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                        cpf=cpf,
+                        matricula=matricula,
+                        data_nascimento=data_nascimento,
+                        telefone=telefone
                     )
-                    aluno.user = user
-                
-                if turma_id:
-                    aluno.turma_atual_id = turma_id
-                aluno.save()
-                
-                if turma_id:
-                    Matricula.objects.create(
-                        aluno=aluno,
-                        turma_id=turma_id,
-                        status='Ativo'
-                    )
+                    
+                    if username and password:
+                        user = User.objects.create_user(
+                            username=username,
+                            email=email,
+                            password=password,
+                            first_name=nome.split()[0] if nome else '',
+                            last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                        )
+                        aluno.user = user
+                    
+                    if turma_id:
+                        aluno.turma_atual_id = turma_id
+                    aluno.save()
+                    
+                    if turma_id:
+                        Matricula.objects.create(
+                            aluno=aluno,
+                            turma_id=turma_id,
+                            status='Ativo'
+                        )
                 
                 messages.success(request, f'Aluno {nome} cadastrado com sucesso!')
                 return redirect('secretaria_alunos')
@@ -1925,57 +2131,79 @@ def secretaria_aluno_editar(request, aluno_id):
     turmas = Turma.objects.all()
     
     if request.method == 'POST':
-        aluno.nome = request.POST.get('nome')
-        aluno.email = request.POST.get('email')
-        aluno.cpf = request.POST.get('cpf')
-        aluno.matricula = request.POST.get('matricula')
-        aluno.data_nascimento = request.POST.get('data_nascimento')
-        aluno.telefone = request.POST.get('telefone')
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        cpf = request.POST.get('cpf')
+        matricula_val = request.POST.get('matricula')
+        data_nascimento = request.POST.get('data_nascimento')
+        telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        if turma_id:
-            aluno.turma_atual_id = turma_id
-        else:
-            aluno.turma_atual = None
-        
-        try:
-            if username:
-                if aluno.user:
-                    if aluno.user.username != username:
-                        if User.objects.filter(username=username).exclude(id=aluno.user.id).exists():
-                            messages.error(request, 'Este nome de usuário já está em uso.')
-                            return render(request, 'escola/secre_aluno_form.html', {
-                                'turmas': turmas, 
-                                'aluno': aluno, 
-                                'acao': 'Editar'
-                            })
-                        aluno.user.username = username
-                    if password:
-                        aluno.user.set_password(password)
-                    aluno.user.email = aluno.email
-                    aluno.user.first_name = aluno.nome.split()[0] if aluno.nome else ''
-                    aluno.user.last_name = ' '.join(aluno.nome.split()[1:]) if aluno.nome and len(aluno.nome.split()) > 1 else ''
-                    aluno.user.save()
-                else:
-                    if User.objects.filter(username=username).exists():
+        if username:
+            if aluno.user:
+                if aluno.user.username != username:
+                    if User.objects.filter(username=username).exclude(id=aluno.user.id).exists():
                         messages.error(request, 'Este nome de usuário já está em uso.')
                         return render(request, 'escola/secre_aluno_form.html', {
                             'turmas': turmas, 
                             'aluno': aluno, 
                             'acao': 'Editar'
                         })
-                    user = User.objects.create_user(
-                        username=username,
-                        email=aluno.email,
-                        password=password if password else 'senha123',
-                        first_name=aluno.nome.split()[0] if aluno.nome else '',
-                        last_name=' '.join(aluno.nome.split()[1:]) if aluno.nome and len(aluno.nome.split()) > 1 else ''
-                    )
-                    aluno.user = user
+            else:
+                if User.objects.filter(username=username).exists():
+                    messages.error(request, 'Este nome de usuário já está em uso.')
+                    return render(request, 'escola/secre_aluno_form.html', {
+                        'turmas': turmas, 
+                        'aluno': aluno, 
+                        'acao': 'Editar'
+                    })
+                if not password:
+                    messages.error(request, 'Por favor, informe uma senha para criar o usuário.')
+                    return render(request, 'escola/secre_aluno_form.html', {
+                        'turmas': turmas, 
+                        'aluno': aluno, 
+                        'acao': 'Editar'
+                    })
+        
+        try:
+            from django.db import transaction
             
-            aluno.save()
+            with transaction.atomic():
+                aluno.nome = nome
+                aluno.email = email
+                aluno.cpf = cpf
+                aluno.matricula = matricula_val
+                aluno.data_nascimento = data_nascimento
+                aluno.telefone = telefone
+                
+                if turma_id:
+                    aluno.turma_atual_id = turma_id
+                else:
+                    aluno.turma_atual = None
+                
+                if username:
+                    if aluno.user:
+                        aluno.user.username = username
+                        if password:
+                            aluno.user.set_password(password)
+                        aluno.user.email = email
+                        aluno.user.first_name = nome.split()[0] if nome else ''
+                        aluno.user.last_name = ' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                        aluno.user.save()
+                    else:
+                        user = User.objects.create_user(
+                            username=username,
+                            email=email,
+                            password=password,
+                            first_name=nome.split()[0] if nome else '',
+                            last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                        )
+                        aluno.user = user
+                
+                aluno.save()
+            
             messages.success(request, f'Aluno {aluno.nome} atualizado com sucesso!')
             return redirect('secretaria_alunos')
         except Exception as e:
@@ -2222,32 +2450,74 @@ def coordenacao_aluno_adicionar(request):
         data_nascimento_str = request.POST.get('data_nascimento')
         telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
         if nome and email and cpf and matricula and data_nascimento_str:
+            if username and User.objects.filter(username=username).exists():
+                messages.error(request, 'Este nome de usuário já está em uso.')
+                return render(request, 'escola/coor_aluno_form.html', {
+                    'turmas': turmas, 
+                    'acao': 'Adicionar'
+                })
+            
+            if username and not password:
+                messages.error(request, 'Por favor, informe uma senha para o usuário.')
+                return render(request, 'escola/coor_aluno_form.html', {
+                    'turmas': turmas, 
+                    'acao': 'Adicionar'
+                })
+            
             try:
+                from django.db import transaction, IntegrityError
                 from datetime import datetime
-                data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
-                aluno = Aluno(
-                    nome=nome,
-                    email=email,
-                    cpf=cpf,
-                    matricula=matricula,
-                    data_nascimento=data_nascimento,
-                    telefone=telefone
-                )
-                if turma_id:
-                    aluno.turma_atual_id = turma_id
-                aluno.save()
                 
-                if turma_id:
-                    Matricula.objects.create(
-                        aluno=aluno,
-                        turma_id=turma_id,
-                        status='Ativo'
+                with transaction.atomic():
+                    data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
+                    
+                    if username and password:
+                        try:
+                            user = User.objects.create_user(
+                                username=username,
+                                email=email,
+                                password=password,
+                                first_name=nome.split()[0] if nome else '',
+                                last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                            )
+                            aluno_group, _ = Group.objects.get_or_create(name='Aluno')
+                            user.groups.add(aluno_group)
+                        except IntegrityError:
+                            raise ValueError('Erro ao criar usuário: dados duplicados.')
+                        except Exception as user_error:
+                            raise ValueError(f'Erro ao criar usuário: {str(user_error)}')
+                    else:
+                        user = None
+                    
+                    aluno = Aluno(
+                        nome=nome,
+                        email=email,
+                        cpf=cpf,
+                        matricula=matricula,
+                        data_nascimento=data_nascimento,
+                        telefone=telefone,
+                        user=user
                     )
+                    
+                    if turma_id:
+                        aluno.turma_atual_id = turma_id
+                    aluno.save()
+                    
+                    if turma_id:
+                        Matricula.objects.create(
+                            aluno=aluno,
+                            turma_id=turma_id,
+                            status='Ativo'
+                        )
                 
                 messages.success(request, f'Aluno {nome} cadastrado com sucesso!')
                 return redirect('coordenacao_alunos')
+            except ValueError as ve:
+                messages.error(request, str(ve))
             except Exception as e:
                 messages.error(request, f'Erro ao cadastrar aluno: {str(e)}')
         else:
@@ -2266,27 +2536,93 @@ def coordenacao_aluno_editar(request, aluno_id):
     turmas = Turma.objects.all()
     
     if request.method == 'POST':
-        aluno.nome = request.POST.get('nome')
-        aluno.email = request.POST.get('email')
-        aluno.cpf = request.POST.get('cpf')
-        aluno.matricula = request.POST.get('matricula')
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        cpf = request.POST.get('cpf')
+        matricula_val = request.POST.get('matricula')
         data_nascimento_str = request.POST.get('data_nascimento')
-        aluno.telefone = request.POST.get('telefone')
+        telefone = request.POST.get('telefone')
         turma_id = request.POST.get('turma_id')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
-        if data_nascimento_str:
-            from datetime import datetime
-            aluno.data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
-        
-        if turma_id:
-            aluno.turma_atual_id = turma_id
-        else:
-            aluno.turma_atual = None
+        if username:
+            if aluno.user:
+                if aluno.user.username != username:
+                    if User.objects.filter(username=username).exclude(id=aluno.user.id).exists():
+                        messages.error(request, 'Este nome de usuário já está em uso.')
+                        return render(request, 'escola/coor_aluno_form.html', {
+                            'turmas': turmas, 
+                            'aluno': aluno, 
+                            'acao': 'Editar'
+                        })
+            else:
+                if User.objects.filter(username=username).exists():
+                    messages.error(request, 'Este nome de usuário já está em uso.')
+                    return render(request, 'escola/coor_aluno_form.html', {
+                        'turmas': turmas, 
+                        'aluno': aluno, 
+                        'acao': 'Editar'
+                    })
+                if not password:
+                    messages.error(request, 'Por favor, informe uma senha para criar o usuário.')
+                    return render(request, 'escola/coor_aluno_form.html', {
+                        'turmas': turmas, 
+                        'aluno': aluno, 
+                        'acao': 'Editar'
+                    })
         
         try:
-            aluno.save()
+            from django.db import transaction, IntegrityError
+            from datetime import datetime
+            
+            with transaction.atomic():
+                aluno.nome = nome
+                aluno.email = email
+                aluno.cpf = cpf
+                aluno.matricula = matricula_val
+                aluno.telefone = telefone
+                
+                if data_nascimento_str:
+                    aluno.data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
+                
+                if turma_id:
+                    aluno.turma_atual_id = turma_id
+                else:
+                    aluno.turma_atual = None
+                
+                if username:
+                    if aluno.user:
+                        aluno.user.username = username
+                        if password:
+                            aluno.user.set_password(password)
+                        aluno.user.email = email
+                        aluno.user.first_name = nome.split()[0] if nome else ''
+                        aluno.user.last_name = ' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                        aluno.user.save()
+                    else:
+                        try:
+                            user = User.objects.create_user(
+                                username=username,
+                                email=email,
+                                password=password,
+                                first_name=nome.split()[0] if nome else '',
+                                last_name=' '.join(nome.split()[1:]) if nome and len(nome.split()) > 1 else ''
+                            )
+                            aluno_group, _ = Group.objects.get_or_create(name='Aluno')
+                            user.groups.add(aluno_group)
+                            aluno.user = user
+                        except IntegrityError:
+                            raise ValueError('Erro ao criar usuário: dados duplicados.')
+                        except Exception as user_error:
+                            raise ValueError(f'Erro ao criar usuário: {str(user_error)}')
+                
+                aluno.save()
+            
             messages.success(request, f'Aluno {aluno.nome} atualizado com sucesso!')
             return redirect('coordenacao_alunos')
+        except ValueError as ve:
+            messages.error(request, str(ve))
         except Exception as e:
             messages.error(request, f'Erro ao atualizar aluno: {str(e)}')
     
@@ -2326,38 +2662,47 @@ def coordenacao_professor_adicionar(request):
         telefone = request.POST.get('telefone')
         especialidade = request.POST.get('especialidade')
         data_admissao_str = request.POST.get('data_admissao')
-        criar_usuario = request.POST.get('criar_usuario', 'nao')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
         if nome and email and data_admissao_str:
+            if username and not password:
+                messages.error(request, 'Por favor, informe uma senha para o usuário.')
+                return redirect('coordenacao_professores')
+            
             try:
                 from datetime import datetime
-                data_admissao = datetime.strptime(data_admissao_str, '%Y-%m-%d').date()
+                from django.db import transaction
                 
-                professor = Professor(
-                    nome=nome,
-                    email=email,
-                    telefone=telefone,
-                    especialidade=especialidade,
-                    data_admissao=data_admissao
-                )
-                
-                if criar_usuario == 'sim':
-                    from django.contrib.auth.models import User, Group
-                    username = email.split('@')[0]
-                    if User.objects.filter(username=username).exists():
-                        username = f"{username}_{Professor.objects.count() + 1}"
-                    user = User.objects.create_user(
-                        username=username,
+                with transaction.atomic():
+                    data_admissao = datetime.strptime(data_admissao_str, '%Y-%m-%d').date()
+                    
+                    professor = Professor(
+                        nome=nome,
                         email=email,
-                        password='senha123',
-                        first_name=nome.split()[0] if nome else '',
-                        last_name=' '.join(nome.split()[1:]) if len(nome.split()) > 1 else ''
+                        telefone=telefone,
+                        especialidade=especialidade,
+                        data_admissao=data_admissao
                     )
-                    professor_group, _ = Group.objects.get_or_create(name='Professor')
-                    user.groups.add(professor_group)
-                    professor.usuario = user
+                    
+                    if username and password:
+                        from django.contrib.auth.models import User, Group
+                        if User.objects.filter(username=username).exists():
+                            messages.error(request, 'Este nome de usuário já está em uso.')
+                            return redirect('coordenacao_professores')
+                        user = User.objects.create_user(
+                            username=username,
+                            email=email,
+                            password=password,
+                            first_name=nome.split()[0] if nome else '',
+                            last_name=' '.join(nome.split()[1:]) if len(nome.split()) > 1 else ''
+                        )
+                        professor_group, _ = Group.objects.get_or_create(name='Professor')
+                        user.groups.add(professor_group)
+                        professor.user = user
+                    
+                    professor.save()
                 
-                professor.save()
                 messages.success(request, f'Professor {nome} cadastrado com sucesso!')
                 return redirect('coordenacao_professores')
             except Exception as e:

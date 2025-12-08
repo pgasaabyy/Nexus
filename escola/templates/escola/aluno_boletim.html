@@ -256,32 +256,29 @@
 
     {% if boletim %}
     <div class="chart-section">
-        <h3 class="chart-title">Gráfico de Desempenho por Bimestre</h3>
+        <h3 class="chart-title">Gráfico de Desempenho por Disciplina</h3>
         <div class="bar-chart">
-            <div class="chart-bars">
-                {% for item in boletim|slice:":5" %}
+            <div class="chart-bars" style="flex-wrap: wrap;">
+                {% for item in boletim|slice:":6" %}
                 <div class="bar-group">
-                    <div class="bar-container">
-                        <div class="bar bar-1" style="height: {% if item.notas|length > 0 %}{{ item.notas.0|default:0 }}0{% else %}0{% endif %}%;"></div>
-                        <div class="bar bar-2" style="height: {% if item.notas|length > 1 %}{{ item.notas.1|default:0 }}0{% else %}0{% endif %}%;"></div>
-                        <div class="bar bar-3" style="height: {% if item.notas|length > 2 %}{{ item.notas.2|default:0 }}0{% else %}0{% endif %}%;"></div>
+                    <div class="bar-container" style="position: relative;">
+                        <div class="bar bar-1" style="height: {{ item.media|floatformat:0 }}0px; min-height: 5px;" title="Média: {{ item.media }}"></div>
                     </div>
-                    <span class="bar-label">{{ item.disciplina|slice:":3" }}</span>
+                    <span class="bar-label" title="{{ item.disciplina }}">{{ item.disciplina|slice:":6" }}</span>
+                    <span style="font-size: 11px; font-weight: 600; color: {% if item.media >= 6 %}#28a745{% else %}#dc3545{% endif %};">{{ item.media }}</span>
                 </div>
                 {% endfor %}
             </div>
             <div class="chart-legend">
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #003366;"></div>
-                    <span>1º Bimestre</span>
+                    <span>Média Final</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #5DADE2;"></div>
-                    <span>2º Bimestre</span>
+                    <span style="color: #28a745; font-weight: 600;">&#9679; Aprovado (>= 6)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #A8D5E2;"></div>
-                    <span>3º Bimestre</span>
+                    <span style="color: #dc3545; font-weight: 600;">&#9679; Recuperação (< 6)</span>
                 </div>
             </div>
         </div>
