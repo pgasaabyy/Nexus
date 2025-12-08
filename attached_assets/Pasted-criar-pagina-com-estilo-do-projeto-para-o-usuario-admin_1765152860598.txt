@@ -1,0 +1,20 @@
+criar pagina com estilo do projeto para o usuario admin para substituir a pagina comum do django sem perder a padronização das outras paginas
+arrumar css das paginas do professor como comunicados
+arrumar rotas professor
+função de adicionar eventos (calendario) (professor testado até agora) sem funcionar, adicionar função
+adicionar função e paginas para visualizar, adicionar, baixar ou excluir materiais, bem como poder baixar as mesmas
+corrigir função de adicionar comunicados, que envie para o banco de dados e que fique disponivel para visualização, edição ou exclusão de acordo com cada função hierarquica
+corrigir css para que tenha responsividade, ou seja, funcione em qualquer dispositivo, tão quanto como funcionar em computadores, notbooks, tablets, celular e etc
+corrigir as alterações nas configurações de todos os tipos de usuarios
+criar grupos automaticamente e adicionar suas funções de acordo com as funções disponiveis e de acordo com a hierarquia e com as funções disponiveis nas partes de cada um, para que todas as funcionalidades sejam corrigidas
+corrija todos os possiveis bugs nas funcionalidades de professor
+corrija todos os possiveis bugs nas funcionalidades de aluno
+corrija todos os possiveis bugs nas funcionalidades da coordenação
+corrija todos os possiveis bugs nas funcionalidades de secretaria
+criar automaticamente todos os tipos de coisas (salas, cursos, turmas, disciplinas, alguns alunos para testes, usuarios de secretaria, coordenação e etc)
+analise e corrija css e paginas html sem perder a padronização, mas corrija o que estiver faltando ou fora do padrão
+corrigir logout em todos os usuarios, para que seja deslogado e redirecionado automaticamente
+adicionar função de mudar o nome da escola e que apareça para todos os usuarios que estejam nela registrada
+corrigir login e paginas da coordenação, tenha certeza de que as rotas e funções estejam funcionando e enviando todas as informações corretamente
+Analise todas as possiveis funções de todos os usuarios (alunos, professor, coordenação e secretaria) para que todas as funções esteja funcionando corretamente
+corrija os graficos disponiveis pelas paginas para que todos estejam utilizaveis
