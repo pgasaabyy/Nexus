@@ -266,14 +266,16 @@
                 <tr>
                     <td>{{ linha.hora }}</td>
                     {% for dia in dias %}
-                    <td class="schedule-cell {% if linha.aulas|get_item:dia %}has-class{% endif %}"
-                        onclick="editarHorario('{{ dia }}', '{{ linha.hora }}', '{% if linha.aulas|get_item:dia %}{{ linha.aulas|get_item:dia.disciplina.id }}{% endif %}', '{% if linha.aulas|get_item:dia %}{{ linha.aulas|get_item:dia.disciplina.nome }}{% endif %}')">
-                        {% if linha.aulas|get_item:dia %}
-                        <span class="disciplina-name">{{ linha.aulas|get_item:dia.disciplina.nome }}</span>
+                    {% with aula=linha.aulas|get_item:dia %}
+                    <td class="schedule-cell {% if aula %}has-class{% endif %}"
+                        onclick="editarHorario('{{ dia }}', '{{ linha.hora }}', '{% if aula and aula.disciplina %}{{ aula.disciplina.id }}{% endif %}', '{% if aula and aula.disciplina %}{{ aula.disciplina.nome }}{% endif %}')">
+                        {% if aula and aula.disciplina %}
+                        <span class="disciplina-name">{{ aula.disciplina.nome }}</span>
                         {% else %}
                         <span class="empty-cell">-</span>
                         {% endif %}
                     </td>
+                    {% endwith %}
                     {% endfor %}
                 </tr>
                 {% endfor %}

@@ -24,11 +24,36 @@
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th, .data-table td { padding: 10px; text-align: left; border-bottom: 1px solid #f0f0f0; }
     .data-table th { font-weight: 600; color: #666; font-size: 13px; }
-    .avisos-list .aviso-item { padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-    .aviso-item:last-child { border-bottom: none; }
-    .aviso-title { font-weight: 500; color: #333; }
-    .aviso-date { font-size: 12px; color: #666; }
-    .link-more { color: #003366; text-decoration: none; font-size: 14px; }
+    .avisos-list { display: flex; flex-direction: column; gap: 12px; }
+    .aviso-item { 
+        display: flex; 
+        align-items: flex-start; 
+        gap: 12px; 
+        padding: 14px; 
+        background: #f8f9fa; 
+        border-radius: 10px; 
+        border-left: 4px solid #003366;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .aviso-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .aviso-date-badge {
+        background: #003366;
+        color: white;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-align: center;
+        min-width: 45px;
+    }
+    .aviso-date-day { font-size: 18px; font-weight: 700; }
+    .aviso-date-month { font-size: 10px; text-transform: uppercase; }
+    .aviso-content { flex: 1; }
+    .aviso-title { font-weight: 600; color: #333; font-size: 14px; margin-bottom: 4px; }
+    .aviso-desc { font-size: 12px; color: #666; line-height: 1.4; }
+    .link-more { color: #003366; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .link-more:hover { text-decoration: underline; }
     .empty-message { color: #666; text-align: center; padding: 20px; }
 </style>
 {% endblock %}
@@ -118,8 +143,14 @@
                 <div class="avisos-list">
                     {% for aviso in avisos %}
                     <div class="aviso-item">
-                        <div class="aviso-title">{{ aviso.titulo }}</div>
-                        <div class="aviso-date">{{ aviso.data_criacao|date:"d/m/Y" }}</div>
+                        <div class="aviso-date-badge">
+                            <div class="aviso-date-day">{{ aviso.data_criacao|date:"d" }}</div>
+                            <div class="aviso-date-month">{{ aviso.data_criacao|date:"M" }}</div>
+                        </div>
+                        <div class="aviso-content">
+                            <div class="aviso-title">{{ aviso.titulo }}</div>
+                            <div class="aviso-desc">{{ aviso.conteudo|truncatewords:15|default:"Clique para ver mais detalhes" }}</div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
