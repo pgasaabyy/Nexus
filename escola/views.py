@@ -897,21 +897,79 @@ def coordenacao_relatorios(request):
     
     turma_id = request.GET.get('turma')
     turma_selecionada = None
+    alunos_turma = []
+    media_turma = None
+    frequencia_turma = None
     
     if turma_id:
         try:
             turma_selecionada = Turma.objects.annotate(
                 total_alunos=Count('alunos_turma')
             ).get(id=turma_id)
+            
+            alunos_turma = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
+            
+            alunos_com_media = []
+            total_media = Decimal('0')
+            total_frequencia = 0
+            count_alunos = 0
+            count_freq = 0
+            
+            for aluno in alunos_turma:
+                notas = Nota.objects.filter(matricula__aluno=aluno)
+                if notas.exists():
+                    media = notas.aggregate(avg=Avg('valor'))['avg']
+                    media = round(float(media), 1) if media else 0
+                else:
+                    media = 0
+                
+                frequencias = Frequencia.objects.filter(matricula__aluno=aluno)
+                total_aulas = frequencias.count()
+                presencas = frequencias.filter(presente=True).count()
+                freq_percent = int((presencas / total_aulas) * 100) if total_aulas > 0 else 100
+                
+                alunos_com_media.append({
+                    'aluno': aluno,
+                    'media': media,
+                    'frequencia': freq_percent,
+                    'status': 'Aprovado' if media >= 6 else ('Recuperação' if media > 0 else 'Cursando')
+                })
+                
+                if media > 0:
+                    total_media += Decimal(str(media))
+                    count_alunos += 1
+                if total_aulas > 0:
+                    total_frequencia += freq_percent
+                    count_freq += 1
+            
+            alunos_turma = alunos_com_media
+            media_turma = round(float(total_media / count_alunos), 1) if count_alunos > 0 else None
+            frequencia_turma = int(total_frequencia / count_freq) if count_freq > 0 else None
+            
         except Turma.DoesNotExist:
             pass
     
     total_alunos = Aluno.objects.count()
     
+    all_notas = Nota.objects.all()
+    media_geral = None
+    if all_notas.exists():
+        avg = all_notas.aggregate(avg=Avg('valor'))['avg']
+        media_geral = round(float(avg), 1) if avg else None
+    
+    total_freq = Frequencia.objects.count()
+    presencas_total = Frequencia.objects.filter(presente=True).count()
+    frequencia_media = int((presencas_total / total_freq) * 100) if total_freq > 0 else None
+    
     context = {
         'turmas': turmas,
         'turma_selecionada': turma_selecionada,
         'total_alunos': total_alunos,
+        'alunos_turma': alunos_turma,
+        'media_turma': media_turma,
+        'frequencia_turma': frequencia_turma,
+        'media_geral': media_geral,
+        'frequencia_media': frequencia_media,
     }
     return render(request, 'escola/coor_relatorios.html', context)
 
@@ -930,6 +988,116 @@ def coordenacao_calendario(request):
         'eventos_json': eventos_json,
     }
     return render(request, 'escola/coor_calendario.html', context)
+
+
+@login_required
+def coordenacao_horarios(request):
+    if not check_coordenacao_permission(request.user):
+        return redirect('home')
+    
+    turmas = Turma.objects.all().order_by('codigo')
+    disciplinas = Disciplina.objects.all().order_by('nome')
+    turma_id = request.GET.get('turma')
+    turma_selecionada = None
+    horarios = []
+    
+    dias = ['SEG', 'TER', 'QUA', 'QUI', 'SEX']
+    horarios_padrao = ['07:00', '07:50', '08:40', '09:30', '09:50', '10:40', '11:30']
+    
+    if turma_id:
+        try:
+            turma_selecionada = Turma.objects.get(id=turma_id)
+            aulas = HorarioAula.objects.filter(turma=turma_selecionada).select_related('disciplina')
+            
+            for hora in horarios_padrao:
+                linha = {'hora': hora, 'aulas': {}}
+                for dia in dias:
+                    aula = aulas.filter(dia_semana=dia, hora_inicio__hour=int(hora.split(':')[0]), 
+                                       hora_inicio__minute=int(hora.split(':')[1])).first()
+                    linha['aulas'][dia] = aula
+                horarios.append(linha)
+        except Turma.DoesNotExist:
+            pass
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'salvar':
+            turma_post_id = request.POST.get('turma_id')
+            dia = request.POST.get('dia')
+            hora = request.POST.get('hora')
+            disciplina_id = request.POST.get('disciplina_id')
+            
+            if turma_post_id and dia and hora:
+                from datetime import datetime, time, timedelta
+                turma_obj = get_object_or_404(Turma, id=turma_post_id)
+                hora_parts = hora.split(':')
+                hora_inicio = time(int(hora_parts[0]), int(hora_parts[1]))
+                hora_fim_dt = datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=50)
+                hora_fim = hora_fim_dt.time()
+                
+                HorarioAula.objects.filter(turma=turma_obj, dia_semana=dia, hora_inicio=hora_inicio).delete()
+                
+                if disciplina_id:
+                    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+                    HorarioAula.objects.create(
+                        turma=turma_obj,
+                        disciplina=disciplina,
+                        dia_semana=dia,
+                        hora_inicio=hora_inicio,
+                        hora_fim=hora_fim
+                    )
+                    messages.success(request, 'Horário salvo com sucesso!')
+                else:
+                    messages.success(request, 'Horário removido com sucesso!')
+                
+                return redirect(f"{request.path}?turma={turma_post_id}")
+    
+    context = {
+        'turmas': turmas,
+        'disciplinas': disciplinas,
+        'turma_selecionada': turma_selecionada,
+        'horarios': horarios,
+        'dias': dias,
+        'horarios_padrao': horarios_padrao,
+    }
+    return render(request, 'escola/coor_horarios.html', context)
+
+
+@login_required
+def coordenacao_professor_senha(request, professor_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    professor = get_object_or_404(Professor, id=professor_id)
+    
+    if request.method == 'POST':
+        nova_senha = request.POST.get('nova_senha')
+        
+        if nova_senha and len(nova_senha) >= 6:
+            if professor.user:
+                professor.user.set_password(nova_senha)
+                professor.user.save()
+                messages.success(request, f'Senha do professor {professor.nome} alterada com sucesso!')
+            else:
+                username = professor.email.split('@')[0]
+                if User.objects.filter(username=username).exists():
+                    username = f"{username}_{professor.id}"
+                user = User.objects.create_user(
+                    username=username,
+                    email=professor.email,
+                    password=nova_senha,
+                    first_name=professor.nome.split()[0] if professor.nome else '',
+                    last_name=' '.join(professor.nome.split()[1:]) if professor.nome and len(professor.nome.split()) > 1 else ''
+                )
+                professor.user = user
+                professor.save()
+                messages.success(request, f'Usuário criado e senha definida para {professor.nome}!')
+        else:
+            messages.error(request, 'A senha deve ter pelo menos 6 caracteres.')
+    
+    return redirect('coordenacao_professores')
 
 
 @login_required

@@ -163,6 +163,9 @@
         font-size: 12px;
         font-weight: 600;
     }
+    .status-badge.aprovado { background: #d4edda; color: #155724; }
+    .status-badge.recuperacao { background: #fff3cd; color: #856404; }
+    .status-badge.cursando { background: #e3f2fd; color: #1565c0; }
     .status-badge.ativo { background: #d4edda; color: #155724; }
     .status-badge.atencao { background: #fff3cd; color: #856404; }
     .status-badge.critico { background: #f8d7da; color: #721c24; }
@@ -171,27 +174,26 @@
         padding: 40px;
         color: #666;
     }
-    .btn-export {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background: #f0f0f0;
-        color: #333;
-        border: none;
-        border-radius: 6px;
-        font-size: 13px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.2s;
-    }
-    .btn-export:hover {
-        background: #e0e0e0;
-    }
     .two-columns {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
         gap: 24px;
+    }
+    .turma-info {
+        background: #e3f2fd;
+        border-left: 4px solid #1976d2;
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .turma-info h4 {
+        margin: 0 0 8px 0;
+        color: #1565c0;
+    }
+    .turma-info p {
+        margin: 0;
+        color: #1976d2;
+        font-size: 14px;
     }
 </style>
 {% endblock %}
@@ -206,7 +208,7 @@
         <form method="GET" class="filter-form">
             <div class="filter-group">
                 <label>Turma</label>
-                <select name="turma" id="turmaSelect">
+                <select name="turma" id="turmaSelect" onchange="this.form.submit()">
                     <option value="">Todas as turmas</option>
                     {% for turma in turmas %}
                     <option value="{{ turma.id }}" {% if turma_selecionada and turma_selecionada.id == turma.id %}selected{% endif %}>
@@ -215,7 +217,6 @@
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn-filter">Filtrar</button>
         </form>
     </div>
 
@@ -229,14 +230,76 @@
             <div class="stat-label">Total de Alunos</div>
         </div>
         <div class="stat-card media">
-            <div class="stat-value">{{ media_geral|default:"--" }}</div>
+            <div class="stat-value">{% if media_geral %}{{ media_geral }}{% else %}--{% endif %}</div>
             <div class="stat-label">Média Geral</div>
         </div>
         <div class="stat-card frequencia">
-            <div class="stat-value">{{ frequencia_media|default:"--" }}%</div>
+            <div class="stat-value">{% if frequencia_media %}{{ frequencia_media }}%{% else %}--%{% endif %}</div>
             <div class="stat-label">Frequência Média</div>
         </div>
     </div>
+
+    {% if turma_selecionada %}
+    <div class="turma-info">
+        <h4>Turma: {{ turma_selecionada.codigo }}</h4>
+        <p>
+            Curso: {{ turma_selecionada.curso.nome }} |
+            Alunos: {{ turma_selecionada.total_alunos }} |
+            {% if media_turma %}Média da Turma: {{ media_turma }}{% else %}Sem notas{% endif %} |
+            {% if frequencia_turma %}Frequência: {{ frequencia_turma }}%{% else %}Sem frequências{% endif %}
+        </p>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header">
+            <h3>Desempenho dos Alunos - {{ turma_selecionada.codigo }}</h3>
+        </div>
+        <div class="card-body">
+            {% if alunos_turma %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Matrícula</th>
+                        <th>Média</th>
+                        <th>Frequência</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in alunos_turma %}
+                    <tr>
+                        <td><strong>{{ item.aluno.nome }}</strong></td>
+                        <td>{{ item.aluno.matricula }}</td>
+                        <td>
+                            <span style="font-weight: 600; color: {% if item.media >= 6 %}#28a745{% elif item.media > 0 %}#ffc107{% else %}#666{% endif %};">
+                                {% if item.media > 0 %}{{ item.media }}{% else %}--{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="progress-bar" style="width: 80px;">
+                                    <div class="progress-fill {% if item.frequencia >= 75 %}high{% elif item.frequencia >= 50 %}medium{% else %}low{% endif %}" 
+                                         style="width: {{ item.frequencia }}%;"></div>
+                                </div>
+                                <span style="font-size: 13px;">{{ item.frequencia }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge {% if item.status == 'Aprovado' %}aprovado{% elif item.status == 'Recuperação' %}recuperacao{% else %}cursando{% endif %}">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">Nenhum aluno nesta turma.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
 
     <div class="content-card">
         <div class="card-header">
@@ -287,40 +350,6 @@
     <div class="two-columns">
         <div class="content-card">
             <div class="card-header">
-                <h3>Distribuição por Turno</h3>
-            </div>
-            <div class="card-body">
-                {% if turmas %}
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Turno</th>
-                            <th>Turmas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Manhã</td>
-                            <td>{% for t in turmas %}{% if t.turno == "Manhã" %}1{% endif %}{% empty %}0{% endfor %}</td>
-                        </tr>
-                        <tr>
-                            <td>Tarde</td>
-                            <td>{% for t in turmas %}{% if t.turno == "Tarde" %}1{% endif %}{% empty %}0{% endfor %}</td>
-                        </tr>
-                        <tr>
-                            <td>Noite</td>
-                            <td>{% for t in turmas %}{% if t.turno == "Noite" %}1{% endif %}{% empty %}0{% endfor %}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                {% else %}
-                <p class="empty-message">Nenhum dado disponível.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="content-card">
-            <div class="card-header">
                 <h3>Turmas com Mais Alunos</h3>
             </div>
             <div class="card-body">
@@ -340,6 +369,32 @@
                 {% else %}
                 <p class="empty-message">Nenhum dado disponível.</p>
                 {% endif %}
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="card-header">
+                <h3>Resumo de Desempenho</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; gap: 16px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                        <span style="font-weight: 500;">Média Geral do Sistema</span>
+                        <span style="font-weight: 600; color: #003366;">{% if media_geral %}{{ media_geral }}{% else %}--{% endif %}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                        <span style="font-weight: 500;">Frequência Média</span>
+                        <span style="font-weight: 600; color: #003366;">{% if frequencia_media %}{{ frequencia_media }}%{% else %}--%{% endif %}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                        <span style="font-weight: 500;">Total de Turmas</span>
+                        <span style="font-weight: 600; color: #003366;">{{ turmas|length }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                        <span style="font-weight: 500;">Total de Alunos</span>
+                        <span style="font-weight: 600; color: #003366;">{{ total_alunos }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

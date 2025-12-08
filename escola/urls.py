@@ -72,6 +72,10 @@ urlpatterns = [
     path('dashboard/coordenacao/professores/adicionar/', views.coordenacao_professor_adicionar, name='coordenacao_professor_adicionar'),
     path('dashboard/coordenacao/professores/<int:professor_id>/editar/', views.coordenacao_professor_editar, name='coordenacao_professor_editar'),
     path('dashboard/coordenacao/professores/<int:professor_id>/excluir/', views.coordenacao_professor_excluir, name='coordenacao_professor_excluir'),
+    path('dashboard/coordenacao/professores/<int:professor_id>/senha/', views.coordenacao_professor_senha, name='coordenacao_professor_senha'),
+    
+    # Coordenação - Horários
+    path('dashboard/coordenacao/horarios/', views.coordenacao_horarios, name='coordenacao_horarios'),
     
     # Dashboard Admin (Custom)
     path('dashboard/admin/', views.dashboard_admin, name='dashboard_admin'),

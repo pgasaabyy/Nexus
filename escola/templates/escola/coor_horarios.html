@@ -1,0 +1,350 @@
+{% extends 'escola/base_coordenacao.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Horários - Coordenação{% endblock %}
+{% block nav_horarios %}active{% endblock %}
+{% block page_title %}Grade de Horários{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .filter-form {
+        display: flex;
+        gap: 16px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #666;
+    }
+    .filter-group select {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        min-width: 200px;
+    }
+    .btn-filter {
+        padding: 10px 20px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-filter:hover {
+        background: #002244;
+    }
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .card-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+    .card-body {
+        padding: 20px;
+        overflow-x: auto;
+    }
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+    }
+    .schedule-table th,
+    .schedule-table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+    }
+    .schedule-table th {
+        background: #003366;
+        color: white;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    .schedule-table th:first-child {
+        background: #002244;
+        width: 80px;
+    }
+    .schedule-table td:first-child {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+    .schedule-cell {
+        min-height: 50px;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
+    }
+    .schedule-cell:hover {
+        background: #e3f2fd;
+    }
+    .schedule-cell.has-class {
+        background: #e8f5e9;
+    }
+    .disciplina-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    .empty-cell {
+        color: #999;
+        font-size: 11px;
+    }
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        width: 100%;
+        max-width: 400px;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .modal-header h3 {
+        margin: 0;
+        color: #003366;
+    }
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+    }
+    .form-group select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-submit:hover {
+        background: #002244;
+    }
+    .btn-remove {
+        width: 100%;
+        padding: 10px;
+        background: #ffebee;
+        color: #c62828;
+        border: 1px solid #ffcdd2;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .btn-remove:hover {
+        background: #c62828;
+        color: white;
+    }
+    .empty-message {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+    .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #1976d2;
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #1565c0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="filter-section">
+    <form method="GET" class="filter-form">
+        <div class="filter-group">
+            <label>Selecionar Turma</label>
+            <select name="turma" onchange="this.form.submit()">
+                <option value="">-- Escolha uma turma --</option>
+                {% for turma in turmas %}
+                <option value="{{ turma.id }}" {% if turma_selecionada and turma_selecionada.id == turma.id %}selected{% endif %}>
+                    {{ turma.codigo }} - {{ turma.curso.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+</div>
+
+{% if turma_selecionada %}
+<div class="info-box">
+    Clique em qualquer célula para adicionar ou editar a disciplina daquele horário.
+</div>
+
+<div class="content-card">
+    <div class="card-header">
+        <h3>Grade de Horários - {{ turma_selecionada.codigo }}</h3>
+    </div>
+    <div class="card-body">
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>Horário</th>
+                    <th>Segunda</th>
+                    <th>Terça</th>
+                    <th>Quarta</th>
+                    <th>Quinta</th>
+                    <th>Sexta</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linha in horarios %}
+                <tr>
+                    <td>{{ linha.hora }}</td>
+                    {% for dia in dias %}
+                    <td class="schedule-cell {% if linha.aulas|get_item:dia %}has-class{% endif %}"
+                        onclick="editarHorario('{{ dia }}', '{{ linha.hora }}', '{% if linha.aulas|get_item:dia %}{{ linha.aulas|get_item:dia.disciplina.id }}{% endif %}', '{% if linha.aulas|get_item:dia %}{{ linha.aulas|get_item:dia.disciplina.nome }}{% endif %}')">
+                        {% if linha.aulas|get_item:dia %}
+                        <span class="disciplina-name">{{ linha.aulas|get_item:dia.disciplina.nome }}</span>
+                        {% else %}
+                        <span class="empty-cell">-</span>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="content-card">
+    <div class="card-body">
+        <p class="empty-message">Selecione uma turma para visualizar e editar a grade de horários.</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Editar Horário</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form method="POST" id="editForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="salvar">
+            <input type="hidden" name="turma_id" value="{{ turma_selecionada.id }}">
+            <input type="hidden" name="dia" id="edit_dia">
+            <input type="hidden" name="hora" id="edit_hora">
+            
+            <p style="margin-bottom: 16px; color: #666;">
+                <strong id="dia_label"></strong> às <strong id="hora_label"></strong>
+            </p>
+            
+            <div class="form-group">
+                <label>Disciplina</label>
+                <select name="disciplina_id" id="edit_disciplina">
+                    <option value="">-- Remover disciplina --</option>
+                    {% for disciplina in disciplinas %}
+                    <option value="{{ disciplina.id }}">{{ disciplina.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-submit">Salvar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const diasNomes = {
+    'SEG': 'Segunda-feira',
+    'TER': 'Terça-feira',
+    'QUA': 'Quarta-feira',
+    'QUI': 'Quinta-feira',
+    'SEX': 'Sexta-feira'
+};
+
+function editarHorario(dia, hora, disciplinaId, disciplinaNome) {
+    document.getElementById('edit_dia').value = dia;
+    document.getElementById('edit_hora').value = hora;
+    document.getElementById('dia_label').textContent = diasNomes[dia];
+    document.getElementById('hora_label').textContent = hora;
+    document.getElementById('edit_disciplina').value = disciplinaId || '';
+    document.getElementById('editModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.remove('active');
+}
+
+document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+{% endblock %}
