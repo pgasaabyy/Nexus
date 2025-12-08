@@ -1,0 +1,57 @@
+{% extends 'escola/base_coordenacao.html' %}
+{% load static %}
+
+{% block title %}Excluir Aluno - Coordenação{% endblock %}
+{% block nav_alunos %}active{% endblock %}
+{% block page_title %}Excluir Aluno{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-page { max-width: 500px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: #003366; text-decoration: none; font-size: 14px; margin-bottom: 20px; }
+    .back-link:hover { text-decoration: underline; }
+    .delete-card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }
+    .delete-icon { width: 64px; height: 64px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .delete-icon svg { color: #dc3545; }
+    .delete-title { font-size: 20px; font-weight: 600; color: #333; margin: 0 0 12px 0; }
+    .delete-message { color: #666; margin-bottom: 24px; }
+    .item-name { font-weight: 600; color: #003366; }
+    .btn-row { display: flex; gap: 12px; justify-content: center; }
+    .btn-cancel { padding: 12px 24px; background: #f0f0f0; color: #333; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .btn-cancel:hover { background: #e0e0e0; }
+    .btn-delete { padding: 12px 24px; background: #dc3545; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-delete:hover { background: #c82333; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-page">
+    <a href="{% url 'coordenacao_alunos' %}" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Voltar
+    </a>
+
+    <div class="delete-card">
+        <div class="delete-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+        </div>
+        <h2 class="delete-title">Confirmar Exclusão</h2>
+        <p class="delete-message">
+            Tem certeza que deseja excluir o aluno <span class="item-name">{{ aluno.nome }}</span>?<br>
+            Esta ação não pode ser desfeita.
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="btn-row">
+                <a href="{% url 'coordenacao_alunos' %}" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-delete">Excluir</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

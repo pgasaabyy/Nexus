@@ -1,0 +1,90 @@
+{% extends 'escola/base_coordenacao.html' %}
+{% load static %}
+
+{% block title %}{{ acao }} Aluno - Coordenação{% endblock %}
+{% block nav_alunos %}active{% endblock %}
+{% block page_title %}{{ acao }} Aluno{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-page { max-width: 700px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: #003366; text-decoration: none; font-size: 14px; margin-bottom: 20px; }
+    .back-link:hover { text-decoration: underline; }
+    .form-card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .form-title { font-size: 22px; font-weight: 600; color: #003366; margin: 0 0 24px 0; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #003366; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+    .btn-submit { width: 100%; padding: 14px 24px; background: #003366; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 12px; }
+    .btn-submit:hover { background: #002244; }
+    .required { color: #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <a href="{% url 'coordenacao_alunos' %}" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Voltar para Alunos
+    </a>
+
+    <div class="form-card">
+        <h2 class="form-title">{{ acao }} Aluno</h2>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Nome Completo <span class="required">*</span></label>
+                <input type="text" name="nome" value="{{ aluno.nome|default:'' }}" placeholder="Nome completo do aluno" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>E-mail <span class="required">*</span></label>
+                    <input type="email" name="email" value="{{ aluno.email|default:'' }}" placeholder="email@exemplo.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="text" name="telefone" value="{{ aluno.telefone|default:'' }}" placeholder="(00) 00000-0000">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>CPF <span class="required">*</span></label>
+                    <input type="text" name="cpf" value="{{ aluno.cpf|default:'' }}" placeholder="000.000.000-00" required>
+                </div>
+                <div class="form-group">
+                    <label>Matrícula <span class="required">*</span></label>
+                    <input type="text" name="matricula" value="{{ aluno.matricula|default:'' }}" placeholder="Ex: 2025001" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Data de Nascimento <span class="required">*</span></label>
+                    <input type="date" name="data_nascimento" value="{{ aluno.data_nascimento|date:'Y-m-d' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Turma</label>
+                    <select name="turma_id">
+                        <option value="">Selecione uma turma...</option>
+                        {% for turma in turmas %}
+                        <option value="{{ turma.id }}" {% if aluno and aluno.turma_atual_id == turma.id %}selected{% endif %}>
+                            {{ turma.codigo }} - {{ turma.curso.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-submit">{{ acao }} Aluno</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

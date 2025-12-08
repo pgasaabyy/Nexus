@@ -277,11 +277,11 @@
                 <svg class="freq-pie-chart" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#e0e0e0" stroke-width="20"></circle>
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#003366" stroke-width="20" 
-                            stroke-dasharray="{{ frequencia_geral|default:85 }} {% widthratio 100 1 1 %}" 
-                            stroke-dashoffset="25" 
+                            stroke-dasharray="{% widthratio porcentagem_geral 100 251 %} 251" 
+                            stroke-dashoffset="0" 
                             transform="rotate(-90 50 50)"></circle>
                 </svg>
-                <div class="freq-chart-label">{{ frequencia_geral|default:"85" }}%</div>
+                <div class="freq-chart-label">{{ porcentagem_geral }}%</div>
             </div>
             <div class="freq-legend">
                 <div class="freq-legend-item">

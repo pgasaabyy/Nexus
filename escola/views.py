@@ -1485,3 +1485,192 @@ def download_material(request, material_id):
     
     messages.error(request, 'Arquivo não encontrado.')
     return redirect('professor_materiais')
+
+
+@login_required
+def coordenacao_turma_adicionar(request):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    cursos = Curso.objects.all()
+    
+    if request.method == 'POST':
+        codigo = request.POST.get('codigo')
+        curso_id = request.POST.get('curso_id')
+        semestre = request.POST.get('semestre')
+        turno = request.POST.get('turno')
+        ano = request.POST.get('ano')
+        
+        if codigo and curso_id:
+            try:
+                turma = Turma(
+                    codigo=codigo,
+                    curso_id=curso_id,
+                    semestre=semestre,
+                    turno=turno,
+                    ano=ano
+                )
+                turma.save()
+                messages.success(request, f'Turma {codigo} criada com sucesso!')
+                return redirect('coordenacao_turmas')
+            except Exception as e:
+                messages.error(request, f'Erro ao criar turma: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return render(request, 'escola/coor_turma_form.html', {
+        'cursos': cursos,
+        'turnos': ['Manhã', 'Tarde', 'Noite', 'Integral'],
+        'acao': 'Adicionar'
+    })
+
+
+@login_required
+def coordenacao_turma_editar(request, turma_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    turma = get_object_or_404(Turma, id=turma_id)
+    cursos = Curso.objects.all()
+    
+    if request.method == 'POST':
+        turma.codigo = request.POST.get('codigo')
+        turma.curso_id = request.POST.get('curso_id')
+        turma.semestre = request.POST.get('semestre')
+        turma.turno = request.POST.get('turno')
+        turma.ano = request.POST.get('ano')
+        
+        try:
+            turma.save()
+            messages.success(request, f'Turma {turma.codigo} atualizada com sucesso!')
+            return redirect('coordenacao_turmas')
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar turma: {str(e)}')
+    
+    return render(request, 'escola/coor_turma_form.html', {
+        'turma': turma,
+        'cursos': cursos,
+        'turnos': ['Manhã', 'Tarde', 'Noite', 'Integral'],
+        'acao': 'Editar'
+    })
+
+
+@login_required
+def coordenacao_turma_excluir(request, turma_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    turma = get_object_or_404(Turma, id=turma_id)
+    
+    if request.method == 'POST':
+        codigo = turma.codigo
+        turma.delete()
+        messages.success(request, f'Turma {codigo} excluída com sucesso!')
+        return redirect('coordenacao_turmas')
+    
+    return render(request, 'escola/coor_turma_excluir.html', {'turma': turma})
+
+
+@login_required
+def coordenacao_aluno_adicionar(request):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        cpf = request.POST.get('cpf')
+        matricula = request.POST.get('matricula')
+        data_nascimento = request.POST.get('data_nascimento')
+        telefone = request.POST.get('telefone')
+        turma_id = request.POST.get('turma_id')
+        
+        if nome and email and cpf and matricula and data_nascimento:
+            try:
+                aluno = Aluno(
+                    nome=nome,
+                    email=email,
+                    cpf=cpf,
+                    matricula=matricula,
+                    data_nascimento=data_nascimento,
+                    telefone=telefone
+                )
+                if turma_id:
+                    aluno.turma_atual_id = turma_id
+                aluno.save()
+                
+                if turma_id:
+                    Matricula.objects.create(
+                        aluno=aluno,
+                        turma_id=turma_id,
+                        status='Ativo'
+                    )
+                
+                messages.success(request, f'Aluno {nome} cadastrado com sucesso!')
+                return redirect('coordenacao_alunos')
+            except Exception as e:
+                messages.error(request, f'Erro ao cadastrar aluno: {str(e)}')
+        else:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+    
+    return render(request, 'escola/coor_aluno_form.html', {'turmas': turmas, 'acao': 'Adicionar'})
+
+
+@login_required
+def coordenacao_aluno_editar(request, aluno_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    aluno = get_object_or_404(Aluno, id=aluno_id)
+    turmas = Turma.objects.all()
+    
+    if request.method == 'POST':
+        aluno.nome = request.POST.get('nome')
+        aluno.email = request.POST.get('email')
+        aluno.cpf = request.POST.get('cpf')
+        aluno.matricula = request.POST.get('matricula')
+        aluno.data_nascimento = request.POST.get('data_nascimento')
+        aluno.telefone = request.POST.get('telefone')
+        turma_id = request.POST.get('turma_id')
+        
+        if turma_id:
+            aluno.turma_atual_id = turma_id
+        else:
+            aluno.turma_atual = None
+        
+        try:
+            aluno.save()
+            messages.success(request, f'Aluno {aluno.nome} atualizado com sucesso!')
+            return redirect('coordenacao_alunos')
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar aluno: {str(e)}')
+    
+    return render(request, 'escola/coor_aluno_form.html', {
+        'turmas': turmas, 
+        'aluno': aluno, 
+        'acao': 'Editar'
+    })
+
+
+@login_required
+def coordenacao_aluno_excluir(request, aluno_id):
+    if not check_coordenacao_permission(request.user):
+        messages.error(request, 'Acesso não autorizado.')
+        return redirect('home')
+    
+    aluno = get_object_or_404(Aluno, id=aluno_id)
+    
+    if request.method == 'POST':
+        nome = aluno.nome
+        aluno.delete()
+        messages.success(request, f'Aluno {nome} excluído com sucesso!')
+        return redirect('coordenacao_alunos')
+    
+    return render(request, 'escola/coor_aluno_excluir.html', {'aluno': aluno})

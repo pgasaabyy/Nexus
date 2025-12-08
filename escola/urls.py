@@ -56,4 +56,12 @@ urlpatterns = [
     path('dashboard/coordenacao/calendario/evento/<int:evento_id>/excluir/', views.coordenacao_evento_excluir, name='coordenacao_evento_excluir'),
     path('dashboard/coordenacao/comunicados/', views.coordenacao_comunicados, name='coordenacao_comunicados'),
     path('dashboard/coordenacao/configuracoes/', views.coordenacao_configuracoes, name='coordenacao_configuracoes'),
+    
+    # Coordenação - Gestão de Turmas e Alunos
+    path('dashboard/coordenacao/turmas/adicionar/', views.coordenacao_turma_adicionar, name='coordenacao_turma_adicionar'),
+    path('dashboard/coordenacao/turmas/<int:turma_id>/editar/', views.coordenacao_turma_editar, name='coordenacao_turma_editar'),
+    path('dashboard/coordenacao/turmas/<int:turma_id>/excluir/', views.coordenacao_turma_excluir, name='coordenacao_turma_excluir'),
+    path('dashboard/coordenacao/alunos/adicionar/', views.coordenacao_aluno_adicionar, name='coordenacao_aluno_adicionar'),
+    path('dashboard/coordenacao/alunos/<int:aluno_id>/editar/', views.coordenacao_aluno_editar, name='coordenacao_aluno_editar'),
+    path('dashboard/coordenacao/alunos/<int:aluno_id>/excluir/', views.coordenacao_aluno_excluir, name='coordenacao_aluno_excluir'),
 ]
