@@ -1,5 +1,8 @@
 #!/bin/bash
-# Apply migrations (migrations should be pre-committed to repo)
+# Create migrations for any model changes
+python3.11 manage.py makemigrations --no-input || true
+
+# Apply migrations
 python3.11 manage.py migrate --no-input
 
 # Create groups and permissions if they don't exist

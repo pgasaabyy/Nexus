@@ -4,6 +4,14 @@
 Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
 
 ## Alterações Recentes
+- **08/12/2025:** Template Fixes and Migration Updates
+  - **coor_horarios.html Fix**: Used `{% with %}` template tag to prevent VariableDoesNotExist errors when accessing disciplina objects that might be None
+  - **coor_dashboard.html Avisos Styling**: Enhanced avisos recentes card with date badge, improved layout with flex display, better hover effects
+  - **aluno_dashboard.html Chart**: Improved performance chart with better color coding (blue for passing grades, red for failing), custom legend, and title
+  - **aluno_calendario.html**: Centered calendar navigation, removed redundant title, improved responsive design
+  - **Database Migration**: Created and applied migration 0007 for Documento.arquivo field
+  - **run.sh Update**: Added automatic makemigrations step before migrate
+
 - **08/12/2025:** UI/UX Improvements and Bug Fixes
   - **Date Format Bug Fix**: Fixed `secretaria_documento_visualizar` view date formatting from `%H:%i` to correct Python `%H:%M` format
   - **Professor Dashboard Enhancement**: Improved avisos recentes card styling with background color, border-left accent, hover effects, and calendar icons
