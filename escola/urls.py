@@ -19,6 +19,8 @@ urlpatterns = [
     path('dashboard/aluno/configuracoes/', views.aluno_configuracoes, name='aluno_configuracoes'),
     path('dashboard/aluno/justificativa/', views.aluno_justificativa, name='aluno_justificativa'),
     path('dashboard/aluno/evento/', views.aluno_evento, name='aluno_evento'),
+    path('dashboard/aluno/materiais/', views.aluno_materiais, name='aluno_materiais'),
+    path('dashboard/aluno/documentos/', views.aluno_documentos, name='aluno_documentos'),
 
     # Dashboard Professor
     path('dashboard/professor/', views.dashboard_professor, name='dashboard_professor'),

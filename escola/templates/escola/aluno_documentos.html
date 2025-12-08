@@ -1,0 +1,308 @@
+{% extends 'escola/base_aluno.html' %}
+{% load static %}
+
+{% block title %}Documentos - Aluno{% endblock %}
+{% block nav_documentos %}active{% endblock %}
+{% block page_title %}Solicitacao de Documentos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .documentos-page {
+        max-width: 1000px;
+    }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+    .student-info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .student-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #003366;
+        margin: 0 0 8px 0;
+    }
+    .student-details-row {
+        display: flex;
+        gap: 24px;
+        color: #666;
+        font-size: 14px;
+    }
+    .content-grid {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 24px;
+    }
+    @media (max-width: 900px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .form-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .form-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 20px 0;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        background: white;
+    }
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #003366;
+    }
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    .form-hint {
+        font-size: 12px;
+        color: #666;
+        margin-top: 6px;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 14px 24px;
+        background: #003366;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-submit:hover {
+        background: #002244;
+    }
+    .history-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .history-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .history-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+    .history-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    .history-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 24px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .history-item:last-child {
+        border-bottom: none;
+    }
+    .history-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .history-icon.pendente { background: #fff3e0; color: #f57c00; }
+    .history-icon.emitido { background: #e3f2fd; color: #1976d2; }
+    .history-icon.entregue { background: #e8f5e9; color: #388e3c; }
+    .history-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .history-tipo {
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+        margin: 0 0 4px 0;
+    }
+    .history-date {
+        font-size: 13px;
+        color: #666;
+    }
+    .history-status {
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .status-pendente {
+        background: #fff3e0;
+        color: #e65100;
+    }
+    .status-emitido {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+    .status-entregue {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .empty-history {
+        padding: 40px 24px;
+        text-align: center;
+        color: #666;
+    }
+    .empty-history svg {
+        width: 48px;
+        height: 48px;
+        stroke: #ccc;
+        margin-bottom: 12px;
+    }
+    .empty-history p {
+        margin: 0;
+        font-size: 14px;
+    }
+    .info-box {
+        background: #e3f2fd;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    .info-box p {
+        margin: 0;
+        font-size: 13px;
+        color: #1565c0;
+        line-height: 1.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="documentos-page">
+    <div class="page-header">
+        <h2 class="section-title">Solicitacao de Documentos</h2>
+    </div>
+
+    <div class="student-info-card">
+        <h3 class="student-name">{{ aluno.nome }}</h3>
+        <div class="student-details-row">
+            <span><strong>RM:</strong> {{ aluno.matricula }}</span>
+            <span><strong>Turma:</strong> {{ aluno.turma_atual.codigo|default:"-" }}</span>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="form-section">
+            <h3 class="form-title">Nova Solicitacao</h3>
+            
+            <div class="info-box">
+                <p>Os documentos solicitados serao emitidos pela secretaria e disponibilizados para retirada. O prazo medio e de 3 a 5 dias uteis.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="tipo">Tipo de Documento *</label>
+                    <select name="tipo" id="tipo" required>
+                        <option value="">Selecione o tipo</option>
+                        {% for tipo_key, tipo_nome in tipos_documento %}
+                        <option value="{{ tipo_key }}">{{ tipo_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descricao">Observacoes (opcional)</label>
+                    <textarea name="descricao" id="descricao" placeholder="Informe detalhes adicionais sobre sua solicitacao..."></textarea>
+                    <div class="form-hint">Ex: Finalidade do documento, quantidade de vias, etc.</div>
+                </div>
+                
+                <button type="submit" class="btn-submit">Solicitar Documento</button>
+            </form>
+        </div>
+
+        <div class="history-section">
+            <div class="history-header">
+                <h3 class="history-title">Historico de Solicitacoes</h3>
+            </div>
+            <div class="history-list">
+                {% for doc in documentos %}
+                <div class="history-item">
+                    <div class="history-icon {{ doc.status|lower }}">
+                        {% if doc.status == 'PENDENTE' %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        {% elif doc.status == 'EMITIDO' %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <path d="M9 15l2 2 4-4"></path>
+                        </svg>
+                        {% else %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    <div class="history-info">
+                        <h4 class="history-tipo">{{ doc.get_tipo_display }}</h4>
+                        <span class="history-date">Solicitado em {{ doc.data_solicitacao|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <span class="history-status status-{{ doc.status|lower }}">{{ doc.get_status_display }}</span>
+                </div>
+                {% empty %}
+                <div class="empty-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <p>Nenhuma solicitacao realizada ainda.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

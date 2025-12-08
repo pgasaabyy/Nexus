@@ -119,7 +119,11 @@ def dashboard_aluno(request):
         messages.error(request, 'Perfil de aluno não encontrado.')
         return redirect('home')
 
-    avisos = Aviso.objects.order_by('-data_criacao')[:5]
+    avisos_query = Q(destinatario='todos') | Q(destinatario='alunos')
+    if aluno.turma_atual:
+        avisos_query = avisos_query | (Q(destinatario='turma') & Q(turma=aluno.turma_atual))
+    
+    avisos = Aviso.objects.filter(avisos_query, ativo=True).order_by('-data_criacao')[:5]
 
     context = {
         'aluno': aluno,
@@ -330,6 +334,80 @@ def aluno_configuracoes(request):
         'user': user,
     }
     return render(request, 'escola/aluno_configuracoes.html', context)
+
+
+@login_required
+def aluno_materiais(request):
+    try:
+        aluno = request.user.perfil_aluno
+    except AttributeError:
+        messages.error(request, 'Perfil de aluno não encontrado.')
+        return redirect('home')
+    
+    materiais = []
+    if aluno.turma_atual:
+        materiais = Material.objects.filter(
+            Q(turma=aluno.turma_atual) | Q(turma__isnull=True),
+            disciplina__in=aluno.turma_atual.curso.disciplinas.all(),
+            ativo=True
+        ).select_related('disciplina', 'professor').order_by('-data_upload')
+    
+    disciplinas = []
+    if aluno.turma_atual:
+        disciplinas = aluno.turma_atual.curso.disciplinas.all()
+    
+    disciplina_filtro = request.GET.get('disciplina', '')
+    tipo_filtro = request.GET.get('tipo', '')
+    
+    if disciplina_filtro:
+        materiais = materiais.filter(disciplina_id=disciplina_filtro)
+    if tipo_filtro:
+        materiais = materiais.filter(tipo=tipo_filtro)
+    
+    context = {
+        'aluno': aluno,
+        'materiais': materiais,
+        'disciplinas': disciplinas,
+        'disciplina_filtro': disciplina_filtro,
+        'tipo_filtro': tipo_filtro,
+        'tipos_material': Material.TIPO_CHOICES,
+    }
+    return render(request, 'escola/aluno_materiais.html', context)
+
+
+@login_required
+def aluno_documentos(request):
+    try:
+        aluno = request.user.perfil_aluno
+    except AttributeError:
+        messages.error(request, 'Perfil de aluno não encontrado.')
+        return redirect('home')
+    
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')
+        descricao = request.POST.get('descricao', '')
+        
+        if tipo:
+            Documento.objects.create(
+                aluno=aluno,
+                tipo=tipo,
+                descricao=descricao,
+                criado_por=request.user
+            )
+            messages.success(request, 'Solicitação de documento enviada com sucesso!')
+        else:
+            messages.error(request, 'Selecione o tipo de documento.')
+        
+        return redirect('aluno_documentos')
+    
+    documentos = Documento.objects.filter(aluno=aluno).order_by('-data_solicitacao')
+    
+    context = {
+        'aluno': aluno,
+        'documentos': documentos,
+        'tipos_documento': Documento.TIPOS_CHOICES,
+    }
+    return render(request, 'escola/aluno_documentos.html', context)
 
 
 @login_required
