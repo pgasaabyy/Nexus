@@ -542,6 +542,7 @@ def secretaria_professor_adicionar(request):
         return redirect('home')
     
     disciplinas = Disciplina.objects.all()
+    turmas = Turma.objects.all()
     
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -551,6 +552,8 @@ def secretaria_professor_adicionar(request):
         data_admissao = request.POST.get('data_admissao')
         username = request.POST.get('username')
         password = request.POST.get('password')
+        disciplinas_ids = request.POST.getlist('disciplinas')
+        turmas_ids = request.POST.getlist('turmas')
         
         if nome and email and data_admissao:
             try:
@@ -566,7 +569,8 @@ def secretaria_professor_adicionar(request):
                     if User.objects.filter(username=username).exists():
                         messages.error(request, 'Este nome de usuário já está em uso.')
                         return render(request, 'escola/secre_professor_form.html', {
-                            'disciplinas': disciplinas, 
+                            'disciplinas': disciplinas,
+                            'turmas': turmas,
                             'acao': 'Adicionar'
                         })
                     user = User.objects.create_user(
@@ -579,6 +583,12 @@ def secretaria_professor_adicionar(request):
                     professor.user = user
                 
                 professor.save()
+                
+                if disciplinas_ids:
+                    professor.disciplinas.set(disciplinas_ids)
+                if turmas_ids:
+                    professor.turmas.set(turmas_ids)
+                
                 messages.success(request, f'Professor {nome} cadastrado com sucesso!')
                 return redirect('secretaria_professores')
             except Exception as e:
@@ -587,7 +597,8 @@ def secretaria_professor_adicionar(request):
             messages.error(request, 'Preencha todos os campos obrigatórios.')
     
     return render(request, 'escola/secre_professor_form.html', {
-        'disciplinas': disciplinas, 
+        'disciplinas': disciplinas,
+        'turmas': turmas,
         'acao': 'Adicionar'
     })
 
@@ -600,6 +611,7 @@ def secretaria_professor_editar(request, professor_id):
     
     professor = get_object_or_404(Professor, id=professor_id)
     disciplinas = Disciplina.objects.all()
+    turmas = Turma.objects.all()
     
     if request.method == 'POST':
         professor.nome = request.POST.get('nome')
@@ -610,6 +622,8 @@ def secretaria_professor_editar(request, professor_id):
         
         username = request.POST.get('username')
         password = request.POST.get('password')
+        disciplinas_ids = request.POST.getlist('disciplinas')
+        turmas_ids = request.POST.getlist('turmas')
         
         try:
             if username:
@@ -618,7 +632,8 @@ def secretaria_professor_editar(request, professor_id):
                         if User.objects.filter(username=username).exclude(id=professor.user.id).exists():
                             messages.error(request, 'Este nome de usuário já está em uso.')
                             return render(request, 'escola/secre_professor_form.html', {
-                                'disciplinas': disciplinas, 
+                                'disciplinas': disciplinas,
+                                'turmas': turmas,
                                 'professor': professor, 
                                 'acao': 'Editar'
                             })
@@ -631,7 +646,8 @@ def secretaria_professor_editar(request, professor_id):
                     if User.objects.filter(username=username).exists():
                         messages.error(request, 'Este nome de usuário já está em uso.')
                         return render(request, 'escola/secre_professor_form.html', {
-                            'disciplinas': disciplinas, 
+                            'disciplinas': disciplinas,
+                            'turmas': turmas,
                             'professor': professor, 
                             'acao': 'Editar'
                         })
@@ -645,13 +661,18 @@ def secretaria_professor_editar(request, professor_id):
                     professor.user = user
             
             professor.save()
+            
+            professor.disciplinas.set(disciplinas_ids)
+            professor.turmas.set(turmas_ids)
+            
             messages.success(request, f'Professor {professor.nome} atualizado com sucesso!')
             return redirect('secretaria_professores')
         except Exception as e:
             messages.error(request, f'Erro ao atualizar professor: {str(e)}')
     
     return render(request, 'escola/secre_professor_form.html', {
-        'disciplinas': disciplinas, 
+        'disciplinas': disciplinas,
+        'turmas': turmas,
         'professor': professor, 
         'acao': 'Editar'
     })
@@ -1219,9 +1240,11 @@ def dashboard_professor(request):
     
     if hasattr(request.user, 'perfil_professor'):
         professor = request.user.perfil_professor
+        turmas = professor.turmas.annotate(total_alunos=Count('alunos_turma'))
     
-    turmas = Turma.objects.annotate(total_alunos=Count('alunos_turma'))[:5]
-    avisos = Aviso.objects.order_by('-data_criacao')[:3]
+    avisos = Aviso.objects.filter(
+        Q(destinatario='todos') | Q(destinatario='professores')
+    ).order_by('-data_criacao')[:3]
     total_alunos = sum(t.total_alunos for t in turmas)
     
     context = {
@@ -1238,8 +1261,14 @@ def professor_notas(request):
     if not check_professor_permission(request.user):
         return redirect('home')
     
-    turmas = Turma.objects.all()
-    disciplinas = Disciplina.objects.all()
+    professor = getattr(request.user, 'perfil_professor', None)
+    
+    if professor:
+        turmas = professor.turmas.all()
+        disciplinas = professor.disciplinas.all()
+    else:
+        turmas = Turma.objects.none()
+        disciplinas = Disciplina.objects.none()
     
     turma_id = request.GET.get('turma')
     disciplina_id = request.GET.get('disciplina')
@@ -1249,21 +1278,22 @@ def professor_notas(request):
     disciplina_selecionada = None
     
     if turma_id:
-        turma_selecionada = get_object_or_404(Turma, id=turma_id)
-        alunos = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
-        
-        if disciplina_id:
-            disciplina_selecionada = get_object_or_404(Disciplina, id=disciplina_id)
+        turma_selecionada = turmas.filter(id=turma_id).first()
+        if turma_selecionada:
+            alunos = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
             
-            for aluno in alunos:
-                matricula = Matricula.objects.filter(aluno=aluno, turma=turma_selecionada).first()
-                if matricula:
-                    notas = Nota.objects.filter(matricula=matricula, disciplina=disciplina_selecionada)
-                    aluno.notas_disciplina = list(notas)
-                    if notas:
-                        aluno.media = sum([float(n.valor) for n in notas]) / len(notas)
-                    else:
-                        aluno.media = 0
+            if disciplina_id:
+                disciplina_selecionada = disciplinas.filter(id=disciplina_id).first()
+                if disciplina_selecionada:
+                    for aluno in alunos:
+                        matricula = Matricula.objects.filter(aluno=aluno, turma=turma_selecionada).first()
+                        if matricula:
+                            notas = Nota.objects.filter(matricula=matricula, disciplina=disciplina_selecionada)
+                            aluno.notas_disciplina = list(notas)
+                            if notas:
+                                aluno.media = sum([float(n.valor) for n in notas]) / len(notas)
+                            else:
+                                aluno.media = 0
     
     context = {
         'turmas': turmas,
@@ -1281,12 +1311,21 @@ def professor_salvar_notas(request):
         return JsonResponse({'error': 'Não autorizado'}, status=403)
     
     if request.method == 'POST':
+        professor = getattr(request.user, 'perfil_professor', None)
+        if not professor:
+            messages.error(request, 'Perfil de professor não encontrado.')
+            return redirect('professor_notas')
+        
         turma_id = request.POST.get('turma_id')
         disciplina_id = request.POST.get('disciplina_id')
         tipo_avaliacao = request.POST.get('tipo_avaliacao', 'Prova')
         
-        turma = get_object_or_404(Turma, id=turma_id)
-        disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+        turma = professor.turmas.filter(id=turma_id).first()
+        disciplina = professor.disciplinas.filter(id=disciplina_id).first()
+        
+        if not turma or not disciplina:
+            messages.error(request, 'Você não tem permissão para acessar esta turma ou disciplina.')
+            return redirect('professor_notas')
         
         for key, value in request.POST.items():
             if key.startswith('nota_'):
@@ -1316,8 +1355,14 @@ def professor_frequencia(request):
     if not check_professor_permission(request.user):
         return redirect('home')
     
-    turmas = Turma.objects.all()
-    disciplinas = Disciplina.objects.all()
+    professor = getattr(request.user, 'perfil_professor', None)
+    
+    if professor:
+        turmas = professor.turmas.all()
+        disciplinas = professor.disciplinas.all()
+    else:
+        turmas = Turma.objects.none()
+        disciplinas = Disciplina.objects.none()
     
     turma_id = request.GET.get('turma')
     disciplina_id = request.GET.get('disciplina')
@@ -1328,11 +1373,12 @@ def professor_frequencia(request):
     disciplina_selecionada = None
     
     if turma_id:
-        turma_selecionada = get_object_or_404(Turma, id=turma_id)
-        alunos = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
-        
-        if disciplina_id:
-            disciplina_selecionada = get_object_or_404(Disciplina, id=disciplina_id)
+        turma_selecionada = turmas.filter(id=turma_id).first()
+        if turma_selecionada:
+            alunos = Aluno.objects.filter(turma_atual=turma_selecionada).order_by('nome')
+            
+            if disciplina_id:
+                disciplina_selecionada = disciplinas.filter(id=disciplina_id).first()
     
     context = {
         'turmas': turmas,
@@ -1351,12 +1397,21 @@ def professor_salvar_frequencia(request):
         return JsonResponse({'error': 'Não autorizado'}, status=403)
     
     if request.method == 'POST':
+        professor = getattr(request.user, 'perfil_professor', None)
+        if not professor:
+            messages.error(request, 'Perfil de professor não encontrado.')
+            return redirect('professor_frequencia')
+        
         turma_id = request.POST.get('turma_id')
         disciplina_id = request.POST.get('disciplina_id')
         data_aula = request.POST.get('data_aula')
         
-        turma = get_object_or_404(Turma, id=turma_id)
-        disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+        turma = professor.turmas.filter(id=turma_id).first()
+        disciplina = professor.disciplinas.filter(id=disciplina_id).first()
+        
+        if not turma or not disciplina:
+            messages.error(request, 'Você não tem permissão para acessar esta turma ou disciplina.')
+            return redirect('professor_frequencia')
         
         alunos = Aluno.objects.filter(turma_atual=turma)
         
@@ -1384,8 +1439,13 @@ def professor_materiais(request):
         return redirect('home')
     
     professor = getattr(request.user, 'perfil_professor', None)
-    disciplinas = Disciplina.objects.all()
-    turmas = Turma.objects.all()
+    
+    if professor:
+        disciplinas = professor.disciplinas.all()
+        turmas = professor.turmas.all()
+    else:
+        disciplinas = Disciplina.objects.none()
+        turmas = Turma.objects.none()
     
     materiais = Material.objects.filter(ativo=True).order_by('-data_upload')
     if professor:
@@ -1446,8 +1506,15 @@ def professor_calendario(request):
         return redirect('home')
     
     professor = getattr(request.user, 'perfil_professor', None)
-    turmas = Turma.objects.all()
-    eventos = Evento.objects.all().order_by('-data')
+    
+    if professor:
+        turmas = professor.turmas.all()
+        eventos = Evento.objects.filter(
+            Q(turma__isnull=True) | Q(turma__in=turmas)
+        ).order_by('-data')
+    else:
+        turmas = Turma.objects.none()
+        eventos = Evento.objects.none()
     
     if request.method == 'POST':
         action = request.POST.get('action')

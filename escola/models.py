@@ -64,6 +64,16 @@ class Professor(models.Model):
     telefone = models.CharField(max_length=20, blank=True, null=True)
     especialidade = models.CharField(max_length=100, blank=True, null=True)
     data_admissao = models.DateField()
+    disciplinas = models.ManyToManyField(
+        'Disciplina',
+        blank=True,
+        related_name='professores'
+    )
+    turmas = models.ManyToManyField(
+        Turma,
+        blank=True,
+        related_name='professores'
+    )
 
     def __str__(self):
         return self.nome

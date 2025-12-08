@@ -85,3 +85,4 @@ psycopg2-binary
 reportlab==4.4.5
 whitenoise
 django-environ
+psycopg2-binary
