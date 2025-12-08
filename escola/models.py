@@ -74,6 +74,7 @@ class Professor(models.Model):
         blank=True,
         related_name='professores'
     )
+    foto = models.ImageField(upload_to='professores_fotos/', blank=True, null=True)
 
     def __str__(self):
         return self.nome

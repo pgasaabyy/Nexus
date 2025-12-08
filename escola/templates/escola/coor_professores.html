@@ -145,8 +145,13 @@
             <h3>Adicionar Professor</h3>
             <button class="modal-close" onclick="closeModal('addModal')">&times;</button>
         </div>
-        <form method="POST" action="{% url 'coordenacao_professor_adicionar' %}">
+        <form method="POST" action="{% url 'coordenacao_professor_adicionar' %}" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="form-group">
+                <label>Foto de Perfil</label>
+                <input type="file" name="foto" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+                <small style="font-size: 11px; color: #666; display: block; margin-top: 4px;">Formatos: JPG, PNG (máx. 5MB)</small>
+            </div>
             <div class="form-group">
                 <label>Nome Completo *</label>
                 <input type="text" name="nome" required placeholder="Digite o nome completo">
@@ -200,8 +205,13 @@
             <h3>Editar Professor</h3>
             <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
         </div>
-        <form method="POST" id="editForm">
+        <form method="POST" id="editForm" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="form-group">
+                <label>Foto de Perfil</label>
+                <input type="file" name="foto" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+                <small style="font-size: 11px; color: #666; display: block; margin-top: 4px;">Deixe vazio para manter a foto atual</small>
+            </div>
             <div class="form-group">
                 <label>Nome Completo *</label>
                 <input type="text" name="nome" id="edit_nome" required>

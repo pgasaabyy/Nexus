@@ -362,6 +362,15 @@ def aluno_configuracoes(request):
             messages.success(request, 'Perfil atualizado com sucesso!')
             return redirect('aluno_configuracoes')
         
+        elif action == 'atualizar_foto':
+            if aluno and 'foto' in request.FILES:
+                aluno.foto = request.FILES['foto']
+                aluno.save()
+                messages.success(request, 'Foto atualizada com sucesso!')
+            else:
+                messages.error(request, 'Selecione uma foto para enviar.')
+            return redirect('aluno_configuracoes')
+        
         elif action == 'alterar_senha':
             senha_atual = request.POST.get('senha_atual')
             nova_senha = request.POST.get('nova_senha')
@@ -696,6 +705,9 @@ def secretaria_professor_adicionar(request):
                     data_admissao=data_admissao
                 )
                 
+                if 'foto' in request.FILES:
+                    professor.foto = request.FILES['foto']
+                
                 if username and password:
                     if User.objects.filter(username=username).exists():
                         messages.error(request, 'Este nome de usuário já está em uso.')
@@ -750,6 +762,9 @@ def secretaria_professor_editar(request, professor_id):
         professor.telefone = request.POST.get('telefone')
         professor.especialidade = request.POST.get('especialidade')
         professor.data_admissao = request.POST.get('data_admissao')
+        
+        if 'foto' in request.FILES:
+            professor.foto = request.FILES['foto']
         
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -2328,6 +2343,15 @@ def professor_configuracoes(request):
             messages.success(request, 'Perfil atualizado com sucesso!')
             return redirect('professor_configuracoes')
         
+        elif action == 'atualizar_foto':
+            if professor and 'foto' in request.FILES:
+                professor.foto = request.FILES['foto']
+                professor.save()
+                messages.success(request, 'Foto atualizada com sucesso!')
+            else:
+                messages.error(request, 'Selecione uma foto para enviar.')
+            return redirect('professor_configuracoes')
+        
         elif action == 'alterar_senha':
             senha_atual = request.POST.get('senha_atual')
             nova_senha = request.POST.get('nova_senha')
@@ -2487,6 +2511,9 @@ def secretaria_aluno_editar(request, aluno_id):
                 aluno.matricula = matricula_val
                 aluno.data_nascimento = data_nascimento
                 aluno.telefone = telefone
+                
+                if 'foto' in request.FILES:
+                    aluno.foto = request.FILES['foto']
                 
                 if turma_id:
                     aluno.turma_atual_id = turma_id
@@ -2921,6 +2948,9 @@ def coordenacao_aluno_editar(request, aluno_id):
                 aluno.matricula = matricula_val
                 aluno.telefone = telefone
                 
+                if 'foto' in request.FILES:
+                    aluno.foto = request.FILES['foto']
+                
                 if data_nascimento_str:
                     aluno.data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
                 
@@ -3023,6 +3053,9 @@ def coordenacao_professor_adicionar(request):
                         data_admissao=data_admissao
                     )
                     
+                    if 'foto' in request.FILES:
+                        professor.foto = request.FILES['foto']
+                    
                     if username and password:
                         from django.contrib.auth.models import User, Group
                         if User.objects.filter(username=username).exists():
@@ -3065,6 +3098,9 @@ def coordenacao_professor_editar(request, professor_id):
         professor.telefone = request.POST.get('telefone')
         professor.especialidade = request.POST.get('especialidade')
         data_admissao_str = request.POST.get('data_admissao')
+        
+        if 'foto' in request.FILES:
+            professor.foto = request.FILES['foto']
         
         if data_admissao_str:
             from datetime import datetime

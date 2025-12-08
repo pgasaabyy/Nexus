@@ -35,8 +35,23 @@
     <div class="form-card">
         <h2 class="form-title">{{ acao }} Aluno</h2>
         
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Foto do Aluno</label>
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: #003366; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        {% if aluno and aluno.foto %}
+                            <img src="{{ aluno.foto.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <span style="color: white; font-size: 22px; font-weight: 600;">{% if aluno %}{{ aluno.nome|slice:":2"|upper }}{% else %}??{% endif %}</span>
+                        {% endif %}
+                    </div>
+                    <input type="file" name="foto" accept="image/*" style="flex: 1;">
+                </div>
+                <small style="font-size: 11px; color: #666;">Formatos aceitos: JPG, PNG (máx. 5MB)</small>
+            </div>
             
             <div class="form-group">
                 <label>Nome Completo <span class="required">*</span></label>

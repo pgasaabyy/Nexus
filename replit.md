@@ -1,235 +1,94 @@
 # NEXUS - Sistema de Gestão Escolar
 
-## Visão Geral
-Sistema de gestão escolar completo desenvolvido em Django 5.2 com PostgreSQL. O sistema possui módulos para Alunos, Professores, Secretaria e Coordenação, com design responsivo e funcionalidades CRUD completas.
+## Overview
+NEXUS is a comprehensive school management system developed with Django 5.2 and PostgreSQL. It provides modules for Students, Teachers, Secretariat, and Coordination, featuring a responsive design and full CRUD (Create, Read, Update, Delete) functionalities. The system aims to streamline administrative tasks, academic management, and communication within an educational institution.
 
-## Alterações Recentes
-- **08/12/2025:** Admin User Creation and Styling Fixes
-  - **Auto-Matricula Creation**: AlunoAdmin.save_model now automatically creates a Matricula when a student is saved with turma_atual, enabling grade assignment for students created via Django admin
-  - **Group Assignment**: AlunoAdmin and ProfessorAdmin now automatically add users to appropriate groups (Aluno/Professor) when linked to a User account
-  - **Comunicados Styling**: Fixed title color in coor_comunicados.html from #333 to #003366 for better visibility and consistency with project design
+## User Preferences
+- System should function responsively on all devices (desktop, tablet, mobile)
+- Design following the NEXUS color palette
+- Graphs and charts must be functional on all dashboards
+- Groups must be created automatically with hierarchical permissions
 
-- **08/12/2025:** Professor Assignment Bug Fix
-  - **Root Cause**: Professors couldn't submit grades for students in turmas created via secretaria/admin because the ManyToMany relationship wasn't being set
-  - **ProfessorAdmin Enhancement**: Added `filter_horizontal = ('disciplinas', 'turmas')` and new fieldset "Turmas e Disciplinas" for proper ManyToMany management in Django admin
-  - **Coordenação Turma Forms**: Added professor multi-select to `coor_turma_form.html` with proper backend handling using atomic transactions
-  - **Secretaria Academic**: Enhanced `secre_academico.html` turma modal with professor assignment feature and proper JS handling for empty arrays
-  - **Transaction Safety**: All professor assignment operations now use atomic transactions with differential updates (only add/remove changed professors)
-  - **JavaScript Fixes**: Fixed empty array handling in editTurma() function to prevent syntax errors
+## System Architecture
 
-- **08/12/2025:** Document Management Workflow Enhancement
-  - **Enviar Documento Feature**: Secretaria can now upload/update document files separately for requests with EMITIDO or ENTREGUE status
-  - **New View**: `secretaria_documento_enviar` for handling separate file uploads
-  - **New URL**: `dashboard/secretaria/documentos/<int:doc_id>/enviar/`
-  - **New Modal**: "modalEnviar" in secre_documentos.html for file upload form
-  - **Arquivo Column**: Added file status column in secretaria documents table showing "Enviado" or "-"
-  - **Aluno Documents**: Enhanced aluno_documentos.html with "Documento disponivel" label and download button when files are available
-  - **Workflow**: PENDENTE → (Emitir) → EMITIDO → (Enviar Documento) → File Available → (Confirmar Entrega) → ENTREGUE
+### UI/UX Decisions
+The system adheres to a modern design aesthetic with a specific color palette:
+- Primary Color: `#092F76` (dark blue)
+- Secondary Color: `#8ED6D7` (pool blue)
+- Accent Color: `#B1B7DC` (light blue)
+- Background Color: `#EDEED9` (beige)
+- Cards feature a `border-radius: 15px` and `box-shadow: 0 4px 15px rgba(0,0,0,0.08)`.
+- Font: Poppins (Google Fonts).
+- Buttons have `border-radius: 10px` and smooth transitions.
+- Responsive CSS with breakpoints for tablet and mobile devices is implemented across all templates.
+- Profile photo upload functionality is integrated for Aluno, Professor, Secretaria, and Coordenação roles.
 
-- **08/12/2025:** Template Fixes and Migration Updates
-  - **coor_horarios.html Fix**: Used `{% with %}` template tag to prevent VariableDoesNotExist errors when accessing disciplina objects that might be None
-  - **coor_dashboard.html Avisos Styling**: Enhanced avisos recentes card with date badge, improved layout with flex display, better hover effects
-  - **aluno_dashboard.html Chart**: Improved performance chart with better color coding (blue for passing grades, red for failing), custom legend, and title
-  - **aluno_calendario.html**: Centered calendar navigation, removed redundant title, improved responsive design
-  - **Database Migration**: Created and applied migration 0007 for Documento.arquivo field
-  - **run.sh Update**: Added automatic makemigrations step before migrate
+### Technical Implementations & Feature Specifications
+The project is structured with a main `escola/` app containing models, views, and templates. Custom management commands handle group creation and data population.
 
-- **08/12/2025:** UI/UX Improvements and Bug Fixes
-  - **Date Format Bug Fix**: Fixed `secretaria_documento_visualizar` view date formatting from `%H:%i` to correct Python `%H:%M` format
-  - **Professor Dashboard Enhancement**: Improved avisos recentes card styling with background color, border-left accent, hover effects, and calendar icons
-  - **Custom Filters**: Verified `get_item` templatetag filter exists and works correctly for horarios grid
+**Core Models:**
+- `Curso`, `Disciplina`, `Turma`, `Sala`
+- `Professor`, `Aluno`, `Matrícula`
+- `Nota`, `Frequência`
+- `Aviso` (with author, recipient, active status), `Evento`, `HorarioAula`, `Documento`
+- `Material` (for educational material uploads)
 
-- **08/12/2025:** Security fixes and functionality improvements (FINAL)
-  - **Security Fix**: Removed all hardcoded 'senha123' default passwords - system now requires explicit password when creating user accounts
-  - **Data Integrity**: Added atomic transactions for student/professor creation with proper error handling and rollback on user creation failures
-  - **Transaction Safety**: Improved error handling in coordenacao_aluno_adicionar/editar to use nested try-except with ValueError raising for transaction rollback
-  - **Username Validation**: Added pre-validation for username uniqueness before attempting user creation
-  - **Password Validation**: Enforced non-empty password requirement when creating user credentials
-  - **Group Assignment**: New users are automatically added to appropriate permission groups (Aluno, Professor, etc.)
-  - **Grade Submission Fix**: Changed `professor_salvar_notas` to use `update_or_create` keyed by (matricula, disciplina, tipo_avaliacao)
-  - **Secretaria Academic CRUD**: Full CRUD for Cursos, Turmas, and Disciplinas in secretaria_academico view
-  - **Credential Management**: Added username/password fields to coordination student forms
-  - **Responsive CSS Fix**: Fixed student dashboard grid overlap issue with media queries
-  - **Boletim Chart Fix**: Improved performance chart in `aluno_boletim.html` with color-coded status
+**Role-Based Functionalities:**
 
-- **08/12/2025:** Bug fixes and improvements across all dashboards
-  - **Professor Dashboard Fix**: Fixed student count display showing "3+3+1" - now shows correct total sum using pre-calculated `total_alunos` context variable
-  - **Turma Creation Fix**: Removed non-existent 'ano' field references from `coordenacao_turma_adicionar` and `coordenacao_turma_editar` views
-  - **Coordination Professors CRUD**: Complete rewrite of `coor_professores.html` with modal-based add/edit/view functionality; added corresponding views and URLs
-  - **Settings Pages Fix**: Rewrote `coor_configuracoes.html` and `secre_configuracoes.html` to properly extend base templates with user profile display and password change forms
-  - **Secretaria Calendar Fix**: Rewrote `secre_calendario.html` to extend `base_secretaria.html` with dynamic JavaScript calendar and events list
-  - **Secretaria Academic Management Fix**: Rewrote `secre_academico.html` with proper tabs for Cursos, Turmas, and Disciplinas
-  - **Reports Page Filter Fix**: Updated `coordenacao_relatorios` view to handle turma filtering from GET parameters
+*   **Aluno (Student):**
+    *   View academic reports (boletim) and attendance (frequência).
+    *   Export academic reports as PDF.
+    *   View calendar and class schedules.
+    *   Submit absence justifications.
+    *   Profile and password settings.
+*   **Professor (Teacher):**
+    *   Record grades and attendance.
+    *   Manage educational materials (upload/download/delete).
+    *   Send announcements to classes.
+    *   Manage calendar events.
+    *   Profile and password settings.
+*   **Secretaria (Secretariat):**
+    *   Full CRUD for students, teachers, courses, classes, and subjects.
+    *   Issue and manage documents, including file uploads and status tracking (PENDENTE, EMITIDO, ENTREGUE).
+    *   View academic calendar.
+    *   Profile and password settings.
+*   **Coordenação (Coordination):**
+    *   Full CRUD for classes, students, and teachers (with optional user creation).
+    *   Manage calendar events (add/edit/delete).
+    *   Send announcements to classes (with full CRUD).
+    *   Generate detailed analytical reports with class filters and export options.
+    *   Oversee teachers.
+    *   Profile and password settings.
 
-- **08/12/2025:** CRUD completo para Coordenação gerenciar Turmas e Alunos
-  - Novas views: coordenacao_turma_adicionar, coordenacao_turma_editar, coordenacao_turma_excluir
-  - Novas views: coordenacao_aluno_adicionar, coordenacao_aluno_editar, coordenacao_aluno_excluir
-  - Templates: coor_turma_form.html, coor_aluno_form.html, coor_turma_excluir.html, coor_aluno_excluir.html
-  - Correção de parsing de data_nascimento usando datetime.strptime
-  - Padronização de logos em todos os templates base (usando imagem logo-nexus.png)
-  - Redesign de aluno_calendario.html com layout moderno
-  - Gráfico de frequência do aluno agora usa dados reais (porcentagem_geral)
-  - Página de relatórios (coor_relatorios.html) com analytics detalhados e exportação
+**System Design Choices:**
+- **Template Inheritance:** Extensive use of Django's template inheritance with base templates (`base_aluno.html`, `base_professor.html`, `base_secretaria.html`, `base_coordenacao.html`) for consistent UI and easier maintenance.
+- **Atomic Transactions:** Critical operations, especially those involving user creation, grade submission, and professor assignments to classes/disciplines, utilize atomic transactions for data integrity and error handling with rollback capabilities.
+- **Automated Group and Permission Management:** Custom management commands (`criar_grupos.py`) automatically set up hierarchical permission groups (Secretaria, Coordenação, Professor, Aluno) upon system initialization, ensuring granular access control.
+- **Dynamic Content:** Dashboards feature dynamic content such as performance charts in `aluno_boletim.html` and `aluno_dashboard.html`, and dynamic calendars in `secre_calendario.html`.
+- **Modals for CRUD:** Many CRUD operations, especially for Coordination and Secretariat roles, are implemented using modal dialogs for an improved user experience.
+- **Credential Management:** New user creation (e.g., for students or professors) includes explicit username and password fields with pre-validation for uniqueness and non-empty passwords.
 
-- **08/12/2025:** Atualização completa de views e templates
-  - Adicionada funcionalidade de configurações para todos os perfis (aluno, professor, secretaria, coordenação)
-  - Views de configurações agora permitem atualizar perfil e alterar senha
-  - Templates de professor (materiais, comunicados, calendário, configurações) convertidos para usar base_professor.html
-  - Adicionada view de download de materiais
-  - Criação automática de migrações e grupos no run.sh
-  - Modelo Material com suporte a upload de arquivos
-  - Modelo Sala para gerenciamento de salas de aula
-  - Campo 'ativo', 'autor' e 'destinatario' adicionados ao modelo Aviso
-  - Grupos criados automaticamente: Secretaria (42 perms), Coordenação (21 perms), Professor (16 perms), Aluno (6 perms)
-  - CSS responsivo com breakpoints para tablet e mobile
-
-- **02/12/2025:** Refatoração completa dos templates para usar herança de base templates
-- **02/12/2025:** Implementação de CRUD completo para alunos (secretaria) e eventos (coordenação)
-
-## Padrão de Design CSS
-- Cor primária NEXUS: #092F76 (azul escuro)
-- Cor secundária: #8ED6D7 (pool blue)
-- Cor de destaque: #B1B7DC (light blue)
-- Cor de fundo: #EDEED9 (beige)
-- Cartões com border-radius: 15px e box-shadow: 0 4px 15px rgba(0,0,0,0.08)
-- Fonte: Poppins (Google Fonts)
-- Botões com border-radius: 10px e transições suaves
-
-## Arquitetura do Projeto
-
-### Estrutura Principal
+### System Hierarchy
 ```
-nexus/              # Configurações do projeto Django
-escola/             # App principal com models, views, templates
-  ├── management/   # Comandos de gerenciamento customizados
+nexus/              # Django project configurations
+escola/             # Main app with models, views, templates
+  ├── management/   # Custom management commands
   │   └── commands/
-  │       ├── criar_grupos.py        # Cria grupos e permissões hierárquicas
-  │       └── criar_dados_completos.py # Popula banco com dados de teste
-  ├── static/       # CSS, JS, imagens
-  ├── templates/    # Templates HTML com herança
-  └── urls.py       # Rotas organizadas por função
+  │       ├── criar_grupos.py        # Creates hierarchical groups and permissions
+  │       └── criar_dados_completos.py # Populates database with test data
+  ├── static/       # CSS, JS, images
+  ├── templates/    # HTML templates with inheritance
+  └── urls.py       # Routes organized by function
 ```
 
-### Modelos de Dados
-- Curso, Disciplina, Turma, Sala
-- Professor, Aluno, Matrícula
-- Nota, Frequência
-- Aviso (com autor, destinatario, ativo), Evento, HorarioAula, Documento
-- Material (novo - para upload de materiais didáticos)
-
-### Templates Base
-- `base_aluno.html` - Layout para alunos
-- `base_professor.html` - Layout para professores (atualizado com SVG icons)
-- `base_secretaria.html` - Layout para secretaria
-- `base_coordenacao.html` - Layout para coordenação
-
-### Funcionalidades por Perfil
-
-**Aluno:**
-- Visualizar boletim e frequência
-- Exportar boletim em PDF
-- Ver calendário e horários
-- Justificar faltas
-- Configurações de perfil e senha
-
-**Professor:**
-- Lançar notas e frequência
-- Gerenciar materiais didáticos (upload/download/excluir)
-- Enviar comunicados para turmas
-- Gerenciar eventos do calendário
-- Configurações de perfil e senha
-
-**Secretaria:**
-- CRUD completo de alunos (adicionar/editar/excluir)
-- Gerenciar professores e turmas
-- Emitir documentos
-- Visualizar calendário acadêmico
-- Configurações de perfil e senha
-
-**Coordenação:**
-- CRUD completo de turmas (adicionar/editar/excluir)
-- CRUD completo de alunos (adicionar/editar/excluir)
-- CRUD completo de professores (adicionar/editar/excluir com criação opcional de usuário)
-- Gerenciar eventos do calendário (adicionar/editar/excluir)
-- Enviar comunicados às turmas (com CRUD completo)
-- Gerar relatórios com analytics detalhados e filtro por turma
-- Supervisionar professores
-- Configurações de perfil e senha
-
-### URLs Importantes
-- `/` - Página inicial
-- `/login/` - Login
-- `/logout/` - Logout (redireciona para home)
-- `/dashboard/professor/materiais/` - Gerenciar materiais
-- `/dashboard/professor/materiais/download/<id>/` - Download de material
-- `/dashboard/secretaria/alunos/adicionar/` - Adicionar aluno
-- `/dashboard/coordenacao/turmas/` - Listar turmas
-- `/dashboard/coordenacao/turmas/adicionar/` - Adicionar turma
-- `/dashboard/coordenacao/turmas/editar/<id>/` - Editar turma
-- `/dashboard/coordenacao/alunos/` - Listar alunos
-- `/dashboard/coordenacao/alunos/adicionar/` - Adicionar aluno
-- `/dashboard/coordenacao/alunos/editar/<id>/` - Editar aluno
-- `/dashboard/coordenacao/calendario/evento/adicionar/` - Adicionar evento
-- `/dashboard/coordenacao/comunicados/` - Enviar comunicados
-- `/dashboard/coordenacao/relatorios/` - Relatórios com analytics
-
-## Configuração do Ambiente
-
-### Variáveis de Ambiente
-- `DATABASE_URL` - URL de conexão PostgreSQL (automático no Replit)
-- `SECRET_KEY` - Chave secreta do Django
-- `DEBUG` - Modo de debug (True/False)
-
-### Comandos Úteis
-```bash
-bash run.sh                           # Inicia servidor (inclui migrations e grupos)
-python3.11 manage.py migrate          # Aplicar migrações
-python3.11 manage.py criar_grupos     # Criar grupos e permissões
-python3.11 manage.py criar_dados_completos # Criar dados de teste completos
-python3.11 manage.py collectstatic    # Coletar arquivos estáticos
-python3.11 manage.py createsuperuser  # Criar admin
-```
-
-## Hierarquia de Permissões
-```
-Admin > Coordenação > Secretaria > Professor > Aluno
-```
-
-Grupos são criados automaticamente pelo comando `criar_grupos`:
-- **Secretaria**: 42 permissões (gestão completa de alunos, professores, documentos)
-- **Coordenação**: 21 permissões (eventos, comunicados, relatórios)
-- **Professor**: 16 permissões (notas, frequência, materiais)
-- **Aluno**: 6 permissões (visualização)
-
-## Credenciais de Teste
-| Usuário | Senha | Função | Grupo |
-|---------|-------|--------|-------|
-| admin | admin123 | Administrador | Admin |
-| coordenacao | coord123 | Coordenação | Coordenacao |
-| secretaria | secre123 | Secretaria | Secretaria |
-| professor | prof123 | Professor | Professor |
-| aluno | aluno123 | Aluno | Aluno |
-
-## Servidor de Desenvolvimento
-- Porta: 5000
-- Comando: `bash run.sh`
-- URL: http://0.0.0.0:5000
-- Python: 3.11
-
-## Dependências Principais
-- Django 5.2.8
-- djangorestframework
-- psycopg2-binary (PostgreSQL)
-- reportlab (PDF)
-- openpyxl (Excel)
-- django-filter
-- django-crispy-forms
-- django-import-export
-- gunicorn (produção)
-- whitenoise (arquivos estáticos)
-
-## Preferências do Usuário
-- Sistema deve funcionar responsivamente em todos dispositivos (desktop, tablet, mobile)
-- Design seguindo a paleta de cores NEXUS
-- Gráficos e charts devem ser funcionais em todos dashboards
-- Grupos devem ser criados automaticamente com permissões hierárquicas
+## External Dependencies
+- **Django 5.2.8**: Web framework.
+- **djangorestframework**: For building Web APIs.
+- **psycopg2-binary**: PostgreSQL database adapter.
+- **reportlab**: For generating PDF reports (e.g., student academic reports).
+- **openpyxl**: For reading and writing Excel 2010 xlsx/xlsm/xltx/xltm files.
+- **django-filter**: For simple filtering of querysets.
+- **django-crispy-forms**: For elegant display of Django forms.
+- **django-import-export**: For importing and exporting data.
+- **gunicorn**: WSGI HTTP Server for UNIX (production deployment).
+- **whitenoise**: For serving static files efficiently in production.
