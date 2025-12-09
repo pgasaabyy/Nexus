@@ -635,7 +635,7 @@ body {
 }
 
 .nexus-logo-image {
-    max-width: 300px; /* Tamanho controlado */
+    max-width: 200px; /* Tamanho controlado */
     width: 100%;      /* Responsivo */
     height: auto;
     display: block;
