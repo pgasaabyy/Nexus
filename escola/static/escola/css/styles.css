@@ -592,98 +592,146 @@ body {
   margin: 0;
 }
 
+/* =========================================
+   SEÇÃO SOBRE (NEXUS ABOUT)
+   ========================================= */
+
+/* Variáveis locais para fácil edição */
 .nexus-about-section {
-    padding: 4rem 2rem;
-    background-repeat: repeat; /* repete o padrão no fundo */
-    background-position: center;
+    --nexus-blue: #092f76;
+    --nexus-cyan: #8ed6d7;
+    --nexus-text: #333333;
+    
+    padding: 6rem 0;
+    background-color: #f8f9fa; /* Fundo leve para contraste com a seção escura acima */
+    background-image: radial-gradient(#092f76 0.5px, transparent 0.5px), radial-gradient(#092f76 0.5px, #f8f9fa 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    background-opacity: 0.1; /* Nota: precisa ser ajustado com rgba no background-color se quiser transparência real, mas o padrão sutil ajuda */
+    overflow: hidden; /* Evita rolagem horizontal indesejada */
 }
 
-/* Header com logo e título */
+/* Container centralizado */
+.nexus-about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+/* --- Cabeçalho: Logo e Título --- */
 .nexus-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 3rem;
-    margin-bottom: 3rem;
+    border-bottom: 3px solid var(--nexus-cyan);
+    padding-bottom: 2rem;
 }
 
 .nexus-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1;
 }
 
 .nexus-logo-image {
-    width: 400px;
+    max-width: 300px; /* Tamanho controlado */
+    width: 100%;      /* Responsivo */
     height: auto;
-    object-fit: contain;
-    
+    display: block;
 }
 
 .nexus-title {
-    font-size: 4rem;
-    font-weight: 600;
+    flex: 1;
+    font-size: clamp(2.5rem, 5vw, 4rem); /* Fonte cresce conforme a tela */
+    font-weight: 800;
     text-align: right;
-    color: #092f76;
+    color: var(--nexus-blue);
     margin: 0;
-    letter-spacing: 2px;
-    text-shadow: 4px 4px 10px #8ed6d7;
-    ;
+    line-height: 1;
+    /* Sombra sólida moderna (Hard Shadow) */
+    text-shadow: 4px 4px 0px var(--nexus-cyan);
 }
 
-/* Textos descritivos */
+/* --- Texto Descritivo --- */
 .nexus-description {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    color: var(--nexus-text);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    text-align: justify;
+    
+    /* Layout em colunas para telas grandes (Estilo Revista) */
+    column-count: 2;
+    column-gap: 4rem;
 }
 
 .nexus-description p {
-    font-size: 1.2rem;
-    line-height: 1.8;
-    color: #000000;
-    text-align: justify;
-    margin: 0;
+    margin-bottom: 1.5rem;
+    /* Evita que um parágrafo seja cortado no meio entre colunas */
+    break-inside: avoid; 
 }
 
-/* Equipe NEXUS */
+/* --- Assinatura da Equipe --- */
 .nexus-team {
-    text-align: right;
-    margin-top: 3rem;
+    align-self: flex-end; /* Alinha à direita */
+    margin-top: 1rem;
 }
 
 .nexus-team h3 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #092f76;
+    color: var(--nexus-blue);
     margin: 0;
-    text-shadow: 4px 4px 10px #8ed6d7;
+    position: relative;
+    display: inline-block;
 }
 
-/* Responsividade */
+/* Pequeno detalhe visual abaixo do "Equipe Nexus" */
+.nexus-team h3::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 4px;
+    background-color: var(--nexus-cyan);
+    margin-top: 5px;
+    border-radius: 2px;
+}
+
+/* =========================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================= */
 @media (max-width: 768px) {
+    .nexus-about-section {
+        padding: 4rem 0;
+    }
+
     .nexus-header {
-        flex-direction: column;
+        flex-direction: column; /* Empilha logo e título */
+        gap: 2rem;
         text-align: center;
-        gap: 1.5rem;
+        border-bottom: none; /* Remove a linha no mobile */
     }
 
     .nexus-logo-image {
-        width: 150px;
+        max-width: 200px; /* Logo menor no celular */
+        margin: 0 auto;
     }
 
     .nexus-title {
-        font-size: 2.5rem;
-    }
-
-    .nexus-description p {
-        font-size: 1rem;
-        text-align: left;
-    }
-
-    .nexus-team h3 {
-        font-size: 2rem;
         text-align: center;
+        width: 100%;
+    }
+
+    .nexus-description {
+        column-count: 1; /* Volta para 1 coluna no celular */
+        background: rgba(255, 255, 255, 0.8); /* Fundo branco para facilitar leitura sobre o pattern */
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .nexus-team {
+        align-self: center; /* Centraliza a assinatura */
     }
 }
 
