@@ -613,7 +613,7 @@ body {
 }
 
 .nexus-logo-image {
-    width: 200px;
+    width: 400px;
     height: auto;
     object-fit: contain;
     
@@ -1697,7 +1697,7 @@ body {
 /* Adicionando estilos para seção SOMOS A NEXUS */
 .nexus-about-section {
   background: linear-gradient(135deg, #8ed6d7 0%, #a8dfe0 100%);
-  padding: 5rem 0;
+  padding: 5rem 40px;
   color: #092f76;
 }
 
@@ -1752,8 +1752,8 @@ body {
 }
 
 .nexus-title {
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 3rem;
+  font-weight: 900;
   color: #092f76;
   margin: 30px 0 10px;
   letter-spacing: 1px;
@@ -1774,14 +1774,6 @@ body {
   padding: 30px;
   margin: 30px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.nexus-description p {
-  color: #1e3a5f;
-  line-height: 1.8;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  text-align: justify;
 }
 
 .nexus-description p:last-child {
